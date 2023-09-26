@@ -1,6 +1,8 @@
 import React from 'react'
 import { nanoid } from 'nanoid'
 import { useForm } from 'react-hook-form'
+import { useAuthState } from 'react-firebase-hooks/auth'
+import { auth } from '@/services/firebase'
 import { useSet } from '@/hooks/use-set'
 import { useToast } from '@/components/ui/use-toast'
 import { Input } from '@/components/ui/input'
@@ -13,11 +15,24 @@ type AddVenueProps = {
 
 export const AddVenue: React.FC<AddVenueProps> = ({ onSuccess }) => {
   const { toast } = useToast()
-  const { register, handleSubmit } = useForm<Venue>()
+  const [user] = useAuthState(auth)
+  const { register, handleSubmit } = useForm<Pick<Venue, 'name' | 'address' | 'maxParticipants'>>()
   const { mutate, loading, error } = useSet<Venue>()
 
   const onSubmit = handleSubmit(async (data) => {
-    await mutate(`venues/${nanoid()}`, data)
+    if (!user || !user.email) {
+      toast({
+        title: 'Error',
+        description: 'You need to be logged in to add a venue',
+        variant: 'destructive'
+      })
+    }
+    await mutate(`venues/${nanoid()}`, {
+      ...data,
+      createdBy: user.email,
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    })
     onSuccess()
   })
 

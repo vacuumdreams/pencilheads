@@ -12,6 +12,7 @@ import {
   Utensils,
   File,
   FileText,
+  Clock,
   HelpCircle,
   Image,
   Laptop,
@@ -32,6 +33,7 @@ import {
   Users,
   LogIn,
   LogOut,
+  Star,
   X,
   type XIcon as LucideIcon,
 } from "lucide-react"
@@ -53,6 +55,7 @@ export const Icons = {
     </svg>
   ),
   close: X,
+  clock: Clock,
   spinner: Loader2,
   chevronLeft: ChevronLeft,
   chevronRight: ChevronRight,
@@ -71,6 +74,7 @@ export const Icons = {
   arrowRight: ArrowRight,
   help: HelpCircle,
   pizza: Pizza,
+  star: Star,
   twitter: Twitter,
   check: Check,
   copy: Copy,

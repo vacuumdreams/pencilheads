@@ -50,7 +50,7 @@ export const VenueSelector: React.FC<VenueSelectorProps> = ({ setValue }) => {
   const { toast } = useToast()
   const [isAddingOpen, setAddingOpen] = React.useState(false)
   const [snapshots, loading, error] = useList(ref(realtimeDB, 'venues'));
-  const [venue, setVenue] = React.useState<Venue>({
+  const [venue, setVenue] = React.useState<Pick<Venue, 'name' | 'address' | 'maxParticipants'>>({
     name: '',
     address: '',
     maxParticipants: 0,

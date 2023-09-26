@@ -8,13 +8,33 @@ export interface Venue {
   name: string;
   address: string;
   maxParticipants: number;
+  createdBy: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export type DBVenue = Venue & {
+  createdAt: number;
+  updatedAt: number;
+}
+
+export type Guest = {
+  name: string;
+  email: string;
+  invitedAt: number;
+  confirmedAt: number | null;
+  invitedBy: {
+    email: string;
+    name: string;
+    photoUrl?: string | null;
+  }
 }
 
 export interface Subscription {
   email: string;
   name: string;
+  subscribedAt: number;
   photoUrl?: string | null;
-  guests: number;
 }
 
 export interface Movie {
@@ -30,7 +50,11 @@ export interface Movie {
 
 export interface Event {
   createdAt: Date;
-  createdBy: string;
+  createdBy: {
+    email: string;
+    name: string;
+    photoUrl?: string | null;
+  };
   updatedAt: Date;
   scheduledForDate: Date;
   scheduledForTime: string;
@@ -38,5 +62,12 @@ export interface Event {
   food?: null | Food;
   venue: Venue;
   subscriptions: Subscription[];
+  guests: Guest[];
   movies: Movie[];
+}
+
+export type DBEvent = Omit<Event, 'createdAt' | 'updatedAt' | 'scheduledForDate'> & {
+  createdAt: number;
+  updatedAt: number;
+  scheduledForDate: string;
 }

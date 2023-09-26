@@ -58,7 +58,10 @@ export const MovieSearch: React.FC<MovieSearchProps> = ({ disabled, onSubmit }) 
                   setTitle(e.target.value)
                 }}
               />
-              <Button onClick={() => title && mutate(title)}>
+              <Button onClick={(e) => {
+                e.preventDefault()
+                title && mutate(title)
+              }}>
                 <Icons.search width={12} />
               </Button>
             </div>

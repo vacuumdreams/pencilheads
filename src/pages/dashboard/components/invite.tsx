@@ -22,10 +22,24 @@ export const Invite: React.FC<InviteProps> = ({ onSuccess }) => {
   const { mutate, loading, error } = useSet()
 
   const onSubmit = handleSubmit(async ({ email }) => {
+    console.log(email, user)
+    if (email === user?.email) {
+      toast({
+        title: 'Error',
+        description: 'You cannot invite yourself',
+        variant: 'destructive',
+      })
+      return
+    }
     await mutate(`invites/${email}`, {
       email,
       accepted: false,
-      createdBy: user?.email,
+      acceptedAt: null,
+      createdAt: new Date().toISOString(),
+      createdBy: {
+        name: user?.displayName || user?.email?.split('@')[0],
+        email: user?.email,
+      },
     })
     onSuccess(email)
   })

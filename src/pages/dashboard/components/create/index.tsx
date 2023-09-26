@@ -11,7 +11,7 @@ import { Icons } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Event } from '@/types';
+import { Event, DBEvent } from '@/types';
 import { VenueSelector } from './venue'
 import { FormData } from './types'
 import { DatePicker } from '@/components/date-picker';
@@ -25,18 +25,16 @@ export const CreateEvent: React.FC<CreateEventProps> = ({ onBack }) => {
   const [showFood, setShowFood] = React.useState(false)
   const [user] = useAuthState(auth)
   const { toast } = useToast();
-  const { register, control, handleSubmit, setValue, formState } = useForm<FormData>({
+  const { register, control, handleSubmit, setValue } = useForm<FormData>({
     defaultValues: {
       scheduledForTime: '19:00',
     },
   });
-  const { mutate, loading, error } = useSet<Event>()
+  const { mutate, loading, error } = useSet<DBEvent>()
   const { mutate: getMovies, loading: isMoviesLoading, error: moviesError } = useMovie()
 
-  console.log(formState.errors, formState.isDirty, formState.isSubmitting, formState.isValid)
-
   const onSubmit = handleSubmit(async (data) => {
-    const now = new Date()
+    const now = Date.now()
 
     if (!data.movies?.length) {
       toast({
@@ -68,30 +66,33 @@ export const CreateEvent: React.FC<CreateEventProps> = ({ onBack }) => {
     const movies = await getMovies(data.movies.map(m => m.imdbId))
 
     if (user && user.email) {
-      mutate(`events/${nanoid()}-${nanoid()}`, {
+      await mutate(`events/${nanoid()}-${nanoid()}`, {
         createdAt: now,
-        createdBy: user.email,
+        createdBy: {
+          email: user.email,
+          name: user.displayName || user.email.split('@')[0],
+          photoUrl: user.photoURL,
+        },
         updatedAt: now,
-        scheduledForDate: data.scheduledForDate,
+        scheduledForDate: data.scheduledForDate.toISOString(),
         scheduledForTime: data.scheduledForTime,
         expenses: data.expenses,
         food: data.food?.name ? {
-          name: data.food?.name,
+          name: data.food.name,
           description: data.food?.description,
         } : null,
-        venue: {
-          name: data.venue.name,
-          address: data.venue.address,
-          maxParticipants: data.venue.maxParticipants,
-        },
+        venue: data.venue,
         subscriptions: [{
           email: user.email,
           name: user.displayName || user.email.split('@')[0],
           photoUrl: user.photoURL,
-          guests: 0,
+          subscribedAt: now,
         }],
+        guests: [],
         movies,
       })
+
+      onBack()
     } else {
       toast({
         title: 'Error',
@@ -167,7 +168,10 @@ export const CreateEvent: React.FC<CreateEventProps> = ({ onBack }) => {
           className={cn('', {
             'hidden': showFood,
           })}
-          onClick={() => setShowFood(true)}
+          onClick={(e) => {
+            e.preventDefault()
+            setShowFood(true)
+          }}
         >
           Add food
         </Button>
