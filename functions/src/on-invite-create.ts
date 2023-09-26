@@ -18,13 +18,13 @@ const mg = mailgun.client({
   key: MAILGUN_API_KEY,
 });
 
-export const sendInviteEmail = functions.database.ref('events/{id}')
+export const onEventCreate = functions.database.ref('events/{id}')
   .onCreate((snapshot) => {
     const data = snapshot.val();
 
     // Email details
     const mailOptions = {
-      from: 'info@pencilheads.net',
+      from: 'Pencilheads <info@pencilheads.net>',
       to: data.email,
       subject: 'You have been invited!',
       template: 'Invitation',

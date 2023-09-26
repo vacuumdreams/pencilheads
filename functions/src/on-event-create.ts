@@ -6,6 +6,7 @@ import Mailgun from 'mailgun-js';
 import * as formData from 'form-data';
 
 admin.initializeApp();
+const db = admin.database();
 
 const mailgun = new Mailgun(formData);
 
@@ -18,13 +19,20 @@ const mg = mailgun.client({
   key: MAILGUN_API_KEY,
 });
 
-export const sendInviteEmail = functions.database.ref('events/{id}')
+export const onEventCreation = functions.database.ref('events/{id}')
   .onCreate((snapshot) => {
     const data = snapshot.val();
 
+    // TODO: send email to all members (invites/accepted=true)
+    // db.ref('invites').on('value', snapshots => {
+    //   const invites = snapshots.val().map(child => child.val())
+    // })
+
+    const members: string[] = []
+
     // Email details
-    const mailOptions = {
-      from: 'info@pencilheads.net',
+    const createMailOptions = {
+      from: 'Pencilheads <info@pencilheads.net>',
       to: data.email,
       subject: `${data.createdBy.name} has created a new event!`,
       template: 'Event',
@@ -34,12 +42,37 @@ export const sendInviteEmail = functions.database.ref('events/{id}')
       }),
     };
 
+    // Email details
+    const inviteMailOptions = {
+      from: 'Pencilheads <info@pencilheads.net>',
+      to: members.join(','),
+      subject: `${data.createdBy.name} has created a new event!`,
+      template: 'Event',
+      'h:X-Mailgun-Variables': JSON.stringify({
+        person: data.createdBy.name,
+        inviteToken: snapshot.key,
+      }),
+    };
+
     // Send the email using Mailgun
-    return mg.messages.create(MAILGUN_DOMAIN, mailOptions)
-      .then(() => {
-        logger.log('Email sent to:', data.email);
-      })
-      .catch((error: any) => {
-        logger.error('There was an error while sending the email:', error);
-      });
+    return Promise.all([
+      mg.messages.create(MAILGUN_DOMAIN, createMailOptions)
+        .then(() => {
+          logger.log('Event creation email sent to:', data.email);
+        })
+        .catch((error: any) => {
+          logger.error('There was an error while sending the email:', error);
+        }),
+      async () => {
+        if (members.length > 0) {
+          return mg.messages.create(MAILGUN_DOMAIN, inviteMailOptions)
+            .then(() => {
+              logger.log('Event invite email sent to:', members.join(','));
+            })
+            .catch((error: any) => {
+              logger.error('There was an error while sending the email:', error);
+            })
+        }
+      },
+    ]);
   });

@@ -18,58 +18,60 @@ const mg = mailgun.client({
   key: MAILGUN_API_KEY,
 });
 
-const getGuests = (acc, sub) => {
-  return [
-    ...acc,
-    sub.guests.map(guest => ({
-      ...guest,
-      invitedBy: {
-        email: sub.email,
-        name: sub.name,
-        photoUrl: sub.photoUrl,
-      },
-    })),
-  ]
-}
-
-const getNewInvitees = (prevData, data) => {
-  const prevGuests = prevData.subscriptions.reduce(getGuests, [])
-  const allGuests = data.subscriptions.reduce(getGuests, [])
-
-  return allGuests.filter(guest => {
-    return !prevGuests.find(prevGuest => prevGuest.email === guest.email)
+const getNewGuests = (prevData, data) => {
+  return data.guests.filter(guest => {
+    return !prevData.guests.find(prevGuest => prevGuest.email === guest.email)
   })
 }
 
-export const sendInviteEmail = functions.database.ref('events/{id}')
+const getNewSubscribers = (prevData, data) => {
+  return data.subscriptions.filter(sub => {
+    return !prevData.subscriptions.find(prevSub => prevSub.email === sub.email)
+  })
+}
+
+export const onEventWrite = functions.database.ref('events/{id}')
   .onWrite((snapshot) => {
     const prevData = snapshot.before.val()
     const data = snapshot.after.val()
 
-    const newInvitees = getNewInvitees(prevData, data)
+    const newSubscribers = getNewSubscribers(prevData, data).map(sub => ({
+      from: 'Pencilheads <info@pencilheads.net>',
+      to: sub.email,
+      subject: `You are going!`,
+      template: 'Event subscription',
+      'h:X-Mailgun-Variables': JSON.stringify({
+        subscriber: sub,
+        event: data,
+      }),
+    }))
+    const newGuests = getNewGuests(prevData, data).map(guest => ({
+      from: 'Pencilheads <info@pencilheads.net>',
+      to: guest.email,
+      subject: `${guest.invitedBy.name} has invited you to an event!`,
+      template: 'Event invite',
+      'h:X-Mailgun-Variables': JSON.stringify({
+        guest,
+        event: data,
+      }),
+    }))
 
-    if (newInvitees.length > 0) {
-      newInvitees.forEach(invitee => {
-        // Email details
-        const mailOptions = {
-          from: 'info@pencilheads.net',
-          to: invitee.email,
-          subject: `${invitee.invitedBy.name} has invited you to an event!`,
-          template: 'Event invite',
-          'h:X-Mailgun-Variables': JSON.stringify({
-            invitee,
-            event: data,
-          }),
-        };
-
-        // Send the email using Mailgun
-        return mg.messages.create(MAILGUN_DOMAIN, mailOptions)
-          .then(() => {
-            logger.log('Email sent to:', data.email);
-          })
-          .catch((error: any) => {
-            logger.error('There was an error while sending the email:', error);
-          });
-      });
-    }
+    return Promise.all([
+      newSubscribers.map(opts => mg.messages.create(MAILGUN_DOMAIN, opts)
+        .then(() => {
+          logger.log('Event subscription email sent to:', opts.to);
+        })
+        .catch((error: any) => {
+          logger.error('There was an error while sending the email:', error);
+        })
+      ),
+      newGuests.map(opts => mg.messages.create(MAILGUN_DOMAIN, opts)
+        .then(() => {
+          logger.log('Event guest invite email sent to:', opts.to);
+        })
+        .catch((error: any) => {
+          logger.error('There was an error while sending the email:', error);
+        })
+      )
+    ])
   });
