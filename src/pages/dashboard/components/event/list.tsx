@@ -1,9 +1,11 @@
 import React from "react"
+import { useAuthState } from "react-firebase-hooks/auth"
+import { auth } from "@/services/firebase"
 import { Event } from "@/types"
 import { Icons } from "@/components/icons"
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert"
-import { EventDateLabel } from "./event-date-label"
-import { EventItem } from "./event-item"
+import { EventDateLabel } from "./date-label"
+import { EventItem } from "./item"
 
 type EventListProps = {
   events: Event[]
@@ -11,6 +13,8 @@ type EventListProps = {
 }
 
 export const EventList: React.FC<EventListProps> = ({ events, noEventsMessage }) => {
+  const [user] = useAuthState(auth)
+
   if (!events || events.length === 0) {
     return (
       <Alert className='max-w-xl mx-auto text-center'>
@@ -25,14 +29,14 @@ export const EventList: React.FC<EventListProps> = ({ events, noEventsMessage })
     )
   }
   return (
-    <ul className="ml-2 pl-8 py-4 border-l border-gray-300">
-      {events?.map((event, index) => (
+    <ul className="ml-2 pl-4 md:pl-8 py-4 border-l border-muted">
+      {user && events?.map((event, index) => (
         <li key={index}>
           <EventDateLabel
             date={event.scheduledForDate}
             prevDate={events[index - 1]?.scheduledForDate}
           />
-          <EventItem event={event} />
+          <EventItem user={user} event={event} />
         </li>
       ))}
     </ul>

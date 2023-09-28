@@ -1,13 +1,12 @@
 import React from 'react'
-import { nanoid } from 'nanoid'
 import { useForm } from 'react-hook-form'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { auth } from '@/services/firebase'
-import { useSet } from '@/hooks/use-set'
+import { useMutate } from '@/hooks/use-mutate'
 import { useToast } from '@/components/ui/use-toast'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { Venue } from '@/types'
+import { Venue, DBVenue } from '@/types'
 
 type AddVenueProps = {
   onSuccess: () => void
@@ -17,34 +16,26 @@ export const AddVenue: React.FC<AddVenueProps> = ({ onSuccess }) => {
   const { toast } = useToast()
   const [user] = useAuthState(auth)
   const { register, handleSubmit } = useForm<Pick<Venue, 'name' | 'address' | 'maxParticipants'>>()
-  const { mutate, loading, error } = useSet<Venue>()
+  const { push, loading } = useMutate<DBVenue>()
 
   const onSubmit = handleSubmit(async (data) => {
-    if (!user || !user.email) {
+    const now = Date.now()
+    if (!user?.email) {
       toast({
         title: 'Error',
         description: 'You need to be logged in to add a venue',
         variant: 'destructive'
       })
+      return
     }
-    await mutate(`venues/${nanoid()}`, {
+    await push('venues', {
       ...data,
       createdBy: user.email,
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
+      createdAt: now,
+      updatedAt: now,
     })
     onSuccess()
   })
-
-  React.useEffect(() => {
-    if (error) {
-      toast({
-        title: 'Error',
-        description: error,
-        variant: 'destructive',
-      })
-    }
-  }, [error])
 
   return (
     <form className="flex flex-col gap-4" onSubmit={onSubmit}>

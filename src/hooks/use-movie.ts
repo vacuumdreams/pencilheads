@@ -1,5 +1,6 @@
 import React from 'react'
 import { Movie } from '@/types'
+import { useToast } from '@/components/ui/use-toast'
 
 export type MovieItem = {
   title: string,
@@ -9,9 +10,9 @@ export type MovieItem = {
 }
 
 export function useMovieSearch() {
+  const { toast } = useToast()
   const [results, setResults] = React.useState<MovieItem[]>([])
   const [loading, setLoading] = React.useState(false)
-  const [error, setError] = React.useState<null | string>(null)
 
   const mutate = async (title: string) => {
     try {
@@ -29,19 +30,84 @@ export function useMovieSearch() {
 
       setResults(res)
     } catch (err) {
-      setError(`${err}`)
+      toast({
+        title: 'Error',
+        description: `${err}`,
+        variant: 'destructive',
+      })
     } finally {
       setLoading(false)
     }
   }
 
-  return { results, mutate, loading, error, reset: () => setResults([]) }
+  return { results, mutate, loading, reset: () => setResults([]) }
+}
+
+type MiniDbResponse = {
+  results: {
+    imdb_id: string
+    title: string
+    year: number
+    popularity: number
+    description: string
+    content_rating: string
+    movie_length: number
+    rating: number
+    created_at: string
+    trailer: string
+    image_url: string
+    release: string
+    plot: string
+    gen: Array<{ genre: string }>
+  }
+}
+
+const getTrailerAndTags = async (id: string, toast: ReturnType<typeof useToast>['toast']) => {
+  try {
+    const res = await fetch(`https://moviesminidatabase.p.rapidapi.com/movie/id/${id}`, {
+      headers: {
+        'X-RapidAPI-Key': import.meta.env.VITE_RAPID_API_KEY,
+        'X-RapidAPI-Host': import.meta.env.VITE_RAPID_API_HOST,
+      }
+    })
+    const json = await res.json() as MiniDbResponse
+    return {
+      trailer: json.results.trailer,
+      tags: json.results.gen.map(g => g.genre),
+    }
+  } catch (err) {
+    toast({
+      title: 'Error',
+      description: `${err}`,
+      variant: 'destructive',
+    })
+    return {
+      trailer: undefined,
+      tags: [] as string[],
+    }
+  }
+}
+
+const getMovieData = async (id: string) => {
+  const response = await fetch(`http://www.omdbapi.com/?i=${encodeURIComponent(id)}&apikey=${import.meta.env.VITE_OMDB_API_KEY}`)
+  const json = await response.json()
+  return {
+    title: json.Title as string,
+    director: json.Director as string,
+    actors: json.Actors as string,
+    awards: json.Awards as string,
+    plot: json.Plot as string,
+    year: json.Year as string,
+    poster: json.Poster as string,
+    imdbId: json.imdbID as string,
+    imdbRating: json.imdbRating as string,
+  }
 }
 
 export function useMovie() {
+  const { toast } = useToast()
   const [results, setResults] = React.useState<Movie[]>([])
   const [loading, setLoading] = React.useState(false)
-  const [error, setError] = React.useState<null | string>(null)
 
   const mutate = async (ids: string[]) => {
     try {
@@ -50,16 +116,15 @@ export function useMovie() {
       }
 
       const data = await Promise.all(ids.map(async id => {
-        const response = await fetch(`http://www.omdbapi.com/?i=${encodeURIComponent(id)}&apikey=${import.meta.env.VITE_OMDB_API_KEY}`)
-        const json = await response.json()
+        const [movie, { trailer, tags }] = await Promise.all([
+          getMovieData(id),
+          getTrailerAndTags(id, toast),
+        ])
+
         return {
-          title: json.Title,
-          director: json.Director,
-          plot: json.Plot,
-          year: json.Year,
-          poster: json.Poster,
-          imdbId: json.imdbID,
-          imdbRating: json.imdbRating,
+          ...movie,
+          trailer,
+          tags,
           votes: [],
         }
       }))
@@ -69,10 +134,14 @@ export function useMovie() {
       return data
     } catch (err) {
       setLoading(false)
-      setError(`${err}`)
+      toast({
+        title: 'Error',
+        description: `${err}`,
+        variant: 'destructive',
+      })
       return []
     }
   }
 
-  return { results, mutate, loading, error }
+  return { results, mutate, loading }
 }

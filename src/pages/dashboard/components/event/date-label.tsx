@@ -15,7 +15,7 @@ export function EventDateLabel({ prevDate, date }: DateLabelProps) {
 
   return (
     <p className="flex items-center relative my-4 font-mono uppercase text-xl">
-      <span className="absolute w-4 h-4 -ml-10 border border-4 border-background bg-gray-200 dark:bg-gray-700"></span>
+      <span className="absolute w-4 h-4 -ml-6 md:-ml-10 border border-4 border-background bg-gray-200 dark:bg-gray-700"></span>
       {intlFormatDistance(date, now)}
     </p>
   );

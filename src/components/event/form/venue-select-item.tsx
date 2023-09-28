@@ -11,7 +11,7 @@ export const VenueSelectItem = React.forwardRef<
     <SelectPrimitive.Item
       ref={ref}
       className={cn(
-        "relative flex w-full cursor-default select-none items-center rounded-sm my-2 py-1.5 pl-6 pr-2 text-sm outline-none transition-colors bg-green-100 focus:bg-green-200 focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&>*:nth-child(2)]:w-full",
+        "relative flex w-full cursor-default select-none items-center rounded-sm my-2 py-1.5 pl-6 pr-2 text-sm outline-none transition-colors bg-green-100 dark:bg-teal-900 focus:bg-green-200 dark:focus:bg-teal-800 focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&>*:nth-child(2)]:w-full",
         className
       )}
       {...props}

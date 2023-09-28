@@ -1,100 +1,124 @@
-import React from 'react'
-import { Transition } from 'react-transition-group'
-import { LottieRefCurrentProps } from 'lottie-react'
-import { useAuthState, useSignOut } from 'react-firebase-hooks/auth';
-import { auth } from '@/services/firebase';
-import { cn } from '@/lib/utils';
+import React from 'react';
+import { useList } from 'react-firebase-hooks/database';
+import { DataSnapshot, ref } from 'firebase/database';
+import { realtimeDB } from '@/services/firebase';
+import { DBEvent, Event } from '@/types';
 import { Icons } from '@/components/icons';
-import { Animation } from '@/components/animations';
 import { Button } from '@/components/ui/button';
 import {
-  Dialog,
-  DialogContent,
-} from '@/components/ui/dialog'
-import { Unauthenticated } from '@/components/auth/unauthenticated';
-import { useToast } from '@/components/ui/use-toast';
-import { Invite } from './components/invite'
-import { Events } from './events';
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs"
+import {
+  Alert,
+  AlertTitle,
+  AlertDescription
+} from "@/components/ui/alert"
+import { Guard } from '@/components/auth/guard'
+import { EventForm } from '@/components/event/form'
+import { EventList } from './components/event/list';
 
-function Dashboard() {
-  const { toast } = useToast();
-  const headerRef = React.useRef(null);
-  const animationRef = React.useRef<LottieRefCurrentProps>(null);
-  const [isInviteOpen, setInviteOpen] = React.useState(false)
-  const [user, loading, error] = useAuthState(auth);
-  const [signOut] = useSignOut(auth)
-
-  React.useEffect(() => {
-    if (!loading && user) {
-      animationRef.current?.stop();
-    }
-  }, [loading, user])
-
-  React.useEffect(() => {
-    if (error) {
-      toast({
-        title: 'Error',
-        description: error.message,
-        variant: 'destructive',
-      })
-    }
-  }, [error])
-
-  return (
-    <div
-      className={cn(
-        "h-screen overflow-x-hidden overflow-y-auto bg-background pb-8 bg-background",
-        // "scrollbar-none"
-        "scrollbar scrollbar-track-transparent scrollbar-thumb-accent scrollbar-thumb-rounded-md"
-      )}
-    >
-      <div className="container">
-        <Transition nodeRef={headerRef} in={!!user} timeout={1000}>
-          {(state) => (
-            <header
-              ref={headerRef}
-              className={cn('w-32 mx-auto transition-all delay-0 duration-500 h-32', {
-                'delay-500 0 h-0': ['entered', 'entering'].includes(state) && !!user,
-              })}
-            >
-              <div className={cn('absolute right-4 top-0 transition-transform -translate-y-32 delay-1000 duration-500', {
-                'translate-y-0': ['entered', 'entering'].includes(state),
-              })}>
-                <div className="flex justify-end gap-1">
-                  <Button variant={'secondary'} onClick={() => setInviteOpen(true)}><Icons.invite /></Button>
-                  <Button onClick={signOut}><Icons.logOut /></Button>
-                </div>
-              </div>
-              <div className={cn('transition-transform duration-1000', {
-                'translate-x-[60vw]': ['entered', 'entering'].includes(state),
-              })}>
-                <Animation lottieRef={animationRef} name='pencilhead' />
-              </div>
-            </header>
-          )}
-        </Transition>
-        <Animation lottieRef={animationRef} name='pencilhead' />
-        <h1 className="font-mono text-4xl text-center mt-12 mb-16">pencilheads</h1>
-        {!loading && user && <Events />}
-        {!loading && !user && <Unauthenticated />}
-      </div>
-      <Dialog open={isInviteOpen} onOpenChange={setInviteOpen}>
-        <DialogContent>
-          <Invite
-            onSuccess={(email) => {
-              setInviteOpen(false)
-              toast({
-                title: 'Success',
-                description: `Invite sent to ${email}`,
-                variant: 'default',
-              })
-            }}
-          />
-        </DialogContent>
-      </Dialog>
-    </div>
-
-  );
+type OrderedEvents = {
+  keys: string[]
+  upcomingEvents: Event[]
+  pastEvents: Event[]
 }
 
-export default Dashboard;
+const getEvents = (snapshots?: DataSnapshot[]) => {
+  const now = new Date()
+  return snapshots?.reduce<OrderedEvents>((acc, item) => {
+    if (!(item && item.key) || (item.key && acc.keys.includes(item.key))) {
+      return acc
+    }
+
+    const val = item.val() as DBEvent
+    const scheduledForDate = new Date(val.scheduledForDate)
+    const createdAt = new Date(val.createdAt)
+    const updatedAt = new Date(val.updatedAt)
+    const event: Event = {
+      ...val,
+      id: item.key,
+      createdAt,
+      updatedAt,
+      scheduledForDate,
+    }
+
+    if (now > scheduledForDate) {
+      acc.pastEvents.push(event)
+    } else {
+      acc.upcomingEvents.push(event)
+    }
+    acc.keys.push(item.key)
+
+    return acc
+  }, {
+    keys: [],
+    upcomingEvents: [],
+    pastEvents: [],
+  }) || {
+    keys: [],
+    upcomingEvents: [],
+    pastEvents: [],
+  }
+}
+
+export const Dashboard: React.FC = () => {
+  const [isCreateOpen, setCreateOpen] = React.useState(false)
+  const [snapshots, loading, error] = useList(ref(realtimeDB, 'events'));
+
+  const { upcomingEvents, pastEvents } = getEvents(snapshots)
+
+  return (
+    <Guard>
+      {isCreateOpen && <EventForm onBack={() => setCreateOpen(false)} />}
+      {!isCreateOpen && (
+        <Tabs defaultValue="future" className="space-y-4">
+          <div className='flex justify-between'>
+            <TabsList>
+              <TabsTrigger value="future">
+                Upcoming
+              </TabsTrigger>
+              <TabsTrigger value="past">
+                Past events
+              </TabsTrigger>
+            </TabsList>
+            <Button onClick={() => setCreateOpen(true)}>
+              <Icons.plus />
+            </Button>
+          </div>
+          {loading && (
+            <div className="flex w-full p-16 justify-center">
+              <Icons.spinner className="animate-spin" />
+            </div>
+          )}
+          {error && (
+            <Alert variant="destructive" className='max-w-xl mx-auto text-center'>
+              <AlertTitle className='flex gap-2 items-center justify-center mb-4'>
+                <Icons.warning width={16} />
+                <span>Error</span>
+              </AlertTitle>
+              <AlertDescription>
+                <p>Failed loading events</p>
+                <p>{error.message}</p>
+              </AlertDescription>
+            </Alert>
+          )}
+          <TabsContent value="future" className="space-y-4">
+            <EventList
+              events={upcomingEvents}
+              noEventsMessage="There are no upcoming events."
+            />
+          </TabsContent>
+          <TabsContent value="past" className="space-y-4">
+            <EventList
+              events={pastEvents}
+              noEventsMessage="Looks like there has been no events organised just yet."
+            />
+          </TabsContent>
+        </Tabs>
+      )}
+    </Guard>
+  );
+}

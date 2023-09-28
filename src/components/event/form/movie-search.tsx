@@ -1,6 +1,5 @@
 import React from 'react'
 import { useMovieSearch, MovieItem } from '@/hooks/use-movie'
-import { useToast } from '@/components/ui/use-toast'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Icons } from '@/components/icons'
@@ -18,26 +17,15 @@ type MovieSearchProps = {
 }
 
 export const MovieSearch: React.FC<MovieSearchProps> = ({ disabled, onSubmit }) => {
-  const { toast } = useToast()
   const [isOpen, setOpen] = React.useState(false)
   const [title, setTitle] = React.useState('')
-  const { results, mutate, loading, error, reset } = useMovieSearch()
+  const { results, mutate, loading, reset } = useMovieSearch()
 
   const handleSubmit = async (movie: MovieItem) => {
     setTitle('')
     reset()
     onSubmit(movie)
   }
-
-  React.useEffect(() => {
-    if (error) {
-      toast({
-        title: 'Error',
-        description: error,
-        variant: 'destructive',
-      })
-    }
-  }, [error])
 
   React.useEffect(() => {
     setOpen(results.length > 0)

@@ -3,9 +3,10 @@ import { useForm } from 'react-hook-form'
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '@/services/firebase';
 import { useToast } from '@/components/ui/use-toast'
-import { useSet } from '@/hooks/use-set'
+import { useMutate } from '@/hooks/use-mutate'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import { Invite as InviteType } from '@/types'
 
 type FormData = {
   email: string
@@ -15,14 +16,13 @@ type InviteProps = {
   onSuccess: (email: string) => void
 }
 
-export const Invite: React.FC<InviteProps> = ({ onSuccess }) => {
+export const InviteForm: React.FC<InviteProps> = ({ onSuccess }) => {
   const { toast } = useToast();
   const [user] = useAuthState(auth);
   const { register, handleSubmit } = useForm<FormData>()
-  const { mutate, loading, error } = useSet()
+  const { set, loading } = useMutate<InviteType>()
 
   const onSubmit = handleSubmit(async ({ email }) => {
-    console.log(email, user)
     if (email === user?.email) {
       toast({
         title: 'Error',
@@ -31,28 +31,18 @@ export const Invite: React.FC<InviteProps> = ({ onSuccess }) => {
       })
       return
     }
-    await mutate(`invites/${email}`, {
+    await set(`invites/${email}`, {
       email,
       accepted: false,
       acceptedAt: null,
-      createdAt: new Date().toISOString(),
+      createdAt: Date.now(),
       createdBy: {
-        name: user?.displayName || user?.email?.split('@')[0],
-        email: user?.email,
+        name: user?.displayName || user?.email?.split('@')[0] || '',
+        email: user?.email || '',
       },
     })
     onSuccess(email)
   })
-
-  React.useEffect(() => {
-    if (error) {
-      toast({
-        title: 'Error',
-        description: error,
-        variant: 'destructive',
-      })
-    }
-  }, [error])
 
   return (
     <div>

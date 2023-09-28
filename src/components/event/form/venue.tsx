@@ -24,6 +24,7 @@ import { Venue } from '@/types'
 import { FormData } from './types'
 
 type VenueSelectorProps = {
+  defaultVenue?: Venue
   setValue: UseFormSetValue<FormData>
 }
 
@@ -46,14 +47,14 @@ const getVenues = (snapshots?: DataSnapshot[]) => {
   return results.venues
 }
 
-export const VenueSelector: React.FC<VenueSelectorProps> = ({ setValue }) => {
+export const VenueSelector: React.FC<VenueSelectorProps> = ({ defaultVenue, setValue }) => {
   const { toast } = useToast()
   const [isAddingOpen, setAddingOpen] = React.useState(false)
   const [snapshots, loading, error] = useList(ref(realtimeDB, 'venues'));
   const [venue, setVenue] = React.useState<Pick<Venue, 'name' | 'address' | 'maxParticipants'>>({
-    name: '',
-    address: '',
-    maxParticipants: 0,
+    name: defaultVenue?.name || '',
+    address: defaultVenue?.address || '',
+    maxParticipants: defaultVenue?.maxParticipants || 0,
   })
 
   React.useEffect(() => {
@@ -73,7 +74,7 @@ export const VenueSelector: React.FC<VenueSelectorProps> = ({ setValue }) => {
           <AddVenue onSuccess={() => setAddingOpen(false)} />
         </DialogContent>
       </Dialog>
-      <Select onValueChange={(name) => {
+      <Select defaultValue={venue.name} onValueChange={(name) => {
         const match = snapshots?.find(v => v.val().name === name)
         if (match) {
           setVenue(match.val())
