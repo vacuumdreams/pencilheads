@@ -1,10 +1,11 @@
-import React from 'react'
+import React from 'react';
+import { Outlet } from 'react-router-dom';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '@/services/firebase';
 import { Unauthenticated } from './unauthenticated';
 
 type GuardProps = {
-  children: React.ReactNode
+  children?: React.ReactNode;
 }
 
 export const Guard = ({ children }: GuardProps) => {
@@ -14,5 +15,5 @@ export const Guard = ({ children }: GuardProps) => {
     return (<Unauthenticated />)
   }
 
-  return children
+  return children || <Outlet />
 }

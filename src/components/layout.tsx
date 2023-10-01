@@ -1,5 +1,5 @@
 import React from 'react'
-import { Outlet } from 'react-router-dom'
+import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { Transition } from 'react-transition-group'
 import { useAuthState, useSignOut } from 'react-firebase-hooks/auth'
 import { auth } from '@/services/firebase'
@@ -8,18 +8,19 @@ import { useToast } from '@/components/ui/use-toast'
 import { Icons } from '@/components/icons'
 import { Button } from '@/components/ui/button'
 import { Animation } from '@/components/animations';
-import {
-  Dialog,
-  DialogContent,
-} from '@/components/ui/dialog'
-import { InviteForm } from '@/components/invite/form'
 
 export const Layout = () => {
+  const location = useLocation()
+  const navigate = useNavigate()
   const headerRef = React.useRef(null)
-  const [isInviteOpen, setInviteOpen] = React.useState(false)
   const { toast } = useToast()
   const [user, loading, error] = useAuthState(auth)
   const [signOut] = useSignOut(auth)
+
+  const onSignOut = () => {
+    signOut()
+    navigate('/')
+  }
 
   React.useEffect(() => {
     if (error) {
@@ -51,8 +52,7 @@ export const Layout = () => {
                 'translate-y-0': ['entered', 'entering'].includes(state),
               })}>
                 <div className="flex justify-end gap-1">
-                  <Button variant={'secondary'} onClick={() => setInviteOpen(true)}><Icons.invite /></Button>
-                  <Button onClick={signOut}><Icons.logOut /></Button>
+                  <Button onClick={onSignOut}><Icons.logOut /></Button>
                 </div>
               </div>
               <div className={cn('transition-transform duration-1000', {
@@ -64,23 +64,8 @@ export const Layout = () => {
             </header>
           )}
         </Transition>
-        <h1 className="font-mono text-4xl text-center mt-12 mb-16">pencilheads</h1>
         {!loading && <Outlet />}
       </div>
-      <Dialog open={isInviteOpen} onOpenChange={setInviteOpen}>
-        <DialogContent>
-          <InviteForm
-            onSuccess={(email) => {
-              setInviteOpen(false)
-              toast({
-                title: 'Success',
-                description: `Invite sent to ${email}`,
-                variant: 'default',
-              })
-            }}
-          />
-        </DialogContent>
-      </Dialog>
     </div>
   )
 }

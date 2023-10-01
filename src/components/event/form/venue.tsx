@@ -1,8 +1,6 @@
 import React from 'react'
 import { UseFormSetValue } from 'react-hook-form'
-import { useList } from 'react-firebase-hooks/database';
-import { ref, DataSnapshot } from 'firebase/database';
-import { realtimeDB } from '@/services/firebase';
+import { useVenueCollection } from '@/hooks/use-data';
 import { useToast } from '@/components/ui/use-toast';
 import { Icons } from '@/components/icons';
 import { Button } from '@/components/ui/button'
@@ -28,40 +26,22 @@ type VenueSelectorProps = {
   setValue: UseFormSetValue<FormData>
 }
 
-type VenueAcc = {
-  keys: string[]
-  venues: Venue[]
-}
-
-const getVenues = (snapshots?: DataSnapshot[]) => {
-  const results = snapshots?.reduce<VenueAcc>((acc, v) => {
-    const venue = v.val()
-    const key = v.key
-    if (key && !acc.keys.includes(key)) {
-      acc.keys.push(key)
-      acc.venues.push(venue)
-    }
-    return acc
-  }, { keys: [], venues: [] }) || { keys: [], venues: [] }
-
-  return results.venues
-}
-
 export const VenueSelector: React.FC<VenueSelectorProps> = ({ defaultVenue, setValue }) => {
   const { toast } = useToast()
   const [isAddingOpen, setAddingOpen] = React.useState(false)
-  const [snapshots, loading, error] = useList(ref(realtimeDB, 'venues'));
+  const [venues, loading, error] = useVenueCollection();
   const [venue, setVenue] = React.useState<Pick<Venue, 'name' | 'address' | 'maxParticipants'>>({
     name: defaultVenue?.name || '',
     address: defaultVenue?.address || '',
     maxParticipants: defaultVenue?.maxParticipants || 0,
   })
+  const venueList = Object.values(venues || {})
 
   React.useEffect(() => {
     if (error) {
       toast({
         title: 'Error',
-        description: error.message,
+        description: `${error}`,
         variant: 'destructive',
       })
     }
@@ -74,11 +54,12 @@ export const VenueSelector: React.FC<VenueSelectorProps> = ({ defaultVenue, setV
           <AddVenue onSuccess={() => setAddingOpen(false)} />
         </DialogContent>
       </Dialog>
-      <Select defaultValue={venue.name} onValueChange={(name) => {
-        const match = snapshots?.find(v => v.val().name === name)
+      <Select defaultValue={venue.name || undefined} onValueChange={(name) => {
+        const match = venueList.find(v => v.name === name)
         if (match) {
-          setVenue(match.val())
-          setValue('venue', match.val())
+          const venue = match
+          setVenue(venue)
+          setValue('venue', venue)
         }
       }}>
         <SelectTrigger className="w-full">
@@ -94,12 +75,12 @@ export const VenueSelector: React.FC<VenueSelectorProps> = ({ defaultVenue, setV
             {loading && <p className="my-4">Loading available venues...</p>}
           </SelectGroup>
           <SelectGroup>
-            {snapshots?.length !== undefined && snapshots.length > 0 && (
+            {venueList.length > 0 && (
               <div className="pl-12 pr-6 flex gap-2 justify-end">
                 <Icons.users width={12} />
               </div>
             )}
-            {getVenues(snapshots).map((venue, i) => (
+            {venueList.map((venue, i) => (
               <VenueSelectItem key={i} value={venue.name}>
                 <div className="w-full my-2 flex gap-2 p-4">
                   <div className="w-full flex justify-between gap-8">

@@ -6,22 +6,32 @@ import { useToast } from '@/components/ui/use-toast';
 import { useMutate } from '@/hooks/use-mutate'
 import { useMovie } from '@/hooks/use-movie';
 import { cn, getUserName } from '@/lib/utils';
+import { useSpaceId } from '@/hooks/use-space';
 import { Icons } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { DBEvent, Event } from '@/types';
+import { Event } from '@/types';
 import { VenueSelector } from './venue'
 import { FormData } from './types'
 import { DatePicker } from '@/components/date-picker';
 import { Movies } from './movies';
 
 type CreateEventProps = {
+  id?: string
   event?: Event
   onBack: () => void
 }
 
-export const EventForm: React.FC<CreateEventProps> = ({ event, onBack }) => {
+const setTime = (date: Date, time: string) => {
+  const [hours, minutes] = time.split(':')
+  date.setHours(parseInt(hours))
+  date.setMinutes(parseInt(minutes))
+  return date
+}
+
+export const EventForm: React.FC<CreateEventProps> = ({ id, event, onBack }) => {
+  const spaceId = useSpaceId()
   const [showFood, setShowFood] = React.useState(event?.food?.name ? true : false)
   const [user] = useAuthState(auth)
   const { toast } = useToast();
@@ -30,12 +40,10 @@ export const EventForm: React.FC<CreateEventProps> = ({ event, onBack }) => {
       scheduledForTime: '19:00',
     },
   });
-  const { push, update, loading } = useMutate<DBEvent>()
+  const { push, update, loading } = useMutate<Event>()
   const { mutate: getMovies, loading: isMoviesLoading } = useMovie()
 
   const onSubmit = handleSubmit(async (data) => {
-    const now = Date.now()
-
     if (!data.movies?.length) {
       toast({
         title: 'Error',
@@ -45,7 +53,7 @@ export const EventForm: React.FC<CreateEventProps> = ({ event, onBack }) => {
       return
     }
 
-    if (!data.scheduledForDate) {
+    if (!data.scheduledFor) {
       toast({
         title: 'Error',
         description: 'You must select a date for the event',
@@ -66,8 +74,10 @@ export const EventForm: React.FC<CreateEventProps> = ({ event, onBack }) => {
     const movies = await getMovies(data.movies.map(m => m.imdbId))
 
     if (user && user.email) {
+      const now = new Date()
       const userName = getUserName(user)
-      const mutation: DBEvent = {
+
+      const mutation: Event = {
         name: data.name || `${userName.split(' ')[0]}'s movie night`,
         createdAt: now,
         createdBy: {
@@ -76,32 +86,31 @@ export const EventForm: React.FC<CreateEventProps> = ({ event, onBack }) => {
           photoUrl: user.photoURL,
         },
         updatedAt: now,
-        scheduledForDate: data.scheduledForDate.getTime(),
-        scheduledForTime: data.scheduledForTime,
+        scheduledFor: setTime(data.scheduledFor, data.scheduledForTime),
         expenses: 0,
         food: data.food?.name ? {
           name: data.food.name,
           description: data.food?.description,
         } : null,
         venue: data.venue,
-        subscriptions: {
+        attendance: {
           [user.uid]: {
             email: user.email,
             name: user.displayName || user.email.split('@')[0],
             photoUrl: user.photoURL,
-            subscribedAt: now,
+            markedAt: now,
           },
         },
         guests: {},
         movies,
       }
 
-      if (event) {
-        await update(`events/${event.id}`, mutation, {
+      if (event && id) {
+        await update(`events/${spaceId}/events/${id}`, mutation, {
           onSuccess: onBack,
         })
       } else {
-        await push(`events`, mutation, {
+        await push(`events/${spaceId}/events`, mutation, {
           onSuccess: onBack,
         })
       }
@@ -133,7 +142,7 @@ export const EventForm: React.FC<CreateEventProps> = ({ event, onBack }) => {
 
         <div className='flex gap-2'>
           <Controller
-            name="scheduledForDate"
+            name="scheduledFor"
             control={control}
             render={({ field }) => (
               <DatePicker

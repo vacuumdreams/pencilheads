@@ -4,88 +4,96 @@ import { Event } from '@/types'
 import { Icons } from '@/components/icons'
 import { Button } from '@/components/ui/button'
 import { AvatarGroup } from '@/components/avatar-group'
-import { useMutate } from '@/hooks/use-mutate'
-import { Subscription } from '@/types'
+import { Attendance } from '@/types'
 import { Movies } from './movies'
 import { Menu } from './menu'
+import { useMutate } from '@/hooks/use-mutate'
 import { getUserName } from '@/lib/utils'
+import { useSpaceId } from '@/hooks/use-space'
 
 type EventItemProps = {
   user: User
+  id: string
   event: Event
 }
 
-const getScedule = (event: Event) => {
-  const schedule = new Date(event.scheduledForDate)
-  const [hh, mm] = event.scheduledForTime.split(':').map(Number)
-  schedule.setHours(hh)
-  schedule.setMinutes(mm)
-  return schedule
-}
-
-export const EventItem: React.FC<EventItemProps> = ({ user, event }) => {
-  const { set, remove, loading } = useMutate<Subscription>()
-  const hasJoined = user.email && !!event.subscriptions?.[user.uid]
-  const currentParticipants = Object.keys(event.subscriptions || {}).length
+export const EventItem: React.FC<EventItemProps> = ({ user, id, event }) => {
+  const spaceId = useSpaceId()
+  const { set, remove, loading } = useMutate<Attendance>()
+  const hasJoined = user.email && !!event.attendance?.[user.uid]
+  const currentParticipants = Object.keys(event.attendance || {}).length
   const [now, setNow] = React.useState(new Date())
-  const schedule = getScedule(event)
 
   React.useEffect(() => {
-    if (now < schedule) {
+    if (now < event.scheduledFor) {
       setTimeout(() => {
         setNow(new Date())
-      }, schedule.getTime() - now.getTime())
+      }, event.scheduledFor.getTime() - now.getTime())
     }
-  }, [now, schedule])
+  }, [now, event.scheduledFor])
 
   return (
-    <div className='relative w-full flex border p-4 pt-12'>
+    <div className='relative w-full flex border p-4 pt-12 sm:pt-4'>
+      <div className="absolute top-0 right-0 flex gap-4 p-2 pr-6 text-gray-500">
+        <div className="flex gap-2">
+          <Icons.clock width={16} />
+          {event.scheduledFor.getHours().toString().padStart(2, '0')}:{event.scheduledFor.getMinutes().toString().padStart(2, '0')}
+        </div>
+        <div className="flex gap-2">
+          <Icons.calendar width={16} />
+          {event.scheduledFor.getDate()}/{event.scheduledFor.getMonth()}/{event.scheduledFor.getFullYear()}
+        </div>
+      </div>
       <div className="w-full my-2">
+        <div className="flex gap-2 mb-8">
+          <Icons.clapperboard width={32} />
+          <h4 className="font-mono text-2xl">{event.name || `${event.createdBy.name}'s movie night`}</h4>
+        </div>
         <div className="w-full flex gap-4 justify-between items-center mb-6">
           <AvatarGroup
             maxDisplay={3}
-            people={Object.values(event.subscriptions || {})}
+            people={Object.values(event.attendance || {}).map(sub => ({
+              name: sub.name,
+              email: sub.email,
+              photoUrl: sub.photoUrl,
+            }))}
           />
           <div className='flex gap-2'>
             {hasJoined && (
               <Button
                 disabled={loading}
                 variant="outline"
-                onClick={() => remove(`events/${event.id}/subscriptions/${user.uid}`)}
+                onClick={() => remove(`events/${spaceId}/events/${id}/attendance/${user.uid}`)}
               >
                 Unsubscribe
               </Button>
             )}
             {!hasJoined && (
               <Button
-                disabled={loading || now < schedule || event.venue.maxParticipants <= currentParticipants}
+                disabled={loading || now < event.scheduledFor || event.venue.maxParticipants <= currentParticipants}
                 onClick={() => {
-                  set(`events/${event.id}/subscriptions/${user.uid}`, {
+                  set(`events/${spaceId}/events/${id}/attendance/${user.uid}`, {
                     name: getUserName(user),
                     email: user.email || '',
-                    subscribedAt: Date.now(),
+                    markedAt: new Date(),
                     photoUrl: user.photoURL,
                   })
                 }}
               >
                 {event.venue.maxParticipants <= currentParticipants && 'Event full'}
-                {now >= schedule && 'In progress'}
-                {now < schedule && event.venue.maxParticipants > currentParticipants && 'Join'}
+                {now >= event.scheduledFor && 'In progress'}
+                {now < event.scheduledFor && event.venue.maxParticipants > currentParticipants && 'Join'}
               </Button>
             )}
             {hasJoined && (
               <Menu
                 now={now}
-                schedule={schedule}
+                schedule={event.scheduledFor}
                 user={user}
                 event={event}
               />
             )}
           </div>
-        </div>
-        <div className="flex gap-2">
-          <Icons.user width={16} />
-          <p>{event.name || `${event.createdBy.name}'s movie night`}</p>
         </div>
         <div className="flex gap-2">
           <a
@@ -104,16 +112,6 @@ export const EventItem: React.FC<EventItemProps> = ({ user, event }) => {
               <Icons.arrowUpRightSquare />
             </span>
           </a>
-        </div>
-        <div className="absolute top-0 right-0 flex gap-4 p-2 pr-6 text-gray-500">
-          <div className="flex gap-2">
-            <Icons.clock width={16} />
-            {event.scheduledForTime}
-          </div>
-          <div className="flex gap-2">
-            <Icons.calendar width={16} />
-            {event.scheduledForDate.getDate()}/{event.scheduledForDate.getMonth()}/{event.scheduledForDate.getFullYear()}
-          </div>
         </div>
         <h2 className='my-4 font-bold'>The movies:</h2>
         <Movies event={event} />

@@ -4,22 +4,24 @@ import { useAuthState } from 'react-firebase-hooks/auth'
 import { auth } from '@/services/firebase'
 import { useMutate } from '@/hooks/use-mutate'
 import { useToast } from '@/components/ui/use-toast'
+import { useSpaceId } from '@/hooks/use-space'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { Venue, DBVenue } from '@/types'
+import { Venue } from '@/types'
 
 type AddVenueProps = {
   onSuccess: () => void
 }
 
 export const AddVenue: React.FC<AddVenueProps> = ({ onSuccess }) => {
+  const spaceId = useSpaceId()
   const { toast } = useToast()
   const [user] = useAuthState(auth)
-  const { register, handleSubmit } = useForm<Pick<Venue, 'name' | 'address' | 'maxParticipants'>>()
-  const { push, loading } = useMutate<DBVenue>()
+  const { register, handleSubmit, formState } = useForm<Pick<Venue, 'name' | 'address' | 'maxParticipants'>>()
+  const { push, loading } = useMutate<Venue>()
 
   const onSubmit = handleSubmit(async (data) => {
-    const now = Date.now()
+    const now = new Date()
     if (!user?.email) {
       toast({
         title: 'Error',
@@ -28,7 +30,7 @@ export const AddVenue: React.FC<AddVenueProps> = ({ onSuccess }) => {
       })
       return
     }
-    await push('venues', {
+    await push(`venues/${spaceId}/venues`, {
       ...data,
       createdBy: user.email,
       createdAt: now,
@@ -40,11 +42,11 @@ export const AddVenue: React.FC<AddVenueProps> = ({ onSuccess }) => {
   return (
     <form className="flex flex-col gap-4" onSubmit={onSubmit}>
       <h3 className="mt-12 mb-4">Add new venue</h3>
-      <Input {...register('name')} placeholder="Name of the venue" />
-      <Input {...register('address')} placeholder="Address of the venue" />
-      <Input {...register('maxParticipants')} placeholder="Maximum number of people the place can host" />
+      <Input {...register('name', { required: true })} placeholder="Name of the venue" />
+      <Input {...register('address', { required: true })} placeholder="Address of the venue" />
+      <Input {...register('maxParticipants', { required: true })} placeholder="Maximum number of people the place can host" />
 
-      <Button disabled={loading} type="submit">
+      <Button disabled={loading || !formState.isValid} type="submit" onClick={(e) => e.stopPropagation()}>
         Submit
       </Button>
     </form >

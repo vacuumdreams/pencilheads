@@ -1,10 +1,9 @@
-// Types.ts
-export interface Food {
+export type Food = {
   name: string;
   description?: string;
 }
 
-export interface Venue {
+export type Venue = {
   name: string;
   address: string;
   maxParticipants: number;
@@ -13,30 +12,25 @@ export interface Venue {
   updatedAt: Date;
 }
 
-export type DBVenue = Omit<Venue, 'createdAt' | 'updatedAt'> & {
-  createdAt: number;
-  updatedAt: number;
-}
-
 export type Guest = {
   name: string;
   email: string;
-  invitedAt: number;
-  confirmedAt: number | null;
+  invitedAt: Date;
+  confirmedAt: Date | null;
   invitedBy: {
     name: string;
     email: string;
   }
 }
 
-export interface Subscription {
+export type Attendance = {
   email: string;
   name: string;
-  subscribedAt: number;
+  markedAt: Date;
   photoUrl?: string | null;
 }
 
-export interface Movie {
+export type Movie = {
   title: string,
   director: string,
   actors: string,
@@ -51,8 +45,7 @@ export interface Movie {
   votes: string[];
 }
 
-export interface Event {
-  id: string
+export type Event = {
   name: string;
   createdAt: Date;
   createdBy: {
@@ -61,29 +54,53 @@ export interface Event {
     photoUrl?: string | null;
   };
   updatedAt: Date;
-  scheduledForDate: Date;
-  scheduledForTime: string;
+  scheduledFor: Date;
   expenses?: number;
   food?: null | Food;
   venue: Venue;
-  subscriptions: Record<string, Subscription>;
+  attendance: Record<string, Attendance>;
   guests: Record<string, Guest[]>;
   movies: Movie[];
 }
 
-export type DBEvent = Omit<Event, 'id' | 'createdAt' | 'updatedAt' | 'scheduledForDate'> & {
-  createdAt: number;
-  updatedAt: number;
-  scheduledForDate: number;
-}
-
 export type Invite = {
   email: string,
+  spaceId: string,
   accepted: boolean,
   acceptedAt: null | number,
-  createdAt: number,
+  expiresAt: Date,
+  createdAt: Date,
   createdBy: {
     name: string,
     email: string,
   },
+}
+
+export type Plan = {
+  name: string
+  maxMembers: number
+  maxEventsPerMonth: number
+}
+
+export type SpaceSubscription = {
+  plan: Plan
+  active: boolean
+  createdAt: Date
+  updatedAt: Date
+  expiresAt: Date
+}
+
+export type Member = {
+  role: 'admin' | 'member';
+  name: string;
+  email: string;
+  photoUrl?: string | null;
+}
+
+export type Space = {
+  name: string;
+  createdAt: Date;
+  createdBy: string;
+  members: Record<string, Member>
+  subscription?: null | SpaceSubscription
 }

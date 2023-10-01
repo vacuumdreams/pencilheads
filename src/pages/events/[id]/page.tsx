@@ -1,7 +1,4 @@
 import { useParams, useNavigate } from 'react-router-dom'
-import { ref } from 'firebase/database'
-import { useObject } from 'react-firebase-hooks/database'
-import { realtimeDB } from '@/services/firebase'
 import { Icons } from '@/components/icons'
 import { Guard } from '@/components/auth/guard';
 import {
@@ -10,20 +7,20 @@ import {
   AlertDescription
 } from "@/components/ui/alert"
 import { EventForm } from '@/components/event/form'
-import { DBEvent, Event } from '@/types';
+import { useEvent } from '@/hooks/use-data'
+import { Event } from '@/types';
 
 export const EventsEdit = () => {
   const { id } = useParams()
   const navigate = useNavigate()
-  const [snapshot, loading, error] = useObject(ref(realtimeDB, `events/${id}`))
+  const [snapshot, _loading, error] = useEvent({ id })
 
-  const val = snapshot?.val() as DBEvent
+  const val = snapshot?.data()
   const event: Event | null = val ? {
     ...val,
-    id: String(id),
     createdAt: new Date(val.createdAt),
     updatedAt: new Date(val.updatedAt),
-    scheduledForDate: new Date(val.scheduledForDate),
+    scheduledFor: new Date(val.scheduledFor),
   } : null
 
   return (

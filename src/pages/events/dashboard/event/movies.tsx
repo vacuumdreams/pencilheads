@@ -5,6 +5,7 @@ import {
   AccordionTrigger,
   AccordionContent,
 } from '@/components/ui/accordion'
+import { Tag } from '@/components/ui/tag'
 import { cn } from '@/lib/utils'
 import { Event } from '@/types'
 
@@ -40,9 +41,9 @@ export const Movies = ({ event }: MoviesProps) => {
                 <h4 className="font-bold">Genre:</h4>
                 <div>
                   {movie.tags?.map(tag => (
-                    <span key={tag} className="inline-block font-mono uppercase text-lg bg-gray-200 px-3 py-1 text-sm font-semibold text-gray-700 mr-2">
+                    <Tag key={tag}>
                       {tag}
-                    </span>
+                    </Tag>
                   )) || 'N/A'}
                 </div>
                 <h4 className="font-bold">IMDB Rating:</h4>

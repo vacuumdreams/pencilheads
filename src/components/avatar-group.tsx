@@ -1,19 +1,23 @@
-import React from 'react'
 import {
   Avatar,
   AvatarImage,
   AvatarFallback,
 } from '@/components/ui/avatar'
 import { cn } from '@/lib/utils'
-import { Subscription } from '@/types'
+
+type Person = {
+  name: string
+  email: string
+  photoUrl?: string | null
+}
 
 type AvatarGroupProps = {
   maxDisplay: number
   className?: string
-  people: Subscription[]
+  people: Person[]
 }
 
-const getName = (person: Subscription) => {
+const getName = (person: Person) => {
   if (!person.name) {
     return person.email.split('@')[0]
   }

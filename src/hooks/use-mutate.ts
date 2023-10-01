@@ -1,11 +1,14 @@
 import { useState } from 'react';
-import { ref, set as dbset, remove as dbremove, push as dbpush, update as dbupdate } from 'firebase/database';
-import { realtimeDB } from '@/services/firebase';
+import { collection, setDoc, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore'
+import { database } from '@/services/firebase';
 import { useToast } from '@/components/ui/use-toast';
 
 type Opts = {
   onSuccess: () => void
+  onError?: (error: string) => void
 }
+
+database
 
 export function useMutate<T extends object>() {
   const { toast } = useToast()
@@ -14,14 +17,18 @@ export function useMutate<T extends object>() {
   const set = async (id: string, data: T, opts?: Opts) => {
     setLoading(true)
     try {
-      await dbset(ref(realtimeDB, id), data)
+      await setDoc(doc(database, id), data)
       opts?.onSuccess()
     } catch (err) {
-      toast({
-        title: 'Error',
-        description: `${err}`,
-        variant: 'destructive',
-      })
+      if (opts?.onError) {
+        opts.onError(`${err}`)
+      } else {
+        toast({
+          title: 'Error',
+          description: `${err}`,
+          variant: 'destructive',
+        })
+      }
     } finally {
       setLoading(false)
     }
@@ -30,14 +37,18 @@ export function useMutate<T extends object>() {
   const push = async (id: string, data: T, opts?: Opts) => {
     setLoading(true)
     try {
-      await dbpush(ref(realtimeDB, id), data)
+      await addDoc(collection(database, id), data)
       opts?.onSuccess()
     } catch (err) {
-      toast({
-        title: 'Error',
-        description: `${err}`,
-        variant: 'destructive',
-      })
+      if (opts?.onError) {
+        opts.onError(`${err}`)
+      } else {
+        toast({
+          title: 'Error',
+          description: `${err}`,
+          variant: 'destructive',
+        })
+      }
     } finally {
       setLoading(false)
     }
@@ -46,14 +57,19 @@ export function useMutate<T extends object>() {
   const remove = async (id: string, opts?: Opts) => {
     setLoading(true)
     try {
-      await dbremove(ref(realtimeDB, id))
+      await deleteDoc(doc(database, id))
+      // await dbremove(ref(realtimeDB, id))
       opts?.onSuccess()
     } catch (err) {
-      toast({
-        title: 'Error',
-        description: `${err}`,
-        variant: 'destructive',
-      })
+      if (opts?.onError) {
+        opts.onError(`${err}`)
+      } else {
+        toast({
+          title: 'Error',
+          description: `${err}`,
+          variant: 'destructive',
+        })
+      }
     } finally {
       setLoading(false)
     }
@@ -62,14 +78,18 @@ export function useMutate<T extends object>() {
   const update = async (id: string, data: T, opts?: Opts) => {
     setLoading(true)
     try {
-      await dbupdate(ref(realtimeDB, id), data)
+      await updateDoc(doc(database, id), data)
       opts?.onSuccess()
     } catch (err) {
-      toast({
-        title: 'Error',
-        description: `${err}`,
-        variant: 'destructive',
-      })
+      if (opts?.onError) {
+        opts.onError(`${err}`)
+      } else {
+        toast({
+          title: 'Error',
+          description: `${err}`,
+          variant: 'destructive',
+        })
+      }
     } finally {
       setLoading(false)
     }

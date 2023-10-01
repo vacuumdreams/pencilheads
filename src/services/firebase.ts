@@ -1,6 +1,6 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
-import { getDatabase } from 'firebase/database';
+import { getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
   apiKey: String(import.meta.env.VITE_FIREBASE_API_KEY),
@@ -11,11 +11,7 @@ const firebaseConfig = {
   appId: String(import.meta.env.VITE_FIREBASE_APP_ID),
 };
 
-const dbUrl = import.meta.env.VITE_FIREBASE_REGION
-  ? `https://${import.meta.env.VITE_FIREBASE_PROJECT_ID}-default-rtdb.${import.meta.env.VITE_FIREBASE_REGION}.firebasedatabase.app`
-  : undefined
-
 const app = initializeApp(firebaseConfig);
 
 export const auth = getAuth(app);
-export const realtimeDB = getDatabase(app, dbUrl);
+export const database = getFirestore(app);

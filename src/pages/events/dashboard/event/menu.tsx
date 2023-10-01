@@ -26,7 +26,7 @@ type MenuProps = {
 export const Menu = ({ now, schedule, user, event }: MenuProps) => {
   const navigate = useNavigate()
   const [isGuestsDialogOpen, setGuestsDialogOpen] = React.useState(false)
-  const currentParticipants = Object.keys(event.subscriptions || {}).length
+  const currentParticipants = Object.keys(event.attendance || {}).length
 
   return (
     <>
