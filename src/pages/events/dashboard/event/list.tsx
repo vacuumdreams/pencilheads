@@ -9,13 +9,14 @@ import { EventDateLabel } from "./date-label"
 import { EventItem } from "./item"
 
 type EventListProps = {
-  filter: QueryFieldFilterConstraint
+  isAdmin: boolean
+  filters: QueryFieldFilterConstraint[]
   noEventsMessage: React.ReactNode | string
 }
 
-export const EventList: React.FC<EventListProps> = ({ filter, noEventsMessage }) => {
+export const EventList: React.FC<EventListProps> = ({ isAdmin, filters, noEventsMessage }) => {
   const [user] = useAuthState(auth)
-  const [events, loading, error] = useEventCollection({ filter })
+  const [events, loading, error] = useEventCollection({ filters })
 
   if (!user || loading) {
     return (
@@ -64,7 +65,7 @@ export const EventList: React.FC<EventListProps> = ({ filter, noEventsMessage })
             date={events[key].scheduledFor}
             prevDate={keys[index - 1] ? events[keys[index - 1]]?.scheduledFor : undefined}
           />
-          <EventItem user={user} event={events[key]} />
+          <EventItem id={key} user={user} isAdmin={isAdmin} event={events[key]} />
         </li>
       ))}
     </ul>

@@ -1,8 +1,3 @@
-export type Food = {
-  name: string;
-  description?: string;
-}
-
 export type Venue = {
   name: string;
   address: string;
@@ -41,8 +36,7 @@ export type Movie = {
   imdbId: string,
   imdbRating: string,
   trailer?: string,
-  tags?: string[],
-  votes: string[];
+  tags: string[],
 }
 
 export type Event = {
@@ -56,11 +50,15 @@ export type Event = {
   updatedAt: Date;
   scheduledFor: Date;
   expenses?: number;
-  food?: null | Food;
+  tags: Array<{
+    name: string;
+    icon: string;
+  }>;
   venue: Venue;
   attendance: Record<string, Attendance>;
   guests: Record<string, Guest[]>;
-  movies: Movie[];
+  movies: Record<string, Movie>;
+  votes: Record<string, string>;
 }
 
 export type Invite = {

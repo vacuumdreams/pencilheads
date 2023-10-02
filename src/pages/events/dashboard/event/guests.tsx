@@ -4,8 +4,10 @@ import { Icons } from '@/components/icons'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useMutate } from '@/hooks/use-mutate'
+import { useSpaceId } from '@/hooks/use-space'
 import { Event, Guest } from '@/types'
 import { isValidEmail, getUserName } from '@/lib/utils'
+import { useToast } from '@/components/ui/use-toast'
 
 type FormData = {
   guests: Array<{
@@ -15,14 +17,15 @@ type FormData = {
 }
 
 type JoinProps = {
+  eventId: string
   user: User
   event: Event
   onClose: () => void
 }
 
-
-
-export const Guests = ({ user, event, onClose }: JoinProps) => {
+export const Guests = ({ eventId, user, event, onClose }: JoinProps) => {
+  const spaceId = useSpaceId()
+  const { toast } = useToast()
   const { register, control, handleSubmit, formState: { isValid } } = useForm<FormData>({
     defaultValues: {
       guests: Object.values(event.guests?.[user.uid] || {}),
@@ -32,13 +35,13 @@ export const Guests = ({ user, event, onClose }: JoinProps) => {
     control,
     name: 'guests',
   })
-  const { update, loading } = useMutate<Guest[]>()
+  const { set, loading } = useMutate<Guest[]>()
 
   const onSubmit = handleSubmit(async (data) => {
-    const now = Date.now()
+    const now = new Date()
     const userName = getUserName(user)
 
-    await update(`events/${event.id}/guests/${user.uid}`, data.guests.map((guest) => {
+    await set(`events/${spaceId}/events/${eventId}/guests/${user.uid}`, data.guests.map((guest) => {
       return {
         name: guest.name,
         email: guest.email,
@@ -50,7 +53,13 @@ export const Guests = ({ user, event, onClose }: JoinProps) => {
         }
       }
     }), {
-      onSuccess: onClose,
+      onSuccess: () => {
+        onClose()
+        toast({
+          title: 'Invites sent',
+          description: 'Your guests have been invited to the event.',
+        })
+      },
     })
 
   })

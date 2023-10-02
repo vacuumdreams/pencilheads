@@ -48,7 +48,7 @@ const toEvent = (d: any): Event => ({
   updatedAt: d.updatedAt.toDate(),
   scheduledFor: d.scheduledFor.toDate(),
   venue: toVenue(d.venue),
-  guets: Object.keys(d.guests).reduce<Event['guests']>((acc, key) => ({
+  guests: Object.keys(d.guests).reduce<Event['guests']>((acc, key) => ({
     ...acc,
     [key]: {
       ...d.guests[key],

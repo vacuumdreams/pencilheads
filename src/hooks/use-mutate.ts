@@ -19,13 +19,14 @@ export function useMutate<T extends object>() {
     try {
       await setDoc(doc(database, id), data)
       opts?.onSuccess()
-    } catch (err) {
+    } catch (error) {
+      console.error(error)
       if (opts?.onError) {
-        opts.onError(`${err}`)
+        opts.onError(`${error}`)
       } else {
         toast({
           title: 'Error',
-          description: `${err}`,
+          description: `${error}`,
           variant: 'destructive',
         })
       }
@@ -39,13 +40,14 @@ export function useMutate<T extends object>() {
     try {
       await addDoc(collection(database, id), data)
       opts?.onSuccess()
-    } catch (err) {
+    } catch (error) {
+      console.error(error)
       if (opts?.onError) {
-        opts.onError(`${err}`)
+        opts.onError(`${error}`)
       } else {
         toast({
           title: 'Error',
-          description: `${err}`,
+          description: `${error}`,
           variant: 'destructive',
         })
       }
@@ -60,13 +62,14 @@ export function useMutate<T extends object>() {
       await deleteDoc(doc(database, id))
       // await dbremove(ref(realtimeDB, id))
       opts?.onSuccess()
-    } catch (err) {
+    } catch (error) {
+      console.error(error)
       if (opts?.onError) {
-        opts.onError(`${err}`)
+        opts.onError(`${error}`)
       } else {
         toast({
           title: 'Error',
-          description: `${err}`,
+          description: `${error}`,
           variant: 'destructive',
         })
       }
@@ -80,13 +83,14 @@ export function useMutate<T extends object>() {
     try {
       await updateDoc(doc(database, id), data)
       opts?.onSuccess()
-    } catch (err) {
+    } catch (error) {
+      console.error(error)
       if (opts?.onError) {
-        opts.onError(`${err}`)
+        opts.onError(`${error}`)
       } else {
         toast({
           title: 'Error',
-          description: `${err}`,
+          description: `${error}`,
           variant: 'destructive',
         })
       }

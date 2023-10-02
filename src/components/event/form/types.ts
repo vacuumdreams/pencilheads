@@ -1,7 +1,7 @@
-import { Event } from '@/types';
+import { Event, Movie } from '@/types';
 import { MovieItem } from '@/hooks/use-movie';
 
-export type FormData = Event & {
+export type FormData = Omit<Event, 'movies'> & {
   scheduledForTime: string
-  movies: MovieItem[]
+  movies: Array<MovieItem | Movie>
 }

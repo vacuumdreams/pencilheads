@@ -123,13 +123,15 @@ export const Dashboard: React.FC = () => {
             <>
               <TabsContent value="future" className="space-y-4">
                 <EventList
-                  filter={where('scheduledFor', '>=', now)}
+                  isAdmin={isAdmin}
+                  filters={[where('scheduledFor', '>=', now)]}
                   noEventsMessage="There are no upcoming events."
                 />
               </TabsContent>
               <TabsContent value="past" className="space-y-4">
                 <EventList
-                  filter={where('scheduledFor', '<', now)}
+                  isAdmin={isAdmin}
+                  filters={[where('scheduledFor', '<', now)]}
                   noEventsMessage="Looks like there has been no events organised just yet."
                 />
               </TabsContent>

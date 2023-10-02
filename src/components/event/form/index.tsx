@@ -5,17 +5,16 @@ import { auth } from '@/services/firebase';
 import { useToast } from '@/components/ui/use-toast';
 import { useMutate } from '@/hooks/use-mutate'
 import { useMovie } from '@/hooks/use-movie';
-import { cn, getUserName } from '@/lib/utils';
+import { getUserName } from '@/lib/utils';
 import { useSpaceId } from '@/hooks/use-space';
 import { Icons } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Event } from '@/types';
-import { VenueSelector } from './venue'
-import { FormData } from './types'
 import { DatePicker } from '@/components/date-picker';
+import { VenueSelector } from './venue'
 import { Movies } from './movies';
+import { Event } from '@/types';
+import { FormData } from './types'
 
 type CreateEventProps = {
   id?: string
@@ -30,13 +29,34 @@ const setTime = (date: Date, time: string) => {
   return date
 }
 
+const getTime = (date: Date) => {
+  return date.getHours().toString().padStart(2, '0') + ':' + date.getMinutes().toString().padStart(2, '0')
+}
+
+const transformEvent = (event: Event): FormData => {
+  return {
+    ...event,
+    movies: Object.values(event.movies),
+    scheduledForTime: getTime(event?.scheduledFor),
+  }
+}
+
+// const getMovies = async (event: Event, data: FormData, fetchMovies: (ids: string[]) => Promise<Event['movies']>) => {
+//   const newIds = data.movies.reduce<string[]>((acc, movie) => {
+//     if (!event.movies[movie.imdbId]) {
+//       acc.push(movie.imdbId)
+//     }
+//     return acc
+//   }, [])
+//   await fetchMovies(newIds)
+// }
+
 export const EventForm: React.FC<CreateEventProps> = ({ id, event, onBack }) => {
   const spaceId = useSpaceId()
-  const [showFood, setShowFood] = React.useState(event?.food?.name ? true : false)
   const [user] = useAuthState(auth)
   const { toast } = useToast();
   const { register, control, handleSubmit, setValue, formState } = useForm<FormData>({
-    defaultValues: event || {
+    defaultValues: event ? transformEvent(event) : {
       scheduledForTime: '19:00',
     },
   });
@@ -71,7 +91,12 @@ export const EventForm: React.FC<CreateEventProps> = ({ id, event, onBack }) => 
       return
     }
 
-    const movies = await getMovies(data.movies.map(m => m.imdbId))
+    // @TODO: optimive fecthing movies - do not call on every item on every update
+    const movieList = await getMovies(data.movies.map(m => m.imdbId))
+    const movies = movieList.reduce((acc, movie) => {
+      acc[movie.imdbId] = movie
+      return acc
+    }, {} as Event['movies'])
 
     if (user && user.email) {
       const now = new Date()
@@ -79,8 +104,8 @@ export const EventForm: React.FC<CreateEventProps> = ({ id, event, onBack }) => 
 
       const mutation: Event = {
         name: data.name || `${userName.split(' ')[0]}'s movie night`,
-        createdAt: now,
-        createdBy: {
+        createdAt: data.createdAt || now,
+        createdBy: data.createdBy || {
           email: user.email,
           name: userName,
           photoUrl: user.photoURL,
@@ -88,12 +113,9 @@ export const EventForm: React.FC<CreateEventProps> = ({ id, event, onBack }) => 
         updatedAt: now,
         scheduledFor: setTime(data.scheduledFor, data.scheduledForTime),
         expenses: 0,
-        food: data.food?.name ? {
-          name: data.food.name,
-          description: data.food?.description,
-        } : null,
+        tags: data.tags || [],
         venue: data.venue,
-        attendance: {
+        attendance: data.attendance || {
           [user.uid]: {
             email: user.email,
             name: user.displayName || user.email.split('@')[0],
@@ -101,7 +123,8 @@ export const EventForm: React.FC<CreateEventProps> = ({ id, event, onBack }) => 
             markedAt: now,
           },
         },
-        guests: {},
+        guests: data.guests || {},
+        votes: data.votes || {},
         movies,
       }
 
@@ -167,29 +190,7 @@ export const EventForm: React.FC<CreateEventProps> = ({ id, event, onBack }) => 
 
         <Movies control={control} />
 
-        <Button
-          className={cn('', {
-            'hidden': showFood,
-          })}
-          onClick={(e) => {
-            e.preventDefault()
-            setShowFood(true)
-          }}
-        >
-          Add food
-        </Button>
-
-        <div className={cn('flex flex-col gap-4', {
-          'hidden': !showFood,
-        })}>
-          <div className='relative'>
-            <span className='absolute flex justify-center items-center h-full w-12 bg-gray-100 dark:bg-gray-700'>
-              <Icons.utensils width={12} />
-            </span>
-            <Input {...register('food.name')} placeholder='What food?' className='pl-16' />
-          </div>
-          <Textarea {...register('food.description')} placeholder="Info about the food you're planning to provide" />
-        </div>
+        {/* <Tags control={control} /> */}
 
         <div className='2-full flex justify-center my-4'>
           <Button

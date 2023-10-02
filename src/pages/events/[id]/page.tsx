@@ -8,38 +8,54 @@ import {
 } from "@/components/ui/alert"
 import { EventForm } from '@/components/event/form'
 import { useEvent } from '@/hooks/use-data'
-import { Event } from '@/types';
+import { useSpaceId } from '@/hooks/use-space'
 
-export const EventsEdit = () => {
+const EventsEditContent = () => {
   const { id } = useParams()
+  const spaceId = useSpaceId()
   const navigate = useNavigate()
-  const [snapshot, _loading, error] = useEvent({ id })
+  const [event, loading, error] = useEvent({ id })
 
-  const val = snapshot?.data()
-  const event: Event | null = val ? {
-    ...val,
-    createdAt: new Date(val.createdAt),
-    updatedAt: new Date(val.updatedAt),
-    scheduledFor: new Date(val.scheduledFor),
-  } : null
+  if (error) {
+    return (
+      <Alert variant="destructive" className='max-w-xl mx-auto text-center'>
+        <AlertTitle className='flex gap-2 items-center justify-center mb-4'>
+          <Icons.warning width={16} />
+          <span>Error</span>
+        </AlertTitle>
+        <AlertDescription>
+          <p>Failed loading events</p>
+          <p>{`${error}`}</p>
+        </AlertDescription>
+      </Alert>
+    )
+  }
+
+  if (loading) {
+    return (
+      <div className="flex w-full p-16 justify-center">
+        <Icons.spinner className="animate-spin" />
+      </div>
+    )
+  }
 
   return (
-    <Guard>
-      {error && (
-        <Alert variant="destructive" className='max-w-xl mx-auto text-center'>
-          <AlertTitle className='flex gap-2 items-center justify-center mb-4'>
-            <Icons.warning width={16} />
-            <span>Error</span>
-          </AlertTitle>
-          <AlertDescription>
-            <p>Failed loading events</p>
-            <p>{error.message}</p>
-          </AlertDescription>
-        </Alert>
-      )}
+    <>
       {event && (
-        <EventForm event={event} onBack={() => navigate('/')} />
+        <EventForm id={id} event={event} onBack={() => navigate(`/${spaceId}`)} />
       )}
+    </>
+  )
+}
+
+export const EventsEdit = () => {
+  return (
+    <Guard>
+      <h1 className="w-full flex gap-2 items-center justify-center font-mono text-4xl text-center mt-12 mb-16">
+        <Icons.pencil />
+        <span>Edit event</span>
+      </h1>
+      <EventsEditContent />
     </Guard>
   )
 }

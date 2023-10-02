@@ -1,10 +1,10 @@
 import React from 'react'
 import { User } from 'firebase/auth'
+import { deleteField } from 'firebase/firestore'
 import { Event } from '@/types'
 import { Icons } from '@/components/icons'
 import { Button } from '@/components/ui/button'
 import { AvatarGroup } from '@/components/avatar-group'
-import { Attendance } from '@/types'
 import { Movies } from './movies'
 import { Menu } from './menu'
 import { useMutate } from '@/hooks/use-mutate'
@@ -13,14 +13,15 @@ import { useSpaceId } from '@/hooks/use-space'
 
 type EventItemProps = {
   user: User
+  isAdmin: boolean
   id: string
   event: Event
 }
 
-export const EventItem: React.FC<EventItemProps> = ({ user, id, event }) => {
+export const EventItem: React.FC<EventItemProps> = ({ user, isAdmin, id, event }) => {
   const spaceId = useSpaceId()
-  const { set, remove, loading } = useMutate<Attendance>()
-  const hasJoined = user.email && !!event.attendance?.[user.uid]
+  const { update, loading } = useMutate()
+  const hasJoined = !!user.email && !!event.attendance?.[user.uid]
   const currentParticipants = Object.keys(event.attendance || {}).length
   const [now, setNow] = React.useState(new Date())
 
@@ -33,7 +34,7 @@ export const EventItem: React.FC<EventItemProps> = ({ user, id, event }) => {
   }, [now, event.scheduledFor])
 
   return (
-    <div className='relative w-full flex border p-4 pt-12 sm:pt-4'>
+    <div className='relative w-full flex border px-4 pt-12 sm:pt-4'>
       <div className="absolute top-0 right-0 flex gap-4 p-2 pr-6 text-gray-500">
         <div className="flex gap-2">
           <Icons.clock width={16} />
@@ -44,7 +45,7 @@ export const EventItem: React.FC<EventItemProps> = ({ user, id, event }) => {
           {event.scheduledFor.getDate()}/{event.scheduledFor.getMonth()}/{event.scheduledFor.getFullYear()}
         </div>
       </div>
-      <div className="w-full my-2">
+      <div className="w-full">
         <div className="flex gap-2 mb-8">
           <Icons.clapperboard width={32} />
           <h4 className="font-mono text-2xl">{event.name || `${event.createdBy.name}'s movie night`}</h4>
@@ -63,20 +64,29 @@ export const EventItem: React.FC<EventItemProps> = ({ user, id, event }) => {
               <Button
                 disabled={loading}
                 variant="outline"
-                onClick={() => remove(`events/${spaceId}/events/${id}/attendance/${user.uid}`)}
+                onClick={() => {
+                  update(`events/${spaceId}/events/${id}`, {
+                    [`attendance.${user.uid}`]: deleteField(),
+                  })
+                  update(`events/${spaceId}/events/${id}`, {
+                    [`votes.${user.uid}`]: deleteField(),
+                  })
+                }}
               >
-                Unsubscribe
+                Leave
               </Button>
             )}
             {!hasJoined && (
               <Button
-                disabled={loading || now < event.scheduledFor || event.venue.maxParticipants <= currentParticipants}
+                disabled={loading || now > event.scheduledFor || event.venue.maxParticipants <= currentParticipants}
                 onClick={() => {
-                  set(`events/${spaceId}/events/${id}/attendance/${user.uid}`, {
-                    name: getUserName(user),
-                    email: user.email || '',
-                    markedAt: new Date(),
-                    photoUrl: user.photoURL,
+                  update(`events/${spaceId}/events/${id}`, {
+                    [`attendance.${user.uid}`]: {
+                      name: getUserName(user),
+                      email: user.email || '',
+                      markedAt: new Date(),
+                      photoUrl: user.photoURL,
+                    }
                   })
                 }}
               >
@@ -87,9 +97,11 @@ export const EventItem: React.FC<EventItemProps> = ({ user, id, event }) => {
             )}
             {hasJoined && (
               <Menu
+                eventId={id}
                 now={now}
                 schedule={event.scheduledFor}
                 user={user}
+                isAdmin={isAdmin}
                 event={event}
               />
             )}
@@ -114,7 +126,12 @@ export const EventItem: React.FC<EventItemProps> = ({ user, id, event }) => {
           </a>
         </div>
         <h2 className='my-4 font-bold'>The movies:</h2>
-        <Movies event={event} />
+        <Movies
+          id={id}
+          event={event}
+          user={user}
+          hasJoined={hasJoined}
+        />
       </div>
     </div>
   )
