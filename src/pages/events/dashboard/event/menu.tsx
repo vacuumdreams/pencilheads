@@ -2,6 +2,7 @@ import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import { User } from 'firebase/auth'
 import { Icons } from '@/components/icons'
+import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -16,6 +17,7 @@ import {
 import { Guests } from './guests'
 import { Event } from '@/types'
 import { useSpaceId } from '@/hooks/use-space'
+import { useMutate } from '@/hooks/use-mutate'
 
 type MenuProps = {
   now: Date
@@ -29,6 +31,7 @@ type MenuProps = {
 export const Menu = ({ now, schedule, user, isAdmin, event, eventId }: MenuProps) => {
   const spaceId = useSpaceId()
   const navigate = useNavigate()
+  const { remove, loading } = useMutate()
   const [isRemoveDialogOpen, setRemoveDialogOpen] = React.useState(false)
   const [isGuestsDialogOpen, setGuestsDialogOpen] = React.useState(false)
   const currentParticipants = Object.keys(event.attendance || {}).length
@@ -80,6 +83,26 @@ export const Menu = ({ now, schedule, user, isAdmin, event, eventId }: MenuProps
               event={event}
               onClose={() => setGuestsDialogOpen(false)}
             />
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isRemoveDialogOpen} onOpenChange={setRemoveDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <h2 className="text-2xl font-bold">Delete event?</h2>
+          </DialogHeader>
+          <div className="flex justify-center">
+            <Button
+              variant="destructive"
+              disabled={loading}
+              onClick={async () => {
+                await remove(`events/${spaceId}/events/${eventId}`)
+                setRemoveDialogOpen(false)
+              }}
+            >
+              Yes, delete it
+            </Button>
           </div>
         </DialogContent>
       </Dialog>

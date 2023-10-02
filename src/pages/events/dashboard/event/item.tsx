@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { AvatarGroup } from '@/components/avatar-group'
 import { Movies } from './movies'
 import { Menu } from './menu'
+import { PastEvent } from './past-event'
 import { useMutate } from '@/hooks/use-mutate'
 import { getUserName } from '@/lib/utils'
 import { useSpaceId } from '@/hooks/use-space'
@@ -26,12 +27,19 @@ export const EventItem: React.FC<EventItemProps> = ({ user, isAdmin, id, event }
   const [now, setNow] = React.useState(new Date())
 
   React.useEffect(() => {
-    if (now < event.scheduledFor) {
-      setTimeout(() => {
+    const fourHoursAfter = new Date(now).setHours(new Date(now).getHours() + 4)
+    if (new Date(fourHoursAfter) < event.scheduledFor) {
+      const t = setTimeout(() => {
         setNow(new Date())
-      }, event.scheduledFor.getTime() - now.getTime())
+      }, event.scheduledFor.getTime() - fourHoursAfter)
+
+      return () => clearTimeout(t)
     }
   }, [now, event.scheduledFor])
+
+  if (now > event.scheduledFor) {
+    return <PastEvent event={event} />
+  }
 
   return (
     <div className='relative w-full flex border px-4 pt-12 sm:pt-4'>

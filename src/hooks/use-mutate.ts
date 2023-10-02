@@ -60,7 +60,6 @@ export function useMutate<T extends object>() {
     setLoading(true)
     try {
       await deleteDoc(doc(database, id))
-      // await dbremove(ref(realtimeDB, id))
       opts?.onSuccess()
     } catch (error) {
       console.error(error)
