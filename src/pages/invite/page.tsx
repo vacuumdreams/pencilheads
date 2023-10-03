@@ -1,7 +1,9 @@
 import React from 'react'
+import { useAuthState } from 'react-firebase-hooks/auth'
 import { useNavigate } from 'react-router-dom';
 import { useParams } from "react-router-dom";
 import { useMutate } from '@/hooks/use-mutate'
+import { auth } from '@/services/firebase'
 import { Invite as InviteType } from '@/types'
 import { Icons } from '@/components/icons';
 import { Button } from '@/components/ui/button';
@@ -13,17 +15,20 @@ import {
 
 const InviteContent = () => {
   const navigate = useNavigate()
+  const [user, _loading, userError] = useAuthState(auth)
   const [isSuccess, setSuccess] = React.useState(false)
   const [error, setError] = React.useState<null | string>(null)
   const { id } = useParams();
   const { update, loading } = useMutate<Partial<InviteType>>()
 
   React.useEffect(() => {
-    update(`/invites/${id}`, { accepted: true }, {
-      onSuccess: () => setSuccess(true),
-      onError: (error) => setError(error)
-    })
-  }, [])
+    if (user) {
+      update(`/invites/${id}`, { accepted: true, userId: user.uid }, {
+        onSuccess: () => setSuccess(true),
+        onError: (error) => setError(error)
+      })
+    }
+  }, [user])
 
   if (loading) {
     return (
@@ -39,7 +44,7 @@ const InviteContent = () => {
     )
   }
 
-  if (error) {
+  if (error || userError) {
     return (
       <Alert variant='destructive' className='mt-16 max-w-xl mx-auto text-center'>
         <AlertTitle className='flex gap-2 items-center justify-center mb-4'>
@@ -48,7 +53,7 @@ const InviteContent = () => {
         </AlertTitle>
         <AlertDescription>
           <p>Failed accepting the invitation.</p>
-          <p>{error}</p>
+          <p>{error || `${userError}`}</p>
         </AlertDescription>
       </Alert>
     )

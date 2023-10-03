@@ -62,6 +62,7 @@ export type Event = {
 }
 
 export type Invite = {
+  userId?: string
   email: string,
   spaceId: string,
   accepted: boolean,
