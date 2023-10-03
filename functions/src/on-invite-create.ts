@@ -4,7 +4,7 @@ import * as logger from "firebase-functions/logger";
 import Mailgun from "mailgun.js";
 import formData from "form-data";
 
-admin.initializeApp();
+admin.initializeApp({}, "on-invite-create");
 const db = admin.firestore();
 
 const mailgun = new Mailgun(formData);
@@ -35,7 +35,7 @@ export const onInviteCreate = functions.firestore.document("invites/{id}")
       "from": "Pencilheads <info@pencilheads.net>",
       "to": data.email,
       "subject": `You have been invited to join ${spaceName}!`,
-      "template": "invitation",
+      "template": "space-invite",
       "h:X-Mailgun-Variables": JSON.stringify({
         person: data.createdBy.name,
         space: spaceName,

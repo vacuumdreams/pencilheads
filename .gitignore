@@ -1,6 +1,7 @@
 .DS_Store
 node_modules
 dist
+functions/lib
 src-tauri/target
 .env
 .vscode
