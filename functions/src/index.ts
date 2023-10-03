@@ -1,4 +1,11 @@
-import {onInviteCreate} from "./on-invite-create";
-import {onInviteUpdate} from "./on-invite-update";
+import * as admin from "firebase-admin";
 
-export {onInviteCreate, onInviteUpdate};
+admin.initializeApp();
+const db = admin.firestore();
+const auth = admin.auth();
+
+import {inviteCreate} from "./on-invite-create";
+import {inviteUpdate} from "./on-invite-update";
+
+export const onInviteCreate = inviteCreate(db);
+export const onInviteUpdate = inviteUpdate(auth, db);
