@@ -1,5 +1,8 @@
 .DS_Store
 node_modules
+dist
+src-tauri/target
 .env
+.vscode
 *-debug.log
 .runtimeconfig.json

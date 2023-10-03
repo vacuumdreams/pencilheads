@@ -35,7 +35,7 @@ export const onInviteCreate = functions.firestore.document("invites/{id}")
       "from": "Pencilheads <info@pencilheads.net>",
       "to": data.email,
       "subject": `You have been invited to join ${spaceName}!`,
-      "template": "Invitation",
+      "template": "invitation",
       "h:X-Mailgun-Variables": JSON.stringify({
         person: data.createdBy.name,
         space: spaceName,

@@ -20,7 +20,7 @@
     "rules": "firestore.rules"
   },
   "hosting": {
-    "public": "public",
+    "public": "dist",
     "ignore": [
       "firebase.json",
       "**/.*",
