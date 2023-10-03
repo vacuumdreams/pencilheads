@@ -62,7 +62,7 @@ export const Menu = ({ now, schedule, user, isAdmin, event, eventId }: MenuProps
             </>
           )}
           <DropdownMenuItem
-            disabled={now > schedule && currentParticipants >= event.venue.maxParticipants}
+            disabled={true} // {now > schedule && currentParticipants >= event.venue.maxParticipants}
             onClick={() => setGuestsDialogOpen(true)}
           >
             <Icons.invite width={12} />

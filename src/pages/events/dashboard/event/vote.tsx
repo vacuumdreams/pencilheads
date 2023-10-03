@@ -18,6 +18,7 @@ export const VoteButton = ({ user, eventId, event, movieKey, hasJoined }: VoteBu
   const spaceId = useSpaceId()
   const { update, loading } = useMutate()
   const hasVotedFor = event.votes[user.uid] === movieKey
+  const voteCount = Object.values(event.votes).filter(v => v === movieKey).length
 
   return (
     <Toggle
@@ -36,7 +37,11 @@ export const VoteButton = ({ user, eventId, event, movieKey, hasJoined }: VoteBu
         }
       }}
     >
-      <Icons.thumbsUp />
+      <div>
+        <Icons.thumbsUp />
+        <div className='mt-2'>{voteCount}</div>
+      </div>
+
     </Toggle>
   )
 }
