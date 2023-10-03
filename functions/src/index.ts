@@ -1,4 +1,4 @@
-import { onInviteCreate } from "./on-invite-create";
-import { onInviteUpdate } from "./on-invite-update";
+import {onInviteCreate} from "./on-invite-create";
+import {onInviteUpdate} from "./on-invite-update";
 
-export { onInviteCreate, onInviteUpdate };
+export {onInviteCreate, onInviteUpdate};

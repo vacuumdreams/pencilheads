@@ -17,35 +17,38 @@ export const onInviteUpdate = functions.firestore.document("invites/{id}")
     }
 
     if (oldData?.accepted === newData.accepted) {
-      return
+      return;
     }
 
     if (!newData.userId) {
       logger.error("No user id on the invite:", context.params.id);
-      return
+      return;
     }
 
     const user = await auth.getUser(newData.userId);
 
     if (!user) {
       logger.error("User cannot be found id for invite:", context.params.id);
-      return
+      return;
     }
 
     if (!oldData?.accepted && newData.accepted) {
       const member = {
-        role: 'member',
+        role: "member",
         name: user.displayName,
         email: user.email,
         photoUrl: user.photoURL,
-      }
+      };
 
       try {
-        await db.collection(`spaces`).doc(newData.spaceId).set({
+        await db.collection("spaces").doc(newData.spaceId).set({
           [`members.${newData.userId}`]: member,
-        }, { merge: true });
+        }, {merge: true});
       } catch (error) {
-        logger.error("Error updating space memberships for invite:", context.params.id);
+        logger.error(
+          "Error updating space memberships for invite:",
+          context.params.id
+        );
       }
     }
   });
