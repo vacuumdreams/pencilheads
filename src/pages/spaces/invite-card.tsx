@@ -1,10 +1,7 @@
-import React from 'react'
 import { useNavigate } from 'react-router-dom'
-import { where } from 'firebase/firestore'
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -51,7 +48,7 @@ export const InviteCard = ({ inviteId, className, invite, space }: SpaceCardProp
         </div>
       </CardContent>
       <CardFooter className="flex gap-2">
-        <Button className="flex gap-2" onClick={() => navigate(`/invite/${inviteId}`)}>
+        <Button className="flex gap-2" onClick={() => navigate(`/invites/${inviteId}`)}>
           <Icons.userPlus />
           <span>Accept invitation</span>
         </Button>

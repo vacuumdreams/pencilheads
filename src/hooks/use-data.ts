@@ -39,7 +39,6 @@ const toInvite = (d: any): Invite => ({
 const toSpace = (d: any): Space => ({
   ...d,
   createdAt: d.createdAt.toDate(),
-  activeUntil: d.activeUntil.toDate(),
 })
 
 const toEvent = (d: any): Event => ({
@@ -149,6 +148,7 @@ export function useEventCount(p?: HookParams & { spaceId?: string }): [number, b
       try {
         const snapshot = await getCountFromServer(p?.filters ? query(ref, ...p.filters) : ref)
         setLoading(false)
+        console.log(snapshot.data())
         setCount(snapshot.data().count)
       } catch (err) {
         setError(err as FirestoreError)

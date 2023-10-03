@@ -37,9 +37,9 @@ const SpacesContent = ({ user, invites }: SpacesContentProps) => {
     return acc
   }, {})
   const inviteSpaceIds = Object.keys(invitesBySpace)
-  const [inviteSpaces, inviteLoading, inviteError] = inviteSpaceIds.length ? useSpaceCollection({
-    filters: [where(documentId(), 'in', inviteSpaceIds)],
-  }) : [{} as Record<string, Space>, false, null]
+  const [inviteSpaces, inviteLoading, inviteError] = useSpaceCollection({
+    filters: [where(documentId(), 'in', inviteSpaceIds.length ? inviteSpaceIds : ['null'])],
+  })
   const [spaces, loading, error] = useSpaceCollection({
     filters: [where(`members.${user?.uid}`, '!=', null)]
   })
@@ -113,6 +113,7 @@ const SpacesContent = ({ user, invites }: SpacesContentProps) => {
       {Object.keys(spaces).map(id => (
         <SpaceCard
           key={id}
+          user={user}
           id={id}
           space={spaces[id]}
         />

@@ -12,6 +12,7 @@ const MAILGUN_API_KEY = functions.config().mailgun.key;
 // Initialize Mailgun
 const mg = mailgun.client({
   username: "api",
+  url: "https://api.eu.mailgun.net",
   key: MAILGUN_API_KEY,
 });
 

@@ -17,8 +17,8 @@ export const App: React.FC = () => {
           <Route index path="/:spaceId" element={<Dashboard />} />
           <Route path="/:spaceId/events/:id" element={<EventsEdit />} />
         </Route>
-        <Route path="/invite" element={<Guard />} >
-          <Route path="/invite/:id" element={<Invite />} />
+        <Route path="/invites" element={<Guard />} >
+          <Route path="/invites/:id" element={<Invite />} />
         </Route>
         <Route path="*" element={<NotFound />} />
       </Route>

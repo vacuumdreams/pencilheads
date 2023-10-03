@@ -1,6 +1,7 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
-import { where } from 'firebase/firestore'
+import { User } from 'firebase/auth'
+import { where, deleteField } from 'firebase/firestore'
 import {
   Card,
   CardContent,
@@ -9,6 +10,14 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
+import {
+  Dialog,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogContent,
+} from '@/components/ui/dialog'
 import { AvatarGroup } from '@/components/avatar-group'
 import { Icons } from '@/components/icons'
 import { Button } from '@/components/ui/button'
@@ -17,17 +26,21 @@ import { Counter } from '@/components/counter'
 import { Space } from '@/types'
 import { cn } from '@/lib/utils'
 import { useEventCount } from '@/hooks/use-data'
+import { useMutate } from '@/hooks/use-mutate'
 import { useToast } from '@/components/ui/use-toast'
 
 type SpaceCardProps = {
+  user: User
   id: string
   space: Space
   className?: string
 }
 
-export const SpaceCard = ({ id, className, space }: SpaceCardProps) => {
+export const SpaceCard = ({ user, id, space, className }: SpaceCardProps) => {
   const { toast } = useToast()
   const navigate = useNavigate()
+  const [isLeaveDialogOpen, setLeaveDialogOpen] = React.useState(false)
+  const { update, loading } = useMutate()
   const members = Object.values(space.members || {})
   const [count, _loading, error] = useEventCount({
     spaceId: id,
@@ -80,11 +93,43 @@ export const SpaceCard = ({ id, className, space }: SpaceCardProps) => {
           <Icons.arrowUpRightSquare />
           <span>Open</span>
         </Button>
-        <Button className="flex gap-2" variant="outline" onClick={() => navigate(`/${id}`)}>
+        <Button
+          disabled={loading}
+          className="flex gap-2"
+          variant="outline"
+          onClick={() => {
+            setLeaveDialogOpen(true)
+          }}
+        >
           <Icons.unplug />
           <span>Leave group</span>
         </Button>
       </CardFooter>
+
+      <Dialog open={isLeaveDialogOpen} onOpenChange={setLeaveDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Leave group</DialogTitle>
+          </DialogHeader>
+          <DialogDescription>
+            <p>Are you sure you want to leave {space.name}?</p>
+          </DialogDescription>
+          <DialogFooter>
+            <Button
+              disabled={loading}
+              variant="destructive"
+              onClick={() => {
+                setLeaveDialogOpen(false)
+                update(`spaces/${id}`, {
+                  [`members.${user.uid}`]: deleteField(),
+                })
+              }}
+            >
+              Yes, leave
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </Card>
   )
 }

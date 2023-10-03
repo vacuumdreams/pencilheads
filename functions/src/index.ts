@@ -4,6 +4,8 @@ admin.initializeApp();
 const db = admin.firestore();
 const auth = admin.auth();
 
+db.settings({ignoreUndefinedProperties: true});
+
 import {inviteCreate} from "./on-invite-create";
 import {inviteUpdate} from "./on-invite-update";
 

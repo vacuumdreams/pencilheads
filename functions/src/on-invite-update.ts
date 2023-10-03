@@ -38,13 +38,15 @@ export const inviteUpdate = (auth: auth.Auth, db: firestore.Firestore) =>
         };
 
         try {
-          await db.collection("spaces").doc(newData.spaceId).set({
+          await db.collection("spaces").doc(newData.spaceId).update({
             [`members.${newData.userId}`]: member,
-          }, {merge: true});
+          });
+          await db.collection("invites").doc(context.params.id).delete();
         } catch (error) {
           logger.error(
             "Error updating space memberships for invite:",
-            context.params.id
+            context.params.id,
+            error
           );
         }
       }
