@@ -17,7 +17,7 @@ import { SpaceCard } from './card'
 import { InviteCard } from './invite-card'
 import { CreateSpace } from './create'
 import { Guard } from '@/components/auth/guard'
-import { Invite, Space } from '@/types'
+import { Invite } from '@/types'
 
 type InviteWithId = Invite & {
   id: string

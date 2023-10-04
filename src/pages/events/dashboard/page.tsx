@@ -28,6 +28,7 @@ import { InviteForm } from '@/components/invite/form'
 import { Guard } from '@/components/auth/guard'
 import { EventForm } from '@/components/event/form'
 import { EventList } from './event/list';
+import { GroupInfo } from './group'
 
 export const Dashboard: React.FC = () => {
   const inviteRef = React.useRef(null)
@@ -36,8 +37,9 @@ export const Dashboard: React.FC = () => {
   const { toast } = useToast()
   const [user] = useAuthState(auth)
   const [space, loading, error] = useSpace()
-  const [isInviteOpen, setInviteOpen] = React.useState(false)
+  const [isInviteDialogOpen, setInviteDialogOpen] = React.useState(false)
   const [isCreateOpen, setCreateOpen] = React.useState(false)
+  const [isGroupDialogOpen, setGroupDialogOpen] = React.useState(false)
   const members = Object.values(space?.members || {})
   const now = new Date()
   const isAdmin = !!user && !!space && space.members[user.uid]?.role === 'admin'
@@ -57,9 +59,15 @@ export const Dashboard: React.FC = () => {
             timeout={200}
           >
             {state => (
-              <div ref={titleRef} className={cn('text-center opacity-0 transition-opacity duration-1000', {
-                'opacity-100': ['entering', 'entered'].includes(state),
-              })}>
+              <div
+                role='button'
+                tabIndex={0}
+                onClick={() => setGroupDialogOpen(true)}
+                ref={titleRef}
+                className={cn('cursor-pointer text-center opacity-0 transition-opacity duration-1000', {
+                  'opacity-100': ['entering', 'entered'].includes(state),
+                })}
+              >
                 <h1 className='font-mono text-3xl'>
                   {space?.name}
                 </h1>
@@ -73,17 +81,33 @@ export const Dashboard: React.FC = () => {
         <div className='w-full justify-center sm:justify-end'>
           <Transition
             nodeRef={inviteRef}
-            in={isAdmin}
+            in={!!space && !!user}
             timeout={200}
           >
             {state => (
-              <div ref={inviteRef} className={cn('opacity-0 transition-opacity duration-1000', {
+              <div ref={inviteRef} className={cn('grid  gap-2 opacity-0 transition-opacity duration-1000', {
                 'opacity-100': ['entering', 'entered'].includes(state),
+                'grid-rows-2': !!space?.telegramInviteLink && isAdmin,
+                'grid-rows-1': !space?.telegramInviteLink || isAdmin,
               })}>
-                <Button disabled={loading || !!error} variant="outline" onClick={() => setInviteOpen(true)}>
-                  <Icons.invite />
-                  <span className="ml-2">Invite someone</span>
-                </Button>
+                {space?.telegramInviteLink && (
+                  <Button variant="outline" asChild className='flex gap-2'>
+                    <a
+                      href={space.telegramInviteLink}
+                      rel="noopener noreferrer"
+                      target='_blank'
+                    >
+                      <Icons.invite width={24} />
+                      <span>Telegram</span>
+                    </a>
+                  </Button>
+                )}
+                {isAdmin && (
+                  <Button disabled={loading || !!error} variant="outline" onClick={() => setInviteDialogOpen(true)}>
+                    <Icons.mail />
+                    <span className="ml-2">Invite someone</span>
+                  </Button>
+                )}
               </div>
             )}
           </Transition>
@@ -140,19 +164,29 @@ export const Dashboard: React.FC = () => {
         </Tabs>
       )}
       {user && (
-        <Dialog open={isInviteOpen} onOpenChange={setInviteOpen}>
+        <Dialog open={isInviteDialogOpen} onOpenChange={setInviteDialogOpen}>
           <DialogContent>
             <InviteForm
               user={user}
               members={members}
               onSuccess={(email) => {
-                setInviteOpen(false)
+                setInviteDialogOpen(false)
                 toast({
                   title: 'Success',
                   description: `Invite sent to ${email}`,
                   variant: 'default',
                 })
               }}
+            />
+          </DialogContent>
+        </Dialog>
+      )}
+      {user && space && (
+        <Dialog open={isGroupDialogOpen} onOpenChange={setGroupDialogOpen}>
+          <DialogContent>
+            <GroupInfo
+              isAdmin={isAdmin}
+              space={space}
             />
           </DialogContent>
         </Dialog>
