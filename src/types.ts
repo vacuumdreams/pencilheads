@@ -101,5 +101,7 @@ export type Space = {
   createdAt: Date;
   createdBy: string;
   members: Record<string, Member>
+  telegramInviteLink?: string;
+  telegramGroupId?: string;
   subscription?: null | SpaceSubscription
 }

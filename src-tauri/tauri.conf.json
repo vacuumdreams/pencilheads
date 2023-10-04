@@ -1,19 +1,20 @@
 {
   "build": {
-    "beforeDevCommand": "pnpm dev",
+    "beforeDevCommand": "pnpm dev --host",
     "beforeBuildCommand": "pnpm build",
     "devPath": "http://localhost:1420",
     "distDir": "../dist",
     "withGlobalTauri": false
   },
   "package": {
-    "productName": "pencilheads"
+    "productName": "pencilheads",
+    "version": "0.1.0"
   },
   "tauri": {
     "bundle": {
       "active": true,
       "category": "DeveloperTool",
-      "copyright": "",
+      "copyright": "Copyright © 2023 Pencilheads",
       "deb": {
         "depends": []
       },
@@ -25,10 +26,10 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": "com.yourname.dev",
-      "longDescription": "",
+      "identifier": "net.pencilheads.Pencilheads",
+      "longDescription": "Organise your movie club",
       "macOS": {
-        "entitlements": null,
+        "entitlements": "../entitlements.plist",
         "exceptionDomain": "",
         "frameworks": [],
         "providerShortName": null,
@@ -68,7 +69,7 @@
     "windows": [
       {
         "fullscreen": false,
-        "title": "pencilheads",
+        "title": "Pencilheads",
         "center": true,
         "resizable": true,
         "decorations": false,

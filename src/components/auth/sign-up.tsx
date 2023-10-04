@@ -1,11 +1,11 @@
 import { useEffect } from 'react';
-import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { useForm } from 'react-hook-form';
 import { useCreateUserWithEmailAndPassword, useUpdateProfile } from 'react-firebase-hooks/auth';
-import { auth } from '../../services/firebase'
-import { useToast } from '../ui/use-toast';
-import { Icons } from '../icons';
-import { Button } from '../ui/button';
+import { signInWithGoogle } from '@/services/oauth';
+import { auth } from '@/services/firebase';
+import { useToast } from '@/components/ui/use-toast';
+import { Icons } from '@/components/icons';
+import { Button } from '@/components/ui/button';
 import { Input } from "@/components/ui/input"
 import {
   Card,
@@ -44,11 +44,6 @@ export function Signup({ onChangeToSignin }: SignupProps) {
       displayName: name,
     })
   })
-
-  const signInWithGoole = () => {
-    const provider = new GoogleAuthProvider();
-    signInWithPopup(auth, provider);
-  };
 
   useEffect(() => {
     if (error) {
@@ -96,7 +91,7 @@ export function Signup({ onChangeToSignin }: SignupProps) {
         </CardContent>
       </Card>
       <div className='flex justify-center my-6'>
-        <Button className='flex gap-2' onClick={signInWithGoole}>
+        <Button className='flex gap-2' onClick={signInWithGoogle}>
           <Icons.google width={16} />
           <span>Sign in with Google</span>
         </Button>

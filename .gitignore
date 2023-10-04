@@ -3,6 +3,7 @@ node_modules
 dist
 functions/lib
 src-tauri/target
+src-tauri/gen
 .env
 .vscode
 *-debug.log
