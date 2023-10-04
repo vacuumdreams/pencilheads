@@ -1,81 +1,65 @@
-// import * as functions from "firebase-functions";
-// import * as admin from "firebase-admin";
-// import * as logger from "firebase-functions/logger";
-// // @ts-ignore
-// import Mailgun from "mailgun-js";
-// import * as formData from "form-data";
+/* eslint-disable max-len */
+import {firestore} from "firebase-admin";
+import * as functions from "firebase-functions";
+import * as logger from "firebase-functions/logger";
+import {Telegraf} from "telegraf";
 
-// admin.initializeApp();
-// const db = admin.database();
+const TELEGRAM_TOKEN = functions.config().telegram.token;
 
-// const mailgun = new Mailgun(formData);
+const bot = new Telegraf(TELEGRAM_TOKEN);
 
-// const MAILGUN_DOMAIN = functions.config().mailgun.domain;
-// const MAILGUN_API_KEY = functions.config().mailgun.key;
+bot.catch((err, ctx) => {
+  logger.error("[Bot] Error", err);
+  ctx.reply(`Ooops, encountered an error for ${ctx.updateType}: ${err}`, {
+    reply_to_message_id: ctx.message?.message_id,
+  });
+});
 
-// // Initialize Mailgun
-// const mg = mailgun.client({
-//   user: "api",
-//   key: MAILGUN_API_KEY,
-// });
+const formatDate = (date: unknown) => {
+  if (date instanceof firestore.Timestamp) {
+    const d = date.toDate();
+    return [`${d.getDate().toString().padStart(2, "0")}/${d.getMonth().toString().padStart(2, "0")}/${d.getFullYear()}`, `${d.getHours()}:${d.getMinutes()}`];
+  }
 
-// export const onEventCreation = functions.database.ref("events/{id}")
-//   .onCreate((snapshot) => {
-//     const data = snapshot.val();
+  if (date instanceof Date) {
+    return [`${date.getDate().toString().padStart(2, "0")}/${date.getMonth().toString().padStart(2, "0")}/${date.getFullYear()}`, `${date.getHours()}:${date.getMinutes()}`];
+  }
+  return [null, null];
+};
 
-//     // TODO: send email to all members (invites/accepted=true)
-//     // db.ref('invites').on('value', snapshots => {
-//     //   const invites = snapshots.val().map(child => child.val())
-//     // })
+const printMovie = (movie: unknown) => {
+  if (typeof movie === "object" && movie && "imdbId" in movie && "title" in movie && "year" in movie) {
+    return `- [${movie.title} (${movie.year})](https://www.imdb.com/title/${movie.imdbId})`;
+  }
+  throw new Error(`Invalid movie entry: ${movie}`);
+};
 
-//     const members: string[] = [];
+export const eventCreate = (db: firestore.Firestore) =>
+  functions.region("europe-west1")
+    .firestore.document("events/{spaceId}/events/{id}")
+    .onCreate(async (snapshot, context) => {
+      const data = snapshot.data();
+      const space = await db.collection("spaces")
+        .doc(context.params.spaceId).get();
+      const spaceData = space.data();
+      const telegramGroupId = spaceData?.telegramGroupId;
 
-//     // Email details
-//     const createMailOptions = {
-//       "from": "Pencilheads <info@pencilheads.net>",
-//       "to": data.email,
-//       "subject": `${data.createdBy.name} has created a new event!`,
-//       "template": "Event",
-//       "h:X-Mailgun-Variables": JSON.stringify({
-//         person: data.createdBy.name,
-//         inviteToken: snapshot.key,
-//       }),
-//     };
+      if (!telegramGroupId) {
+        logger.log(`Event ${snapshot.id} created, no telegram group id found, continuing..`);
+        return;
+      }
 
-//     // Email details
-//     const inviteMailOptions = {
-//       "from": "Pencilheads <info@pencilheads.net>",
-//       "to": members.join(","),
-//       "subject": `${data.createdBy.name} has created a new event!`,
-//       "template": "Event",
-//       "h:X-Mailgun-Variables": JSON.stringify({
-//         person: data.createdBy.name,
-//         inviteToken: snapshot.key,
-//       }),
-//     };
+      const [date, hours] = formatDate(data.scheduledFor);
 
-//     // Send the email using Mailgun
-//     return Promise.all([
-//       mg.messages.create(MAILGUN_DOMAIN, createMailOptions)
-//         .then(() => {
-//           logger.log("Event creation email sent to:", data.email);
-//         })
-//         .catch((error: any) => {
-//           logger.error("There was an error while sending the email:", error);
-//         }),
-//       async () => {
-//         if (members.length > 0) {
-//           return mg.messages.create(MAILGUN_DOMAIN, inviteMailOptions)
-//             .then(() => {
-//               logger.log("Event invite email sent to:", members.join(","));
-//             })
-//             .catch((error: any) => {
-//               logger.error(
-//                "There was an error while sending the email:",
-//                error
-//              );
-//             });
-//         }
-//       },
-//     ]);
-//   });
+      try {
+        await bot.telegram.sendMessage(telegramGroupId, `
+Hey humans!
+*${data.createdBy.name}* just created a new event!
+If you're free on ${date} at ${hours}, subscribe to it on https://pencilheads.net/${context.params.spaceId}!
+The movies planned are:
+${Object.values(data.movies || {}).map(printMovie).join("\n")}
+`);
+      } catch (err) {
+        logger.error("[Bot] Error", err);
+      }
+    });

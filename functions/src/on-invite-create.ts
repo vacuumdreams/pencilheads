@@ -27,7 +27,9 @@ export const inviteCreate = (db: firestore.Firestore) =>
       }
 
       const space = await db.collection("spaces").doc(data.spaceId).get();
-      const spaceName = space.data()?.name;
+      const spaceData = space.data();
+      const spaceName = spaceData?.name;
+      const telegramInviteLink = spaceData?.telegramInviteLink;
 
       // Email details
       const mailOptions = {
@@ -39,6 +41,7 @@ export const inviteCreate = (db: firestore.Firestore) =>
           person: data.createdBy.name,
           space: spaceName,
           inviteToken: context.params.id,
+          telegramInviteLink,
         }),
       };
 
