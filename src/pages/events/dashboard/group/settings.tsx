@@ -55,7 +55,7 @@ export const GroupSettings = ({ isAdmin, space, spaceId }: GroupSettingsProps) =
         </div>
         <CopyToClipboard text={getValues('telegramGroupId')} onCopy={() => setJustCopied('telegramGroupId')}>
           <Button variant="outline">
-            {justCopied === 'telegramGroupId' ? <Icons.check width={12} /> : <Icons.copy width={12} />}
+            {justCopied === 'telegramGroupId' ? <Icons.copyDone width={12} /> : <Icons.copy width={12} />}
           </Button>
         </CopyToClipboard>
       </div>
@@ -72,7 +72,7 @@ export const GroupSettings = ({ isAdmin, space, spaceId }: GroupSettingsProps) =
         </div>
         <CopyToClipboard text={getValues('telegramInviteLink')} onCopy={() => setJustCopied('telegramInviteLink')}>
           <Button variant="outline">
-            {justCopied === 'telegramInviteLink' ? <Icons.check width={12} /> : <Icons.copy width={12} />}
+            {justCopied === 'telegramInviteLink' ? <Icons.copyDone width={12} /> : <Icons.copy width={12} />}
           </Button>
         </CopyToClipboard>
       </div>

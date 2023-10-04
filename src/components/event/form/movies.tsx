@@ -16,8 +16,8 @@ export const Movies: React.FC<MoviesProps> = ({ control }) => {
   });
 
   return (
-    <div className='py-4'>
-      <div className="flex flex-col gap-2 my-4">
+    <div className='pt-2'>
+      <div className="flex flex-col gap-2">
         {fields.map((field, i) => (
           <div key={field.imdbId} className="flex gap-2 items-center justify-between">
             <div key={field.imdbId} className="flex gap-2 items-center">

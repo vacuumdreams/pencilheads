@@ -32,7 +32,7 @@ export const MovieSearch: React.FC<MovieSearchProps> = ({ disabled, onSubmit }) 
   }, [results])
 
   return (
-    <div className="mb-8">
+    <div className="">
       <DropdownMenu open={isOpen} onOpenChange={setOpen} modal>
         {disabled !== false && (
           <div className='w-full'>

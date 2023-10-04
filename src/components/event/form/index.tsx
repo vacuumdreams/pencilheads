@@ -13,6 +13,7 @@ import { Input } from '@/components/ui/input';
 import { DatePicker } from '@/components/date-picker';
 import { VenueSelector } from './venue'
 import { Movies } from './movies';
+import { Tags } from './tags';
 import { Event } from '@/types';
 import { FormData } from './types'
 
@@ -190,7 +191,7 @@ export const EventForm: React.FC<CreateEventProps> = ({ id, event, onBack }) => 
 
         <Movies control={control} />
 
-        {/* <Tags control={control} /> */}
+        <Tags register={register} control={control} />
 
         <div className='2-full flex justify-center my-4'>
           <Button
