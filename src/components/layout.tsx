@@ -1,5 +1,5 @@
 import React from 'react'
-import { Outlet, useLocation, useNavigate } from 'react-router-dom'
+import { Outlet, useNavigate } from 'react-router-dom'
 import { Transition } from 'react-transition-group'
 import { useAuthState, useSignOut } from 'react-firebase-hooks/auth'
 import { auth } from '@/services/firebase'
@@ -10,7 +10,6 @@ import { Button } from '@/components/ui/button'
 import { Animation } from '@/components/animations';
 
 export const Layout = () => {
-  const location = useLocation()
   const navigate = useNavigate()
   const headerRef = React.useRef(null)
   const { toast } = useToast()
@@ -35,7 +34,7 @@ export const Layout = () => {
   return (
     <div
       className={cn(
-        "h-screen overflow-x-hidden overflow-y-auto bg-background pb-8 pr-0 bg-background",
+        "h-screen overflow-x-hidden overflow-y-auto bg-background pb-24 pr-0 bg-background",
         "scrollbar scrollbar-track-transparent scrollbar-thumb-accent scrollbar-thumb-rounded-md"
       )}
     >

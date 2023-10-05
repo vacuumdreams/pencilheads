@@ -1,6 +1,7 @@
 import React from "react"
 import { useFieldArray, Control, Controller, UseFormRegister } from 'react-hook-form'
 import { icons as lucides } from "lucide-react"
+import { FixedSizeList } from 'react-window'
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -29,26 +30,53 @@ type Option = {
   value: string
 }
 
-console.log(lucides)
+console.log(Object.keys(lucides))
 
 const icons = Object.keys(lucides).reduce<Option[]>((acc, key) => {
   // @ts-ignore too lazy to fix this
-  const Icon = Icons[key]
+  const Icon = lucides[key]
 
   if (Icon && 'displayName' in Icon) {
     acc.push({
-      label: (<span><Icon width={16} /> {key}</span>),
+      label: <Icon width={16} />,
       value: key,
     })
   }
   return acc
 }, [])
 
-console.log(icons)
+type ComboBoxItemRowProps = {
+  index: number
+  style?: React.HTMLAttributes<HTMLDivElement>['style']
+}
+
+const getComboBoxItemRow = (currentValue: string, onSelect: (value: string) => void) => ({ index, style }: ComboBoxItemRowProps) => {
+  const element = icons[index]
+
+  return (
+    <CommandItem
+      key={element.value}
+      style={{
+        ...style,
+      }}
+      className={cn('cursor-pointer flex justify-start items-center gap-2', {
+        'bg-green-700 hover:bg-green-700': currentValue?.toLowerCase() === element.value.toLowerCase(),
+      })}
+      onSelect={onSelect}
+    >
+      <span>{element.label}</span>
+      <span>{element.value}</span>
+    </CommandItem>
+  );
+}
 
 export function Combobox({ onChange }: ComboboxProps) {
   const [open, setOpen] = React.useState(false)
   const [value, setValue] = React.useState('')
+
+  const activeItem = React.useMemo(() => {
+    return icons.find((icons) => icons.value.toLowerCase() === value.toLowerCase())
+  }, [value])
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -57,11 +85,11 @@ export function Combobox({ onChange }: ComboboxProps) {
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-[200px] justify-between"
+          className="w-[100px] justify-between"
         >
-          {value
-            ? icons.find((icons) => icons.value === value)?.label
-            : "Select icon..."}
+          <span>
+            {activeItem?.label || "Icon"}
+          </span>
           <Icons.chevronUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
@@ -70,23 +98,17 @@ export function Combobox({ onChange }: ComboboxProps) {
           <CommandInput placeholder="Search icons..." />
           <CommandEmpty>No icons found.</CommandEmpty>
           <CommandGroup>
-            {icons.map((icons) => (
-              <CommandItem
-                key={icons.value}
-                onSelect={(currentValue) => {
-                  setValue(currentValue === value ? '' : currentValue)
-                  setOpen(false)
-                }}
-              >
-                <Icons.check
-                  className={cn(
-                    "mr-2 h-4 w-4",
-                    value === icons.value ? "opacity-100" : "opacity-0"
-                  )}
-                />
-                {icons.label}
-              </CommandItem>
-            ))}
+            <FixedSizeList
+              height={400}
+              width={200}
+              itemCount={icons.length}
+              itemSize={50}
+            >
+              {getComboBoxItemRow(value, (newValue) => {
+                setValue(newValue)
+                setOpen(false)
+              })}
+            </FixedSizeList>
           </CommandGroup>
         </Command>
       </PopoverContent>
@@ -115,9 +137,9 @@ export const Tags = ({ register, control }: TagsProps) => {
       >
         Add tag
       </Button>
-      <div className="flex flex-col gap-2 my-4">
+      <div className="flex gap-2 my-4">
         {fields.map((f, i) => (
-          <div key={f.id} className="flex gap-2">
+          <div key={f.id} className="w-full flex gap-2">
             <div>
               <Controller
                 name={`tags.${i}.icon`}
@@ -129,6 +151,7 @@ export const Tags = ({ register, control }: TagsProps) => {
               />
             </div>
             <Input
+              className="grow"
               {...register(`tags.${i}.name`, { required: true })}
               placeholder="E.g. vegan hotdogs, or birthday party, etc."
             />
