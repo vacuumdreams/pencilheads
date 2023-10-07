@@ -63,7 +63,7 @@ const SpacesContent = ({ user, invites }: SpacesContentProps) => {
         </AlertTitle>
         <AlertDescription>
           <p>{`${error}`}</p>
-          <Button onClick={() => navigate('/')} className='mt-4'>
+          <Button onClick={() => navigate('/dashboard')} className='mt-4'>
             Reload
           </Button>
         </AlertDescription>

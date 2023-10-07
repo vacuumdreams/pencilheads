@@ -68,7 +68,7 @@ const InviteContent = () => {
         </AlertTitle>
         <AlertDescription>
           <p>Invitation accepted.</p>
-          <Button onClick={() => navigate('/')}>Go to the dashboard</Button>
+          <Button onClick={() => navigate('/dashboard')}>Go to the dashboard</Button>
         </AlertDescription>
       </Alert>
     )

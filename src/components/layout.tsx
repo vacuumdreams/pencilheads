@@ -18,7 +18,7 @@ export const Layout = () => {
 
   const onSignOut = () => {
     signOut()
-    navigate('/')
+    navigate('/dashboard')
   }
 
   React.useEffect(() => {

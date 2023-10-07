@@ -20,7 +20,7 @@ export const NotFound = () => {
         </AlertTitle>
         <AlertDescription>
           <p>This page doesn't exist.</p>
-          <Button onClick={() => navigate('/')} className='mt-4'>
+          <Button onClick={() => navigate('/dashboard')} className='mt-4'>
             Go back
           </Button>
         </AlertDescription>

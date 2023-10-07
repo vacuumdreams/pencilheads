@@ -48,7 +48,7 @@ export const Dashboard: React.FC = () => {
     <Guard>
       <div className='w-full pb-8 pt-20 grid gap-4 sm:grid-cols-3 mb-12 [&>*]:flex [&>*]:items-center'>
         <div className="flex gap-1 sm:justify-start">
-          <Button variant="outline" onClick={() => navigate('/')}>
+          <Button variant="outline" onClick={() => navigate('/dashboard')}>
             <Icons.arrowLeft />
           </Button>
         </div>
@@ -137,7 +137,7 @@ export const Dashboard: React.FC = () => {
               </AlertTitle>
               <AlertDescription>
                 <p>{`${error}`}</p>
-                <Button onClick={() => navigate('/')} className='mt-4'>
+                <Button onClick={() => navigate('/dashboard')} className='mt-4'>
                   Reload
                 </Button>
               </AlertDescription>

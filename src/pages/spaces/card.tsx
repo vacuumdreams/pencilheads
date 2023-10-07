@@ -89,7 +89,7 @@ export const SpaceCard = ({ user, id, space, className }: SpaceCardProps) => {
         </CardDescription>
       </CardContent>
       <CardFooter className="flex gap-2">
-        <Button className="flex gap-2" onClick={() => navigate(`/${id}`)}>
+        <Button className="flex gap-2" onClick={() => navigate(`/dashboard/${id}`)}>
           <Icons.arrowUpRightSquare />
           <span>Open</span>
         </Button>

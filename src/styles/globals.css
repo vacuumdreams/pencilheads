@@ -22,6 +22,27 @@
   src: url("../assets/CourierPrime-Italic.ttf") format("truetype");
 }
 
+@keyframes tvSwitch {
+  0% {
+    width: initial;
+    height: initial;
+    background: initial;
+  }
+
+  50% {
+    width: 100vw;
+    height: 2px;
+    background: #333;
+  }
+
+  100% {
+    width: 100%;
+    height: 100%;
+    background: #ffffff;
+  }
+}
+
+
 @layer base {
   :root {
     --background: 0 0% 100%;
