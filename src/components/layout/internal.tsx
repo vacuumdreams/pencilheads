@@ -9,7 +9,7 @@ import { Icons } from '@/components/icons'
 import { Button } from '@/components/ui/button'
 import { Animation } from '@/components/animations';
 
-export const Layout = () => {
+export const InternalLayout = () => {
   const navigate = useNavigate()
   const headerRef = React.useRef(null)
   const { toast } = useToast()
@@ -18,7 +18,7 @@ export const Layout = () => {
 
   const onSignOut = () => {
     signOut()
-    navigate('/dashboard')
+    navigate('/')
   }
 
   React.useEffect(() => {

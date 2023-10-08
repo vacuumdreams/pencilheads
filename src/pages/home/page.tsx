@@ -67,8 +67,15 @@ export const Home = () => {
               <p className="mb-6">the place to <Captions /></p>
               <NavLink to="/dashboard" className={linkClass}>Get started</NavLink>
             </main>
-            <footer className="fixed bottom-0 left-0 w-full flex justify-center mt-auto">
-              <a className="inline-flex items-center gap-1 ml-2"><Icons.mail width={12} />info@pencilheads.net</a>
+            <footer className="fixed bg-transparent gap-x-4 px-2 sm:px-4 bottom-0 left-0 w-full flex justify-end mt-auto">
+              <NavLink to="/cookies" className="inline-flex items-center gap-1 ml-2">
+                <Icons.cookie width={12} />
+                <span>privacy</span>
+              </NavLink>
+              <a className="inline-flex items-center gap-1 ml-2" href="mailto:info@pencilheads.net">
+                <Icons.mail width={12} />
+                <span>contact</span>
+              </a>
             </footer>
           </div>
         )}
