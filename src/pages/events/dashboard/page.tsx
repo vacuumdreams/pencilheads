@@ -6,6 +6,7 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '@/services/firebase';
 import { useSpace } from '@/hooks/use-data'
 import { useToast } from '@/components/ui/use-toast'
+import { useMessaging } from '@/hooks/use-messaging';
 import { cn } from '@/lib/utils'
 import { Icons } from '@/components/icons';
 import { Button } from '@/components/ui/button';
@@ -31,6 +32,7 @@ import { EventList } from './event/list';
 import { GroupInfo } from './group'
 
 export const Dashboard: React.FC = () => {
+  useMessaging()
   const inviteRef = React.useRef(null)
   const titleRef = React.useRef(null)
   const navigate = useNavigate()

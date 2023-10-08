@@ -30,8 +30,6 @@ type Option = {
   value: string
 }
 
-console.log(Object.keys(lucides))
-
 const icons = Object.keys(lucides).reduce<Option[]>((acc, key) => {
   // @ts-ignore too lazy to fix this
   const Icon = lucides[key]
