@@ -1,8 +1,9 @@
 /* eslint-disable max-len */
-import {firestore} from "firebase-admin";
+import { firestore } from "firebase-admin";
 import * as functions from "firebase-functions";
 import * as logger from "firebase-functions/logger";
-import {Telegraf} from "telegraf";
+import { Telegraf } from "telegraf";
+import { pushToUsers } from "./push";
 
 const TELEGRAM_TOKEN = functions.config().telegram.token;
 
@@ -34,6 +35,19 @@ const printMovie = (movie: unknown) => {
   throw new Error(`Invalid movie entry: ${movie}`);
 };
 
+
+const telegramMessage = (spaceId: string, data: any) => {
+  const [date, hours] = formatDate(data.scheduledFor);
+
+  return `
+Hey humans!
+*${data.createdBy?.name}* just created a new event!
+If you're free on ${date} at ${hours}, subscribe to it on https://pencilheads.net/${spaceId}!
+The movies planned are:
+${Object.values(data.movies || {}).map(printMovie).join("\n")}
+`
+};
+
 export const eventCreate = (db: firestore.Firestore) =>
   functions.region("europe-west1")
     .firestore.document("events/{spaceId}/events/{id}")
@@ -49,17 +63,35 @@ export const eventCreate = (db: firestore.Firestore) =>
         return;
       }
 
-      const [date, hours] = formatDate(data.scheduledFor);
+      await Promise.all([
+        async () => {
+          try {
+            const userIds = Object.keys(spaceData.members)
 
-      try {
-        await bot.telegram.sendMessage(telegramGroupId, `
-Hey humans!
-*${data.createdBy.name}* just created a new event!
-If you're free on ${date} at ${hours}, subscribe to it on https://pencilheads.net/${context.params.spaceId}!
-The movies planned are:
-${Object.values(data.movies || {}).map(printMovie).join("\n")}
-`);
-      } catch (err) {
-        logger.error("[Bot] Error", err);
-      }
+            await pushToUsers({
+              db,
+              topic: 'event',
+              userIds: userIds,
+              payload: {
+                notification: {
+                  title: 'New event has been created!',
+                  body: `${data.createdBy.name} is hosting a new event!`,
+                },
+              }
+            })
+          } catch (err) {
+            logger.error("[Bot] Error", err);
+          }
+        },
+        async () => {
+          try {
+            await bot.telegram.sendMessage(
+              telegramGroupId,
+              telegramMessage(context.params.spaceId, data)
+            );
+          } catch (err) {
+            logger.error("[Bot] Error", err);
+          }
+        },
+      ]);
     });

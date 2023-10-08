@@ -51,7 +51,11 @@ export const useMessaging = () => {
                         await initMessaging({
                           toast,
                           saveToken: async (token) => {
-                            await set(`/devices/${user.uid}/${token}`, { enabled: true })
+                            await set(`/devices/${token}`, {
+                              uid: user.uid,
+                              token,
+                              events: true,
+                            })
                           },
                         })
                         dismiss()
