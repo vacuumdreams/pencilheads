@@ -1,55 +1,65 @@
 import React from 'react'
-import { Outlet, Link } from 'react-router-dom'
-import { Icons } from '@/components/icons'
-import { Button, buttonVariants } from '@/components/ui/button'
-import {
-  Toast,
-  ToastTitle,
-  ToastDescription,
-  ToastClose,
-  ToastProvider,
-} from '@/components/ui/toast'
+import { Outlet } from 'react-router-dom'
+import { onMessage } from 'firebase/messaging'
+import { messaging } from '@/services/firebase'
+// import { Button, buttonVariants } from '@/components/ui/button'
+import { useToast } from '@/components/ui/use-toast'
 
-const cookiePreferences = localStorage.getItem('cookie-preferences')
+// const cookiePreferences = localStorage.getItem('cookie-preferences')
 
 export const UniversalLayout = () => {
-  const [isCookieToastOpen, setCookieToastOpen] = React.useState(false)
+  const { toast } = useToast()
 
   React.useEffect(() => {
-    if (!cookiePreferences) {
-      setTimeout(() => {
-        setCookieToastOpen(true)
-      }, 2000)
-    }
+    onMessage(messaging, (payload) => {
+      toast({
+        title: payload.notification?.title,
+        description: payload.notification?.body,
+      })
+    })
   }, [])
 
+  // React.useEffect(() => {
+  //   if (cookiePreferences !== 'rejected') {
+  //     setTimeout(() => {
+  //       toast({
+  //         title: 'Cookies and privacy',
+  //         duration: Infinity,
+  //         description: (
+  //           <div className='w-full'>
+  //             <p className="mb-4">We use cookies on this site.</p>
+  //             <div className="flex gap-2 mb-2">
+  //               <Button onClick={() => {
+  //                 localStorage.setItem('cookie-preferences', 'accepted')
+  //                 dismiss()
+  //               }}>
+  //                 Accept
+  //               </Button>
+  //               <NavLink
+  //                 to="/cookies"
+  //                 className={buttonVariants({ variant: 'outline' })}
+  //                 onClick={() => dismiss()}
+  //               >
+  //                 Learn more
+  //               </NavLink>
+  //             </div>
+  //             <div className="w-full flex">
+  //               <button
+  //                 onClick={() => {
+  //                   localStorage.setItem('cookie-preferences', 'rejected')
+  //                 }}
+  //               >
+  //                 Don't show again
+  //               </button>
+  //             </div>
+  //           </div>
+  //         ),
+  //       })
+  //     }, 2000)
+  //   }
+  // }, [])
+
   return (
-    <div>
-      <Outlet />
-      <ToastProvider>
-        <Toast variant='default' open={isCookieToastOpen}>
-          <div className="grid gap-1">
-            <div className="flex gap-2 items-center mb-4">
-              <Icons.help />
-              <ToastTitle className="flex gap-2">Cookie policy</ToastTitle>
-            </div>
-            <ToastDescription>
-              <p>We use cookies to improve your experience on our site.</p>
-              <div className="flex gap-2">
-                <Button
-                  onClick={() => localStorage.setItem('cookie-preferences', 'accepted')}
-                >
-                  Accept
-                </Button>
-                <Link to="/cookies" className={buttonVariants({ variant: 'outline' })}>
-                  Details
-                </Link>
-              </div>
-            </ToastDescription>
-          </div>
-          <ToastClose />
-        </Toast>
-      </ToastProvider>
-    </div>
+    <Outlet />
   )
 }

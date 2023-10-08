@@ -5,13 +5,7 @@ import { AppRouter } from "./routes";
 import { Toaster } from "@/components/ui/toaster"
 import { ThemeProvider } from "./components/theme-provider";
 
-// import { registerSW } from 'virtual:pwa-register'
-
 import "./styles/globals.css";
-
-// registerSW({
-
-// })
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
