@@ -1,9 +1,9 @@
 /* eslint-disable max-len */
-import {firestore, messaging} from "firebase-admin";
+import { firestore, messaging } from "firebase-admin";
 import * as functions from "firebase-functions";
 import * as logger from "firebase-functions/logger";
-import {Telegraf} from "telegraf";
-import {pushToUsers} from "./push";
+import { Telegraf } from "telegraf";
+import { pushToUsers } from "./push";
 
 const TELEGRAM_TOKEN = functions.config().telegram.token;
 
@@ -70,8 +70,8 @@ export const eventCreate = (db: firestore.Firestore, messaging: messaging.Messag
               userIds: userIds,
               payload: {
                 notification: {
-                  title: "New event has been created!",
-                  body: `${data.createdBy.name} is hosting a new event!`,
+                  title: "New event has been added!",
+                  body: `${data.createdBy.name} is hosting a movie night!`,
                 },
               },
             });

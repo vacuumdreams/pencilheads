@@ -16,7 +16,7 @@ export default defineConfig({
     VitePWA({
       srcDir: 'src',
       filename: 'sw.ts',
-      registerType: 'prompt',
+      registerType: 'autoUpdate',
       strategies: 'injectManifest',
       manifest: {
         short_name: 'pencilheads',

@@ -21,8 +21,8 @@ self.addEventListener('message', (event) => {
 onBackgroundMessage(messaging, (payload) => {
   console.log('FIREBASE MESSAGE PAYLOAD', payload)
 
-  self.registration.showNotification('HEY!', {
-    body: 'got a message',
-    icon: '/assets/pencilhead.svg',
+  self.registration.showNotification(payload?.notification?.title || '', {
+    body: payload?.notification?.body,
+    icon: payload?.notification?.icon || '/pencilhead.svg',
   });
 });
