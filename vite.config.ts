@@ -27,6 +27,8 @@ export default defineConfig({
         background_color: '#0f1629',
         theme_color: '#0f1629',
         categories: ['movies', 'events'],
+        // @ts-ignore
+        gcm_sender_id: process.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
         shortcuts: [
           {
             name: 'Dashboard',

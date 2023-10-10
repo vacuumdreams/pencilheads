@@ -33,7 +33,7 @@ export const CreateSpace = ({ user, children }: CreateSpaceProps) => {
         <AlertDescription className="bg-muted mt-8 -mx-4 -mb-4 px-4 py-8 text-left">
           <p className="inline-flex gap-2 justify-start">
             <Icons.info />
-            <span className="ml-2">Currently the creation of groups is disabled. Come back later.</span>
+            <span className="ml-2">The creation of groups is currently disabled. Come back later.</span>
           </p>
         </AlertDescription>
       </Alert>

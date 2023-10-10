@@ -1,9 +1,9 @@
 /* eslint-disable max-len */
-import { firestore } from "firebase-admin";
+import {firestore, messaging} from "firebase-admin";
 import * as functions from "firebase-functions";
 import * as logger from "firebase-functions/logger";
-import { Telegraf } from "telegraf";
-import { pushToUsers } from "./push";
+import {Telegraf} from "telegraf";
+import {pushToUsers} from "./push";
 
 const TELEGRAM_TOKEN = functions.config().telegram.token;
 
@@ -35,7 +35,7 @@ const printMovie = (movie: unknown) => {
   throw new Error(`Invalid movie entry: ${movie}`);
 };
 
-
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const telegramMessage = (spaceId: string, data: any) => {
   const [date, hours] = formatDate(data.scheduledFor);
 
@@ -45,10 +45,10 @@ Hey humans!
 If you're free on ${date} at ${hours}, subscribe to it on https://pencilheads.net/${spaceId}!
 The movies planned are:
 ${Object.values(data.movies || {}).map(printMovie).join("\n")}
-`
+`;
 };
 
-export const eventCreate = (db: firestore.Firestore) =>
+export const eventCreate = (db: firestore.Firestore, messaging: messaging.Messaging) =>
   functions.region("europe-west1")
     .firestore.document("events/{spaceId}/events/{id}")
     .onCreate(async (snapshot, context) => {
@@ -64,27 +64,31 @@ export const eventCreate = (db: firestore.Firestore) =>
       }
 
       await Promise.all([
-        async () => {
+        (async () => {
           try {
-            const userIds = Object.keys(spaceData.members)
+            logger.log("Pushing to well, push");
+            const userIds = data.private ? Object.keys(spaceData.members) : undefined;
+            logger.log(`Found ${userIds?.length || 0} users`);
 
             await pushToUsers({
               db,
-              topic: 'event',
+              messaging,
+              topic: "events",
               userIds: userIds,
               payload: {
                 notification: {
-                  title: 'New event has been created!',
+                  title: "New event has been created!",
                   body: `${data.createdBy.name} is hosting a new event!`,
                 },
-              }
-            })
+              },
+            });
           } catch (err) {
-            logger.error("[Bot] Error", err);
+            logger.error("[Push] Error", err);
           }
-        },
-        async () => {
+        })(),
+        (async () => {
           try {
+            logger.log("pushing to telegram");
             await bot.telegram.sendMessage(
               telegramGroupId,
               telegramMessage(context.params.spaceId, data)
@@ -92,6 +96,6 @@ export const eventCreate = (db: firestore.Firestore) =>
           } catch (err) {
             logger.error("[Bot] Error", err);
           }
-        },
+        })(),
       ]);
     });

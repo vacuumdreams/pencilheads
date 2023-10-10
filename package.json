@@ -8,7 +8,9 @@
     "preview": "bunx --bun vite preview",
     "format": "npx prettier --write . --ignore-path .gitignore ",
     "taze": "taze major -I",
-    "taze:minor": "taze minor -w"
+    "taze:minor": "taze minor -w",
+    "functions:lint": "./functions/node_modules/.bin/eslint --ext .js,.ts functions/src",
+    "functions:build": "./functions/node_modules/.bin/tsc --project functions/tsconfig.json"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.1.1",
@@ -55,6 +57,7 @@
     "react-copy-to-clipboard": "^5.1.0",
     "react-day-picker": "^8.8.0",
     "react-dom": "^18.2.0",
+    "react-error-boundary": "^4.0.11",
     "react-firebase-hooks": "^5.1.1",
     "react-helmet": "^6.1.0",
     "react-hook-form": "^7.45.2",
@@ -78,6 +81,7 @@
     "autoprefixer": "^10.4.14",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
+    "eslint": "^8.51.0",
     "internal-ip": "^8.0.0",
     "postcss": "^8.4.27",
     "prettier": "^3.0.1",

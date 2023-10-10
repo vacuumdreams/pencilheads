@@ -1,4 +1,4 @@
-import { firestore } from "firebase-admin";
+import {firestore} from "firebase-admin";
 import * as functions from "firebase-functions";
 import * as logger from "firebase-functions/logger";
 import Mailgun from "mailgun.js";
@@ -36,7 +36,9 @@ export const inviteCreate = (db: firestore.Firestore) =>
         "from": "Pencilheads <info@pencilheads.net>",
         "to": data.email,
         "subject": `You have been invited to join ${spaceName}!`,
-        "template": telegramInviteLink ? "space-invite-telegram" : "space-invite",
+        "template": telegramInviteLink ?
+          "space-invite-telegram" :
+          "space-invite",
         "h:X-Mailgun-Variables": JSON.stringify({
           person: data.createdBy.name,
           space: spaceName,

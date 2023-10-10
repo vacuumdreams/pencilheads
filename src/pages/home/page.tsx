@@ -46,13 +46,13 @@ export const Home = () => {
   return (
     <div className="relative flex w-screen h-screen justify-center items-center">
       <div
-        className="overflow-hidden w-full h-full left-1/2 top-1/2 absolute transform -translate-x-1/2 -translate-y-1/2 bg-black"
+        className="overflow-hidden w-full h-full left-1/2 top-1/2 absolute transform -translate-x-1/2 -translate-y-1/2 dark:bg-black"
         style={{
           animation: 'tvSwitch 0.5s cubic-bezier(0.32, 0.70, 0.58, 1)',
           animationPlayState: !loaded ? 'running' : 'paused',
         }}
       >
-        <div className="fixed top-0 left-0 w-screen h-screen opacity-30">
+        <div className="fixed top-0 left-0 w-screen h-screen opacity-20 dark:opacity-30">
           <Animation name="white-noise" />
         </div>
       </div>
@@ -64,7 +64,7 @@ export const Home = () => {
           })}>
             <main className="pb-48 text-center">
               <h1 className="font-mono text-6xl sm:text-8xl md:text-9xl mb-12">pencilheads</h1>
-              <p className="mb-6">the place to <Captions /></p>
+              <p className="mb-6">a place to <Captions /></p>
               <NavLink to="/dashboard" className={linkClass}>Get started</NavLink>
             </main>
             <footer className="fixed bg-transparent gap-x-4 px-2 sm:px-4 bottom-0 left-0 w-full flex justify-end mt-auto">

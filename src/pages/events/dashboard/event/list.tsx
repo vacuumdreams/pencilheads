@@ -49,7 +49,7 @@ export const EventList: React.FC<EventListProps> = ({ isAdmin, filters, noEvents
           <span>No data</span>
         </AlertTitle>
         <AlertDescription>
-          <p>{noEventsMessage}</p>
+          {noEventsMessage}
         </AlertDescription>
       </Alert>
     )

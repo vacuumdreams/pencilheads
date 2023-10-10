@@ -20,11 +20,7 @@ import {
   Dialog,
   DialogContent,
 } from '@/components/ui/dialog'
-import {
-  Alert,
-  AlertTitle,
-  AlertDescription
-} from "@/components/ui/alert"
+import { ErrorScreen } from '@/components/error-screen';
 import { InviteForm } from '@/components/invite/form'
 import { Guard } from '@/components/auth/guard'
 import { EventForm } from '@/components/event/form'
@@ -43,7 +39,7 @@ export const Dashboard: React.FC = () => {
   const [isCreateOpen, setCreateOpen] = React.useState(false)
   const [isGroupDialogOpen, setGroupDialogOpen] = React.useState(false)
   const members = Object.values(space?.members || {})
-  const now = new Date()
+  const [now] = React.useState(new Date())
   const isAdmin = !!user && !!space && space.members[user.uid]?.role === 'admin'
 
   return (
@@ -132,18 +128,10 @@ export const Dashboard: React.FC = () => {
             </Button>
           </div>
           {error && (
-            <Alert variant='destructive' className='mt-16 max-w-xl mx-auto text-center'>
-              <AlertTitle className='flex gap-2 items-center justify-center mb-4'>
-                <Icons.warning width={16} />
-                <span>Error</span>
-              </AlertTitle>
-              <AlertDescription>
-                <p>{`${error}`}</p>
-                <Button onClick={() => navigate('/dashboard')} className='mt-4'>
-                  Reload
-                </Button>
-              </AlertDescription>
-            </Alert>
+            <ErrorScreen
+              error={error}
+              resetErrorBoundary={() => navigate('/dashboard')}
+            />
           )}
           {!error && (
             <>

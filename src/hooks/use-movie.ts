@@ -19,7 +19,7 @@ export function useMovieSearch() {
       if (!import.meta.env.VITE_OMDB_API_KEY) {
         throw new Error('Missing OMDB API Key')
       }
-      const response = await fetch(`http://www.omdbapi.com/?s=${encodeURIComponent(title)}&apikey=${import.meta.env.VITE_OMDB_API_KEY}`)
+      const response = await fetch(`https://www.omdbapi.com/?s=${encodeURIComponent(title)}&apikey=${import.meta.env.VITE_OMDB_API_KEY}`)
       const data = await response.json()
       const res = data.Search?.map((item: any) => ({
         title: item.Title,
@@ -89,7 +89,7 @@ const getTrailerAndTags = async (id: string, toast: ReturnType<typeof useToast>[
 }
 
 const getMovieData = async (id: string) => {
-  const response = await fetch(`http://www.omdbapi.com/?i=${encodeURIComponent(id)}&apikey=${import.meta.env.VITE_OMDB_API_KEY}`)
+  const response = await fetch(`https://www.omdbapi.com/?i=${encodeURIComponent(id)}&apikey=${import.meta.env.VITE_OMDB_API_KEY}`)
   const json = await response.json()
   return {
     title: json.Title as string,
@@ -118,7 +118,9 @@ export function useMovie() {
       const data = await Promise.all(ids.map(async id => {
         const [movie, { trailer, tags }] = await Promise.all([
           getMovieData(id),
-          getTrailerAndTags(id, toast),
+          // @TODO: RAPIDAPI's down, replace it with something else later
+          // getTrailerAndTags(id, toast),
+          Promise.resolve({ trailer: '', tags: [] })
         ])
 
         return {
