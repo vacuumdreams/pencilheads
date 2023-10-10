@@ -13,10 +13,10 @@ const linkClass = buttonVariants({
 })
 
 const captions = [
-  'host your events',
-  'meet new friends',
-  'discover events around you',
-  'organise your movie club',
+  'share stories',
+  'host movie nights',
+  'discover events',
+  'organise your film club',
 ]
 
 const Captions = () => {
@@ -67,12 +67,16 @@ export const Home = () => {
               <p className="mb-6">a place to <Captions /></p>
               <NavLink to="/dashboard" className={linkClass}>Get started</NavLink>
             </main>
-            <footer className="fixed bg-transparent gap-x-4 px-2 sm:px-4 bottom-0 left-0 w-full flex justify-end mt-auto">
-              <NavLink to="/cookies" className="inline-flex items-center gap-1 ml-2">
+            <footer className="fixed bg-transparent gap-x-2 px-2 sm:px-4 bottom-0 left-0 w-full flex justify-end mt-auto">
+              <NavLink to="/about" className="inline-flex py-2 items-center gap-1 ml-2">
+                <Icons.cookie width={12} />
+                <span>about</span>
+              </NavLink>
+              <NavLink to="/cookies" className="inline-flex py-2 items-center gap-1 ml-2">
                 <Icons.cookie width={12} />
                 <span>privacy</span>
               </NavLink>
-              <a className="inline-flex items-center gap-1 ml-2" href="mailto:info@pencilheads.net">
+              <a className="inline-flex items-center gap-1 py-2 ml-2" href="mailto:info@pencilheads.net">
                 <Icons.mail width={12} />
                 <span>contact</span>
               </a>

@@ -1,5 +1,6 @@
 export type Venue = {
   name: string;
+  city: string;
   address: string;
   maxParticipants: number;
   createdBy: string;

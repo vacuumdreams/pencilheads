@@ -3,9 +3,12 @@ import { Routes, Route } from "react-router-dom";
 import { UniversalLayout } from '@/components/layout/universal'
 import { InternalLayout } from '@/components/layout/internal'
 import { Home } from '@/pages/home/page';
+import { About } from '@/pages/about/page';
+import { Events } from '@/pages/events/page';
 import { Spaces } from '@/pages/spaces/page';
-import { Dashboard } from '@/pages/events/dashboard/page';
-import { EventsEdit } from '@/pages/events/[id]/page';
+import { SpaceEvents } from '@/pages/spaces/events/page';
+import { EventsEdit } from '@/pages/spaces/events/[id]/page';
+import { Settings } from '@/pages/settings/page';
 import { Invite } from '@/pages/invite/page';
 import { Cookies } from '@/pages/cookies/page';
 import { NotFound } from '@/pages/not-found/page';
@@ -16,17 +19,32 @@ export const AppRouter: React.FC = () => {
     <Routes>
       <Route path="/" element={<UniversalLayout />}>
         <Route index path="/" element={<Home />} />
+
         <Route path="/dashboard" element={<InternalLayout />}>
-          <Route index path="/dashboard" element={<Spaces />} />
-          <Route path="/dashboard/:spaceId" element={<Guard />}>
-            <Route index path="/dashboard/:spaceId" element={<Dashboard />} />
-            <Route path="/dashboard/:spaceId/events/:id" element={<EventsEdit />} />
+          <Route index path="/dashboard" element={<Events />} />
+          <Route path="/dashboard/events/:id" element={<EventsEdit />} />
+        </Route>
+
+        <Route path="/spaces" element={<InternalLayout />}>
+          <Route index path="/spaces" element={<Spaces />} />
+          <Route path="/spaces/:spaceId" element={<Guard />}>
+            <Route index path="/spaces/:spaceId" element={<SpaceEvents />} />
+            <Route path="/spaces/:spaceId/events/:id" element={<EventsEdit />} />
           </Route>
         </Route>
+
+        <Route path="/settings" element={<InternalLayout />}>
+          <Route index path="/settings" element={<Settings />} />
+        </Route>
+
         <Route path="/invites" element={<Guard />} >
           <Route path="/invites/:id" element={<Invite />} />
         </Route>
+
+        <Route path="/about" element={<About />} />
+
         <Route path="/cookies" element={<Cookies />} />
+
       </Route>
       <Route path="*" element={<NotFound />} />
     </Routes>

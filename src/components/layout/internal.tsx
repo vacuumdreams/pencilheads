@@ -1,15 +1,41 @@
 import React from 'react'
-import { Outlet, useNavigate } from 'react-router-dom'
+import { Outlet, NavLink, useNavigate } from 'react-router-dom'
 import { Transition } from 'react-transition-group'
 import { useAuthState, useSignOut } from 'react-firebase-hooks/auth'
-import { auth } from '@/services/firebase'
-import { cn } from '@/lib/utils'
 import { useToast } from '@/components/ui/use-toast'
+import { auth } from '@/services/firebase'
+import { cn, getUserName } from '@/lib/utils'
 import { Icons } from '@/components/icons'
 import { Button } from '@/components/ui/button'
 import { Animation } from '@/components/animations';
+import { Avatar } from '@/components/avatar-group'
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+} from '@/components/ui/sheet';
+import {
+  NavigationMenu,
+  NavigationMenuLink,
+  navigationMenuTriggerStyle,
+} from '@/components/ui/navigation-menu';
+
+const navigation = [
+  { name: 'Events', href: '/dashboard', icon: <Icons.calendar /> },
+  { name: 'Groups', href: '/spaces', icon: <Icons.users /> },
+  { name: 'Settings', href: '/settings', icon: <Icons.settings /> },
+]
+
+const captions = [
+  'You look amazing today!',
+  ''
+]
 
 export const InternalLayout = () => {
+  const [isSheetOpen, setSheetOpen] = React.useState(false)
   const navigate = useNavigate()
   const headerRef = React.useRef(null)
   const { toast } = useToast()
@@ -51,7 +77,7 @@ export const InternalLayout = () => {
                 'translate-y-0': ['entered', 'entering'].includes(state),
               })}>
                 <div className="flex justify-end gap-1">
-                  <Button onClick={onSignOut}><Icons.logOut /></Button>
+                  <Button onClick={() => setSheetOpen(true)}><Icons.chevronLeftSquare /></Button>
                 </div>
               </div>
               <div className={cn('transition-transform duration-1000', {
@@ -65,6 +91,57 @@ export const InternalLayout = () => {
         </Transition>
         {!loading && <Outlet />}
       </div>
-    </div>
+      <Sheet open={isSheetOpen} onOpenChange={setSheetOpen}>
+        <SheetContent>
+          <SheetHeader className="flex justify-start mb-6">
+            <SheetTitle>
+              {user && (
+                <div className="flex gap-4 justify-start items-center">
+                  <Avatar
+                    className="w-8 h-8"
+                    person={{
+                      name: getUserName(user),
+                      email: user.email || '',
+                      photoUrl: user.photoURL,
+                    }}
+                  />
+                  <span>Hello, {getUserName(user).split(' ')[0]}</span>
+                </div>
+              )}
+            </SheetTitle>
+          </SheetHeader>
+          <SheetDescription className="text-left mb-8">
+            {captions[0]}
+          </SheetDescription>
+          <NavigationMenu orientation='vertical' className="w-[calc(100%_+_4rem)] max-w-none flex-col justify-stretch -mx-6">
+            {navigation.map(({ name, href, icon }) => (
+              <NavigationMenuLink asChild>
+                <NavLink
+                  to={href}
+                  onClick={() => setSheetOpen(false)}
+                  className={cn(
+                    navigationMenuTriggerStyle(),
+                    'justify-start gap-2 py-6 w-full max-w-none flex-1 px-6',
+                    '[&.active]:bg-accent'
+                  )}
+                >
+                  {icon}
+                  {name}
+                </NavLink>
+              </NavigationMenuLink>
+            ))}
+          </NavigationMenu>
+          <SheetFooter className="pt-6">
+            <Button
+              className="flex gap-2"
+              onClick={onSignOut}
+            >
+              <Icons.logOut />
+              <span>Sign Out</span>
+            </Button>
+          </SheetFooter>
+        </SheetContent>
+      </Sheet>
+    </div >
   )
 }

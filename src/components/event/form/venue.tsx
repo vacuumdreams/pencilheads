@@ -47,11 +47,23 @@ export const VenueSelector: React.FC<VenueSelectorProps> = ({ defaultVenue, setV
     }
   }, [error])
 
+  const handleAddingChange = (open: boolean) => {
+    setAddingOpen(open)
+    if (!open) {
+      // fix radix-ui bug not removing "pointer-events: none" when multiple stacks of portals open
+      setTimeout(() => {
+        document.body.removeAttribute('style')
+      }, 200)
+    }
+  }
+
   return (
     <div>
-      <Dialog open={isAddingOpen} onOpenChange={setAddingOpen}>
+      <Dialog open={isAddingOpen} onOpenChange={handleAddingChange}>
         <DialogContent>
-          <AddVenue onSuccess={() => setAddingOpen(false)} />
+          <AddVenue
+            onSuccess={() => handleAddingChange(false)}
+          />
         </DialogContent>
       </Dialog>
       <Select defaultValue={venue.name || undefined} onValueChange={(name) => {

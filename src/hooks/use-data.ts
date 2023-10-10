@@ -117,14 +117,13 @@ export function useSpace(p?: HookParams & { id?: string }): [Space | undefined, 
   return [document?.data(), loading, getErrorMessage('this space', error)]
 }
 
-export function useEventCollection(p?: HookParams): [Record<string, Event> | undefined, boolean, string | null] {
-  const spaceId = useSpaceId()
+export function useEventCollection(p: HookParams & { spaceId: string }): [Record<string, Event> | undefined, boolean, string | null] {
   const [user] = useAuthState(auth)
 
   if (!user) throw new Error('Must be authorized to query events.')
-  if (!spaceId) throw new Error('Missing space id, cannot query events.')
+  if (!p?.spaceId) throw new Error('Missing space id, cannot query events.')
 
-  const ref = collection(database, `events/${spaceId}/events`).withConverter(eventConverter)
+  const ref = collection(database, `events/${p.spaceId}/events`).withConverter(eventConverter)
   const [snapshots, loading, error] = useCollection(p?.filters ? query(ref, ...p.filters) : ref)
   const docs = (snapshots?.docs || []).reduce<Record<string, Event>>((acc, doc) => ({ ...acc, [doc.id]: doc.data() }), {})
   return [docs, loading, getErrorMessage('events', error)]
@@ -183,7 +182,8 @@ export function useVenueCollection(p?: HookParams): [Record<string, Venue> | und
   if (!user) throw new Error('Must be authorized to query venues.')
   if (!spaceId) throw new Error('Missing space id, cannot query venues.')
 
-  const ref = collection(database, `venues/${spaceId}/venues`).withConverter(venueConverter)
+  const venueNamespace = spaceId === 'PUBLIC' ? `users/${user.uid}/venues` : `venues/${spaceId}/venues`
+  const ref = collection(database, venueNamespace).withConverter(venueConverter)
   const [snapshots, loading, error] = useCollection(p?.filters ? query(ref, ...p.filters) : ref)
   const docs = (snapshots?.docs || []).reduce<Record<string, Venue>>((acc, doc) => ({ ...acc, [doc.id]: doc.data() }), {})
   return [docs, loading, getErrorMessage('venues', error)]

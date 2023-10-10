@@ -58,17 +58,10 @@ export const eventCreate = (db: firestore.Firestore, messaging: messaging.Messag
       const spaceData = space.data();
       const telegramGroupId = spaceData?.telegramGroupId;
 
-      if (!telegramGroupId) {
-        logger.log(`Event ${snapshot.id} created, no telegram group id found, continuing..`);
-        return;
-      }
-
       await Promise.all([
         (async () => {
           try {
-            logger.log("Pushing to well, push");
-            const userIds = data.private ? Object.keys(spaceData.members) : undefined;
-            logger.log(`Found ${userIds?.length || 0} users`);
+            const userIds = data.private ? Object.keys(spaceData?.members || {}) : undefined;
 
             await pushToUsers({
               db,
@@ -87,6 +80,10 @@ export const eventCreate = (db: firestore.Firestore, messaging: messaging.Messag
           }
         })(),
         (async () => {
+          if (!telegramGroupId) {
+            logger.log(`Event ${snapshot.id} created, no telegram group id found, continuing..`);
+            return;
+          }
           try {
             logger.log("pushing to telegram");
             await bot.telegram.sendMessage(

@@ -19,7 +19,7 @@ export const Movies: React.FC<MoviesProps> = ({ control }) => {
     <div className='pt-2'>
       <div className="flex flex-col gap-2">
         {fields.map((field, i) => (
-          <div key={field.imdbId} className="flex gap-2 items-center justify-between">
+          <div key={field.imdbId} className="flex gap-2 mb-2 items-center justify-between">
             <div key={field.imdbId} className="flex gap-2 items-center">
               <div className="w-16 h-16 overflow-hidden">
                 <img

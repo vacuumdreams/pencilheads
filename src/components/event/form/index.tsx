@@ -191,7 +191,7 @@ export const EventForm: React.FC<CreateEventProps> = ({ id, event, onBack }) => 
 
         <Movies control={control} />
 
-        <Tags register={register} control={control} />
+        {/* <Tags register={register} control={control} /> */}
 
         <div className='2-full flex justify-center my-4'>
           <Button

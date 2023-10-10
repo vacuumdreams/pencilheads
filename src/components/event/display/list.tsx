@@ -10,13 +10,14 @@ import { EventItem } from "./item"
 
 type EventListProps = {
   isAdmin: boolean
+  spaceId: string
   filters: QueryFieldFilterConstraint[]
   noEventsMessage: React.ReactNode | string
 }
 
-export const EventList: React.FC<EventListProps> = ({ isAdmin, filters, noEventsMessage }) => {
+export const EventList: React.FC<EventListProps> = ({ isAdmin, spaceId, filters, noEventsMessage }) => {
   const [user] = useAuthState(auth)
-  const [events, loading, error] = useEventCollection({ filters })
+  const [events, loading, error] = useEventCollection({ spaceId, filters })
 
   if (!user || loading) {
     return (
@@ -65,7 +66,13 @@ export const EventList: React.FC<EventListProps> = ({ isAdmin, filters, noEvents
             date={events[key].scheduledFor}
             prevDate={keys[index - 1] ? events[keys[index - 1]]?.scheduledFor : undefined}
           />
-          <EventItem id={key} user={user} isAdmin={isAdmin} event={events[key]} />
+          <EventItem
+            id={key}
+            user={user}
+            spaceId={spaceId}
+            isAdmin={isAdmin}
+            event={events[key]}
+          />
         </li>
       ))}
     </ul>

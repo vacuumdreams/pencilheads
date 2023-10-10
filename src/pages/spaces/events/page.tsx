@@ -6,7 +6,7 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '@/services/firebase';
 import { useSpace } from '@/hooks/use-data'
 import { useToast } from '@/components/ui/use-toast'
-import { useMessaging } from '@/hooks/use-messaging';
+import { useSpaceId } from '@/hooks/use-space'
 import { cn } from '@/lib/utils'
 import { Icons } from '@/components/icons';
 import { Button } from '@/components/ui/button';
@@ -24,17 +24,17 @@ import { ErrorScreen } from '@/components/error-screen';
 import { InviteForm } from '@/components/invite/form'
 import { Guard } from '@/components/auth/guard'
 import { EventForm } from '@/components/event/form'
-import { EventList } from './event/list';
+import { EventList } from '@/components/event/display/list';
 import { GroupInfo } from './group'
 
-export const Dashboard: React.FC = () => {
-  useMessaging()
+export const SpaceEvents: React.FC = () => {
   const inviteRef = React.useRef(null)
   const titleRef = React.useRef(null)
   const navigate = useNavigate()
   const { toast } = useToast()
   const [user] = useAuthState(auth)
-  const [space, loading, error] = useSpace()
+  const spaceId = useSpaceId()
+  const [space, loading, error] = useSpace({ id: spaceId })
   const [isInviteDialogOpen, setInviteDialogOpen] = React.useState(false)
   const [isCreateOpen, setCreateOpen] = React.useState(false)
   const [isGroupDialogOpen, setGroupDialogOpen] = React.useState(false)
@@ -133,11 +133,12 @@ export const Dashboard: React.FC = () => {
               resetErrorBoundary={() => navigate('/dashboard')}
             />
           )}
-          {!error && (
+          {!error && spaceId && (
             <>
               <TabsContent value="future" className="space-y-4">
                 <EventList
                   isAdmin={isAdmin}
+                  spaceId={spaceId}
                   filters={[where('scheduledFor', '>=', now)]}
                   noEventsMessage="There are no upcoming events."
                 />
@@ -145,6 +146,7 @@ export const Dashboard: React.FC = () => {
               <TabsContent value="past" className="space-y-4">
                 <EventList
                   isAdmin={isAdmin}
+                  spaceId={spaceId}
                   filters={[where('scheduledFor', '<', now)]}
                   noEventsMessage="Looks like there has been no events organised just yet."
                 />

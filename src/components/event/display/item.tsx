@@ -10,17 +10,16 @@ import { Menu } from './menu'
 import { PastEvent } from './past-event'
 import { useMutate } from '@/hooks/use-mutate'
 import { getUserName } from '@/lib/utils'
-import { useSpaceId } from '@/hooks/use-space'
 
 type EventItemProps = {
   user: User
+  spaceId: string
   isAdmin: boolean
   id: string
   event: Event
 }
 
-export const EventItem: React.FC<EventItemProps> = ({ user, isAdmin, id, event }) => {
-  const spaceId = useSpaceId()
+export const EventItem: React.FC<EventItemProps> = ({ user, spaceId, isAdmin, id, event }) => {
   const { update, loading } = useMutate()
   const hasJoined = !!user.email && !!event.attendance?.[user.uid]
   const currentParticipants = Object.keys(event.attendance || {}).length
