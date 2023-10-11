@@ -42,16 +42,6 @@ const transformEvent = (event: Event): FormData => {
   }
 }
 
-// const getMovies = async (event: Event, data: FormData, fetchMovies: (ids: string[]) => Promise<Event['movies']>) => {
-//   const newIds = data.movies.reduce<string[]>((acc, movie) => {
-//     if (!event.movies[movie.imdbId]) {
-//       acc.push(movie.imdbId)
-//     }
-//     return acc
-//   }, [])
-//   await fetchMovies(newIds)
-// }
-
 export const EventForm: React.FC<CreateEventProps> = ({ id, event, onBack }) => {
   const spaceId = useSpaceId()
   const [user] = useAuthState(auth)
@@ -83,7 +73,9 @@ export const EventForm: React.FC<CreateEventProps> = ({ id, event, onBack }) => 
       return
     }
 
-    if (!data.venue.name) {
+    console.log(data)
+
+    if (!data.venue?.name) {
       toast({
         title: 'Error',
         description: 'You must select a venue for the event',

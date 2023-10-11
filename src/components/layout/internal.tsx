@@ -115,7 +115,7 @@ export const InternalLayout = () => {
           </SheetDescription>
           <NavigationMenu orientation='vertical' className="w-[calc(100%_+_4rem)] max-w-none flex-col justify-stretch -mx-6">
             {navigation.map(({ name, href, icon }) => (
-              <NavigationMenuLink asChild>
+              <NavigationMenuLink asChild key={href}>
                 <NavLink
                   to={href}
                   onClick={() => setSheetOpen(false)}

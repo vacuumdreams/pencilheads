@@ -1,9 +1,9 @@
 /* eslint-disable max-len */
-import { firestore, messaging } from "firebase-admin";
+import {firestore, messaging} from "firebase-admin";
 import * as functions from "firebase-functions";
 import * as logger from "firebase-functions/logger";
-import { Telegraf } from "telegraf";
-import { pushToUsers } from "./push";
+import {Telegraf} from "telegraf";
+import {pushToUsers} from "./push";
 
 const TELEGRAM_TOKEN = functions.config().telegram.token;
 

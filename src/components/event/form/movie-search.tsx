@@ -12,11 +12,12 @@ import {
 } from '@/components/ui/dropdown-menu'
 
 type MovieSearchProps = {
+  ids: string[]
   disabled: boolean
   onSubmit: (movie: MovieItem) => void
 }
 
-export const MovieSearch: React.FC<MovieSearchProps> = ({ disabled, onSubmit }) => {
+export const MovieSearch: React.FC<MovieSearchProps> = ({ ids, disabled, onSubmit }) => {
   const [isOpen, setOpen] = React.useState(false)
   const [title, setTitle] = React.useState('')
   const { results, mutate, loading, reset } = useMovieSearch()
@@ -57,8 +58,12 @@ export const MovieSearch: React.FC<MovieSearchProps> = ({ disabled, onSubmit }) 
         )}
         <DropdownMenuTrigger className='w-full' />
         <DropdownMenuContent className='w-[calc(100%_-_2rem) left-[1rem]'>
-          {results.map((movie, i) => (
-            <DropdownMenuItem key={i} onClick={() => handleSubmit(movie)}>
+          {results?.map((movie, i) => (
+            <DropdownMenuItem
+              key={i}
+              disabled={!!ids.find(id => id === movie.imdbId)}
+              onClick={() => handleSubmit(movie)}
+            >
               <div className='w-full flex items-center gap-2'>
                 <div className="w-8 h-8 overflow-hidden">
                   <img className="object-cover" src={movie.poster} />

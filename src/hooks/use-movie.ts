@@ -21,6 +21,7 @@ export function useMovieSearch() {
       }
       const response = await fetch(`https://www.omdbapi.com/?s=${encodeURIComponent(title)}&apikey=${import.meta.env.VITE_OMDB_API_KEY}`)
       const data = await response.json()
+      console.log(data)
       const res = data.Search?.map((item: any) => ({
         title: item.Title,
         year: item.Year,

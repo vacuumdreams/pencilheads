@@ -37,7 +37,11 @@ export const Movies: React.FC<MoviesProps> = ({ control }) => {
           </div>
         ))}
       </div>
-      <MovieSearch disabled={fields.length <= 4} onSubmit={(movie) => append(movie)} />
+      <MovieSearch
+        ids={fields.map((field) => field.imdbId)}
+        disabled={fields.length <= 4}
+        onSubmit={(movie) => append(movie)}
+      />
     </div >
   )
 }
