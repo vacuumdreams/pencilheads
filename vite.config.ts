@@ -1,6 +1,7 @@
 import path from "path"
 import react from "@vitejs/plugin-react-swc"
 import { VitePWA } from 'vite-plugin-pwa'
+import { viteStaticCopy } from 'vite-plugin-static-copy';
 import { defineConfig } from "vite"
 import iconConfig from './src/assets/icons.json'
 
@@ -13,6 +14,11 @@ export default defineConfig({
   },
   plugins: [
     react(),
+    viteStaticCopy({
+      targets: [
+        { src: 'src/assets/*', dest: '.' }
+      ],
+    }),
     VitePWA({
       srcDir: 'src',
       filename: 'sw.ts',

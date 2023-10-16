@@ -106,3 +106,10 @@ export type Space = {
   telegramGroupId?: string;
   subscription?: null | SpaceSubscription
 }
+
+export type Device = {
+  uid: string;
+  token: string;
+  events: boolean;
+  updatedAt: Date;
+}

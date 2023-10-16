@@ -73,8 +73,6 @@ export const EventForm: React.FC<CreateEventProps> = ({ id, event, onBack }) => 
       return
     }
 
-    console.log(data)
-
     if (!data.venue?.name) {
       toast({
         title: 'Error',

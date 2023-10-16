@@ -12,14 +12,21 @@ cleanupOutdatedCaches()
 
 precacheAndRoute(self.__WB_MANIFEST)
 
+let badgeCount = 0
+
 self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting()
   }
+  if (event.data && event.data.type === 'RESET_BADGE') {
+    badgeCount = 0
+    navigator?.clearAppBadge?.()
+  }
 })
 
 onBackgroundMessage(messaging, (payload) => {
-  console.log('FIREBASE MESSAGE PAYLOAD', payload)
+  badgeCount += 1
+  navigator?.setAppBadge?.(badgeCount)
 
   self.registration.showNotification(payload?.notification?.title || '', {
     body: payload?.notification?.body,

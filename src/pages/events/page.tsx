@@ -19,11 +19,15 @@ import { EventForm } from '@/components/event/form'
 import { EventList } from '@/components/event/display/list';
 
 export const Events: React.FC = () => {
-  useMessaging()
+  const { initialize } = useMessaging()
   const titleRef = React.useRef(null)
   const [user] = useAuthState(auth)
   const [isCreateOpen, setCreateOpen] = React.useState(false)
   const [now] = React.useState(new Date())
+
+  React.useEffect(() => {
+    initialize()
+  }, [])
 
   return (
     <Guard>
