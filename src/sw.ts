@@ -19,6 +19,7 @@ self.addEventListener('message', (event) => {
     self.skipWaiting()
   }
   if (event.data && event.data.type === 'RESET_BADGE') {
+    console.log('reset badge')
     badgeCount = 0
     navigator?.clearAppBadge?.()
   }

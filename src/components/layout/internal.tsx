@@ -60,7 +60,7 @@ export const InternalLayout = () => {
   return (
     <div
       className={cn(
-        "h-screen overflow-x-hidden overflow-y-auto bg-background pb-24 pr-0 bg-background",
+        "h-screen overflow-x-hidden overflow-y-auto bg-background pb-24 pr-0",
         "scrollbar scrollbar-track-transparent scrollbar-thumb-accent scrollbar-thumb-rounded-md"
       )}
     >

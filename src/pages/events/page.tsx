@@ -26,7 +26,17 @@ export const Events: React.FC = () => {
   const [now] = React.useState(new Date())
 
   React.useEffect(() => {
+    function onFocus() {
+      postMessage({ type: 'RESET_BADGE' })
+    }
+
     initialize()
+    postMessage({ type: 'RESET_BADGE' })
+    window.addEventListener('focus', onFocus)
+
+    return () => {
+      window.removeEventListener('focus', onFocus)
+    }
   }, [])
 
   return (
