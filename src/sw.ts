@@ -21,7 +21,7 @@ self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'RESET_BADGE') {
     console.log('reset badge')
     badgeCount = 0
-    navigator?.clearAppBadge?.()
+    navigator?.setAppBadge?.()
   }
 })
 
@@ -32,5 +32,8 @@ onBackgroundMessage(messaging, (payload) => {
   self.registration.showNotification(payload?.notification?.title || '', {
     body: payload?.notification?.body,
     icon: payload?.notification?.icon || '/pencilhead.svg',
+    data: {
+      click_action: '/dashboard',
+    }
   });
 });

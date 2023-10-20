@@ -7,13 +7,19 @@ import { useMutate } from '@/hooks/use-mutate'
 import { useMovie } from '@/hooks/use-movie';
 import { getUserName } from '@/lib/utils';
 import { useSpaceId } from '@/hooks/use-space';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
 import { Icons } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { DatePicker } from '@/components/date-picker';
 import { VenueSelector } from './venue'
 import { Movies } from './movies';
-import { Tags } from './tags';
+// import { Tags } from './tags';
 import { Event } from '@/types';
 import { FormData } from './types'
 
@@ -95,6 +101,7 @@ export const EventForm: React.FC<CreateEventProps> = ({ id, event, onBack }) => 
 
       const mutation: Event = {
         name: data.name || `${userName.split(' ')[0]}'s movie night`,
+        type: 'movie-vote',
         createdAt: data.createdAt || now,
         createdBy: data.createdBy || {
           email: user.email,
@@ -104,6 +111,7 @@ export const EventForm: React.FC<CreateEventProps> = ({ id, event, onBack }) => 
         updatedAt: now,
         scheduledFor: setTime(data.scheduledFor, data.scheduledForTime),
         expenses: 0,
+        description: data.description,
         tags: data.tags || [],
         venue: data.venue,
         attendance: data.attendance || {
@@ -147,6 +155,21 @@ export const EventForm: React.FC<CreateEventProps> = ({ id, event, onBack }) => 
       </div>
 
       <form className="flex flex-col gap-4 mt-8" onSubmit={onSubmit}>
+        <Popover>
+          <PopoverTrigger type="button" className="p-4 text-muted-foreground border border-muted">
+            <div className="flex gap-2">
+              <Icons.hand />
+              <span className="font-mono text-xl">the voter</span>
+            </div>
+          </PopoverTrigger>
+          <PopoverContent className="max-w-full">
+            <div className="p-2">
+              <p className="mb-2"><Icons.info size={14} className="inline mr-2" />You can add up to three movies to the event, and whoever decides to join, can vote for which one they'd like to see.</p>
+              <p>We'll add more event types later on. Probably. Maybe.</p>
+            </div>
+          </PopoverContent>
+        </Popover>
+
         <Input {...register('name')} placeholder='Name your event. What is the theme?' />
 
         <VenueSelector
@@ -180,6 +203,12 @@ export const EventForm: React.FC<CreateEventProps> = ({ id, event, onBack }) => 
         </div>
 
         <Movies control={control} />
+
+        <Textarea
+          {...register('description')}
+          maxLength={256}
+          placeholder='E.g. we gonna have some tempuras while watching a Kurosava movie. Chopsticks not allowed, but you are more than welcome!'
+        />
 
         {/* <Tags register={register} control={control} /> */}
 

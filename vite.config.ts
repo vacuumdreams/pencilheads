@@ -25,6 +25,7 @@ export default defineConfig({
       registerType: 'autoUpdate',
       strategies: 'injectManifest',
       manifest: {
+        id: 'pencilheads',
         short_name: 'pencilheads',
         name: 'pencilheads - film clubs | movie events',
         description: 'Discover film clubs and movie events around you, host your own events, share experiences.',

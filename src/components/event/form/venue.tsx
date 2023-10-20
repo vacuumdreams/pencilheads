@@ -1,6 +1,6 @@
 import React from 'react'
 import { UseFormSetValue } from 'react-hook-form'
-import { useVenueCollection } from '@/hooks/use-data';
+import { usePrivateVenueCollection, useVenueCollection } from '@/hooks/use-data';
 import { useToast } from '@/components/ui/use-toast';
 import { Icons } from '@/components/icons';
 import { Button } from '@/components/ui/button'
@@ -29,23 +29,34 @@ type VenueSelectorProps = {
 export const VenueSelector: React.FC<VenueSelectorProps> = ({ defaultVenue, setValue }) => {
   const { toast } = useToast()
   const [isAddingOpen, setAddingOpen] = React.useState(false)
-  const [venues, loading, error] = useVenueCollection();
+  const [venues, vLoading, vError] = useVenueCollection();
+  const [pVenues, pvLoading, pvError] = usePrivateVenueCollection()
   const [venue, setVenue] = React.useState<Pick<Venue, 'name' | 'address' | 'maxParticipants'>>({
     name: defaultVenue?.name || '',
     address: defaultVenue?.address || '',
     maxParticipants: defaultVenue?.maxParticipants || 0,
   })
-  const venueList = Object.values(venues || {})
+  const venueList = Object.values(pVenues || {}).concat(Object.values(venues || {}))
 
   React.useEffect(() => {
-    if (error) {
+    if (vError) {
       toast({
         title: 'Error',
-        description: `${error}`,
+        description: `${vError}`,
         variant: 'destructive',
       })
     }
-  }, [error])
+  }, [vError])
+
+  React.useEffect(() => {
+    if (pvError) {
+      toast({
+        title: 'Error',
+        description: `${pvError}`,
+        variant: 'destructive',
+      })
+    }
+  }, [pvError])
 
   const handleAddingChange = (open: boolean) => {
     setAddingOpen(open)
@@ -62,6 +73,7 @@ export const VenueSelector: React.FC<VenueSelectorProps> = ({ defaultVenue, setV
       <Dialog open={isAddingOpen} onOpenChange={handleAddingChange}>
         <DialogContent>
           <AddVenue
+            canAddPrivate={Object.values(pVenues || {}).length === 0}
             onSuccess={() => handleAddingChange(false)}
           />
         </DialogContent>
@@ -84,7 +96,7 @@ export const VenueSelector: React.FC<VenueSelectorProps> = ({ defaultVenue, setV
         </SelectTrigger>
         <SelectContent>
           <SelectGroup>
-            {loading && <p className="my-4">Loading available venues...</p>}
+            {(vLoading || pvLoading) && <p className="my-4">Loading available venues...</p>}
           </SelectGroup>
           <SelectGroup>
             {venueList.length > 0 && (
@@ -110,7 +122,11 @@ export const VenueSelector: React.FC<VenueSelectorProps> = ({ defaultVenue, setV
           </SelectGroup>
           <SelectSeparator />
           <SelectGroup>
-            <Button disabled={loading} variant="outline" onClick={() => setAddingOpen(true)}>
+            <Button
+              disabled={vLoading || pvLoading}
+              variant="outline"
+              onClick={() => setAddingOpen(true)}
+            >
               Add new venue
             </Button>
           </SelectGroup>

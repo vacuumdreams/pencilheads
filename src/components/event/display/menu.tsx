@@ -90,9 +90,9 @@ export const Menu = ({ now, schedule, user, isAdmin, event, eventId }: MenuProps
       <Dialog open={isRemoveDialogOpen} onOpenChange={setRemoveDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <h2 className="text-2xl font-bold">Delete event?</h2>
+            <h2 className="text-2xl text-center font-bold">Delete event?</h2>
           </DialogHeader>
-          <div className="flex justify-center">
+          <div className="flex  gap-2 justify-center">
             <Button
               variant="destructive"
               disabled={loading}
@@ -101,7 +101,16 @@ export const Menu = ({ now, schedule, user, isAdmin, event, eventId }: MenuProps
                 setRemoveDialogOpen(false)
               }}
             >
-              Yes, delete it
+              Go ahead
+            </Button>
+            <Button
+              variant="outline"
+              disabled={loading}
+              onClick={async () => {
+                setRemoveDialogOpen(false)
+              }}
+            >
+              Cancel
             </Button>
           </div>
         </DialogContent>

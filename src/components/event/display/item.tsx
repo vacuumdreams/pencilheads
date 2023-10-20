@@ -41,7 +41,7 @@ export const EventItem: React.FC<EventItemProps> = ({ user, spaceId, isAdmin, id
   }
 
   return (
-    <div className='relative w-full flex border px-4 pt-12 sm:pt-4'>
+    <div className='relative w-full flex border px-4 pt-12 sm:pt-4 mb-8'>
       <div className="absolute top-0 right-0 flex gap-4 p-2 pr-6 text-gray-500">
         <div className="flex gap-2">
           <Icons.clock width={16} />
@@ -114,7 +114,7 @@ export const EventItem: React.FC<EventItemProps> = ({ user, spaceId, isAdmin, id
             )}
           </div>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 mb-2">
           <a
             rel="noreferrer noopener"
             target="_blank"
@@ -132,6 +132,11 @@ export const EventItem: React.FC<EventItemProps> = ({ user, spaceId, isAdmin, id
             </span>
           </a>
         </div>
+        {event.description && (
+          <div className="">
+            <p>{event.description}</p>
+          </div>
+        )}
         <h2 className='my-4 font-bold'>The movies:</h2>
         <Movies
           id={id}

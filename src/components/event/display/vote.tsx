@@ -38,7 +38,7 @@ export const VoteButton = ({ user, eventId, event, movieKey, hasJoined }: VoteBu
       }}
     >
       <div>
-        <Icons.thumbsUp />
+        <Icons.hand />
         <div className='mt-2'>{voteCount}</div>
       </div>
 

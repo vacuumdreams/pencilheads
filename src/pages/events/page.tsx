@@ -26,17 +26,7 @@ export const Events: React.FC = () => {
   const [now] = React.useState(new Date())
 
   React.useEffect(() => {
-    function onFocus() {
-      postMessage({ type: 'RESET_BADGE' })
-    }
-
     initialize()
-    postMessage({ type: 'RESET_BADGE' })
-    window.addEventListener('focus', onFocus)
-
-    return () => {
-      window.removeEventListener('focus', onFocus)
-    }
   }, [])
 
   return (
@@ -74,8 +64,9 @@ export const Events: React.FC = () => {
                 Past events
               </TabsTrigger>
             </TabsList>
-            <Button onClick={() => setCreateOpen(true)}>
+            <Button className="flex gap-2 items-center" onClick={() => setCreateOpen(true)}>
               <Icons.plus />
+              <span className="hidden sm:inline-block">Create event</span>
             </Button>
           </div>
           <TabsContent value="future" className="space-y-4">

@@ -11,12 +11,23 @@ export const UniversalLayout = () => {
   const { toast } = useToast()
 
   React.useEffect(() => {
+    function resetBadgeCount() {
+      navigator?.setAppBadge?.()
+    }
+
+    resetBadgeCount()
+    window.addEventListener('focus', resetBadgeCount)
+
     onMessage(messaging, (payload) => {
       toast({
         title: payload.notification?.title,
         description: payload.notification?.body,
       })
     })
+
+    return () => {
+      window.removeEventListener('focus', resetBadgeCount)
+    }
   }, [])
 
   // React.useEffect(() => {

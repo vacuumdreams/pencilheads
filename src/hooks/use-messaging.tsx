@@ -33,16 +33,18 @@ export const useMessaging = () => {
         vapidKey: String(import.meta.env.VITE_FIREBASE_MESSAGING_PUBLIC_KEY),
         serviceWorkerRegistration: serviceWorkerRegistration,
       })
-      setToken(t)
-      await set(`/devices/${token}`, {
-        uid: user.uid,
-        token: t,
-        events: topics?.events ?? true,
-        updatedAt: new Date(),
-      })
-      setTopics(topics || {
-        events: true
-      })
+      if (t) {
+        setToken(t)
+        await set(`/devices/${token}`, {
+          uid: user.uid,
+          token: t,
+          events: topics?.events ?? true,
+          updatedAt: new Date(),
+        })
+        setTopics(topics || {
+          events: true
+        })
+      }
     } catch (error) {
       toast({
         title: 'Error',

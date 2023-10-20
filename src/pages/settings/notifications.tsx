@@ -35,7 +35,7 @@ export const Notifications = (_: NotificationsProps) => {
       )}
       {notificationState === 'default' || notificationState === 'granted' && (
         <div>
-          <div className="flex flex-row items-center justify-between">
+          <div className="flex flex-row gap-2 items-center justify-between">
             <div className="space-y-0.5">
               <p className="mb-2">
                 New events

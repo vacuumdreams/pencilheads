@@ -5,6 +5,8 @@ import { FormData } from './types'
 import { Button } from '@/components/ui/button'
 import { Icons } from '@/components/icons'
 
+const MAX_MOVIES = 3
+
 type MoviesProps = {
   control: Control<FormData>
 }
@@ -39,7 +41,7 @@ export const Movies: React.FC<MoviesProps> = ({ control }) => {
       </div>
       <MovieSearch
         ids={fields.map((field) => field.imdbId)}
-        disabled={fields.length <= 4}
+        disabled={fields.length <= MAX_MOVIES}
         onSubmit={(movie) => append(movie)}
       />
     </div >

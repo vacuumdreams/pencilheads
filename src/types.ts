@@ -1,5 +1,6 @@
 export type Venue = {
   name: string;
+  public: boolean;
   city: string;
   address: string;
   maxParticipants: number;
@@ -42,6 +43,8 @@ export type Movie = {
 
 export type Event = {
   name: string;
+  type: 'movie-vote';
+  description?: string;
   createdAt: Date;
   createdBy: {
     email: string;

@@ -58,14 +58,18 @@ export const Movies = ({ id, event, user, hasJoined }: MoviesProps) => {
                     <div>{movie.director}</div>
                     <h4 className="font-bold">Cast:</h4>
                     <div>{movie.actors}</div>
-                    <h4 className="font-bold">Genre:</h4>
-                    <div>
-                      {movie.tags?.map(tag => (
-                        <Tag key={tag}>
-                          {tag}
-                        </Tag>
-                      )) || 'N/A'}
-                    </div>
+                    {movie.tags?.length > 0 && (
+                      <>
+                        <h4 className="font-bold">Genre:</h4>
+                        <div>
+                          {movie.tags?.map(tag => (
+                            <Tag key={tag}>
+                              {tag}
+                            </Tag>
+                          )) || 'N/A'}
+                        </div>
+                      </>
+                    )}
                     <h4 className="font-bold">IMDB Rating:</h4>
                     <a
                       href={`https://imdb.com/title/${movie.imdbId}`}
