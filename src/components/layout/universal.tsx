@@ -1,4 +1,5 @@
 import React from 'react'
+import * as Sentry from '@sentry/react'
 import { Outlet } from 'react-router-dom'
 import { onMessage } from 'firebase/messaging'
 import { messaging } from '@/services/firebase'
@@ -7,7 +8,7 @@ import { useToast } from '@/components/ui/use-toast'
 
 // const cookiePreferences = localStorage.getItem('cookie-preferences')
 
-export const UniversalLayout = () => {
+export const UniversalLayout = Sentry.withProfiler(() => {
   const { toast } = useToast()
 
   React.useEffect(() => {
@@ -73,4 +74,4 @@ export const UniversalLayout = () => {
   return (
     <Outlet />
   )
-}
+})

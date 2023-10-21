@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { ErrorBoundary } from 'react-error-boundary'
+import * as Sentry from "@sentry/react";
+import { initSentry } from '@/services/sentry'
 import { BrowserRouter } from "react-router-dom";
 import { AppRouter } from "@/routes";
 import { Toaster } from "@/components/ui/toaster"
@@ -9,10 +10,17 @@ import { ErrorScreen } from "@/components/error-screen";
 
 import "./styles/globals.css";
 
+initSentry()
+
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
-    <ErrorBoundary
-      FallbackComponent={ErrorScreen}
+    <Sentry.ErrorBoundary
+      fallback={
+        <ErrorScreen
+          error="Something went wrong. Please refresh the page."
+          resetErrorBoundary={() => window.location.reload()}
+        />
+      }
     >
       <BrowserRouter>
         <ThemeProvider attribute="class" enableSystem>
@@ -20,6 +28,6 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
           <AppRouter />
         </ThemeProvider>
       </BrowserRouter>
-    </ErrorBoundary>
+    </Sentry.ErrorBoundary>
   </React.StrictMode>
 );

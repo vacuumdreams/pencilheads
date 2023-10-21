@@ -1,3 +1,4 @@
+import { sentryVitePlugin } from "@sentry/vite-plugin";
 import path from "path"
 import react from "@vitejs/plugin-react-swc"
 import { VitePWA } from 'vite-plugin-pwa'
@@ -50,6 +51,10 @@ export default defineConfig({
         maximumFileSizeToCacheInBytes: 5000000,
       }
     }),
+    sentryVitePlugin({
+      org: "pencilheads",
+      project: "pencilheads-web"
+    })
   ],
   clearScreen: false,
   server: {
@@ -58,6 +63,7 @@ export default defineConfig({
   },
   build: {
     minify: true,
+    sourcemap: true
   },
   envPrefix: ["VITE_"],
 })

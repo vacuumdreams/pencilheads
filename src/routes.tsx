@@ -1,7 +1,10 @@
 import React from 'react'
-import { Routes, Route } from "react-router-dom";
+import { Route } from "react-router-dom";
 import { UniversalLayout } from '@/components/layout/universal'
 import { InternalLayout } from '@/components/layout/internal'
+
+import { SentryRoutes } from '@/services/sentry'
+
 import { Home } from '@/pages/home/page';
 import { About } from '@/pages/about/page';
 import { Events } from '@/pages/events/page';
@@ -16,7 +19,7 @@ import { Guard } from '@/components/auth/guard';
 
 export const AppRouter: React.FC = () => {
   return (
-    <Routes>
+    <SentryRoutes>
       <Route path="/" element={<UniversalLayout />}>
         <Route index path="/" element={<Home />} />
 
@@ -47,6 +50,6 @@ export const AppRouter: React.FC = () => {
 
       </Route>
       <Route path="*" element={<NotFound />} />
-    </Routes>
+    </SentryRoutes>
   )
 }
