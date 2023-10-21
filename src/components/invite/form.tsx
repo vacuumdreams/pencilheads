@@ -4,7 +4,7 @@ import { User } from 'firebase/auth'
 import { useToast } from '@/components/ui/use-toast'
 import { useMutate } from '@/hooks/use-mutate'
 import { useSpaceId } from '@/hooks/use-space'
-import { getUserName } from '@/lib/utils'
+import { getUser } from '@/lib/utils'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Invite as InviteType, Member } from '@/types'
@@ -47,10 +47,7 @@ export const InviteForm: React.FC<InviteProps> = ({ user, onSuccess }) => {
       acceptedAt: null,
       expiresAt: new Date(new Date(now).setMonth(now.getMonth() + 1)),
       createdAt: now,
-      createdBy: {
-        name: getUserName(user),
-        email: user?.email || '',
-      },
+      createdBy: getUser(user),
     })
 
     onSuccess(email)

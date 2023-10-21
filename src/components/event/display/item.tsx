@@ -4,12 +4,13 @@ import { deleteField } from 'firebase/firestore'
 import { Event } from '@/types'
 import { Icons } from '@/components/icons'
 import { Button } from '@/components/ui/button'
-import { AvatarGroup } from '@/components/avatar-group'
+import { Tag } from '@/components/ui/tag'
+import { Avatar, AvatarGroup } from '@/components/avatar-group'
 import { Movies } from './movies'
 import { Menu } from './menu'
 import { PastEvent } from './past-event'
 import { useMutate } from '@/hooks/use-mutate'
-import { getUserName } from '@/lib/utils'
+import { getUser } from '@/lib/utils'
 
 type EventItemProps = {
   user: User
@@ -20,7 +21,7 @@ type EventItemProps = {
 }
 
 export const EventItem: React.FC<EventItemProps> = ({ user, spaceId, isAdmin, id, event }) => {
-  const { update, loading } = useMutate()
+  const { update, loading } = useMutate<Partial<Event>>()
   const hasJoined = !!user.email && !!event.attendance?.[user.uid]
   const currentParticipants = Object.keys(event.attendance || {}).length
   const [now, setNow] = React.useState(new Date())
@@ -57,63 +58,87 @@ export const EventItem: React.FC<EventItemProps> = ({ user, spaceId, isAdmin, id
           <Icons.clapperboard width={32} />
           <h4 className="font-mono text-2xl">{event.name || `${event.createdBy.name}'s movie night`}</h4>
         </div>
-        <div className="w-full flex gap-4 justify-between items-center mb-6">
-          <AvatarGroup
-            maxDisplay={3}
-            people={Object.values(event.attendance || {}).map(sub => ({
-              name: sub.name,
-              email: sub.email,
-              photoUrl: sub.photoUrl,
-            }))}
-          />
-          <div className='flex gap-2'>
-            {hasJoined && (
-              <Button
-                disabled={loading}
-                variant="outline"
-                onClick={() => {
-                  update(`events/${spaceId}/events/${id}`, {
-                    [`attendance.${user.uid}`]: deleteField(),
-                  })
-                  update(`events/${spaceId}/events/${id}`, {
-                    [`votes.${user.uid}`]: deleteField(),
-                  })
-                }}
-              >
-                Leave
-              </Button>
+        {event.approvedByHost && (
+          <div className="w-full flex gap-4 justify-between items-center mb-6">
+            <AvatarGroup
+              maxDisplay={3}
+              people={Object.values(event.attendance || {})}
+            />
+            <div className='flex gap-2'>
+              {hasJoined && (
+                <Button
+                  disabled={loading}
+                  variant="outline"
+                  onClick={() => {
+                    update(`events/${spaceId}/events/${id}`, {
+                      [`attendance.${user.uid}`]: deleteField(),
+                    })
+                    update(`events/${spaceId}/events/${id}`, {
+                      [`votes.${user.uid}`]: deleteField(),
+                    })
+                  }}
+                >
+                  Leave
+                </Button>
+              )}
+              {!hasJoined && (
+                <Button
+                  disabled={loading || now > event.scheduledFor || event.venue.maxParticipants <= currentParticipants}
+                  onClick={() => {
+                    update(`events/${spaceId}/events/${id}`, {
+                      [`attendance.${user.uid}`]: {
+                        ...getUser(user),
+                        markedAt: new Date(),
+
+                      }
+                    })
+                  }}
+                >
+                  {event.venue.maxParticipants <= currentParticipants && 'Event full'}
+                  {now >= event.scheduledFor && 'In progress'}
+                  {now < event.scheduledFor && event.venue.maxParticipants > currentParticipants && 'Join'}
+                </Button>
+              )}
+              {hasJoined && (
+                <Menu
+                  eventId={id}
+                  now={now}
+                  schedule={event.scheduledFor}
+                  user={user}
+                  isAdmin={isAdmin}
+                  event={event}
+                />
+              )}
+            </div>
+          </div>
+        )}
+        {!event.approvedByHost && (
+          <div className="flex gap-4">
+            {event.venue.createdBy.uid === user.uid && (
+              <div>
+                <p className="mb-2">Created by: <Avatar person={event.createdBy} className="inline mr-2" />{event.createdBy.name.split(' ')[0]}</p>
+                <Tag className="bg-muted text-muted-foreground">
+                  Waiting for host approval
+                </Tag>
+              </div>
             )}
-            {!hasJoined && (
-              <Button
-                disabled={loading || now > event.scheduledFor || event.venue.maxParticipants <= currentParticipants}
-                onClick={() => {
-                  update(`events/${spaceId}/events/${id}`, {
-                    [`attendance.${user.uid}`]: {
-                      name: getUserName(user),
-                      email: user.email || '',
-                      markedAt: new Date(),
-                      photoUrl: user.photoURL,
-                    }
-                  })
-                }}
-              >
-                {event.venue.maxParticipants <= currentParticipants && 'Event full'}
-                {now >= event.scheduledFor && 'In progress'}
-                {now < event.scheduledFor && event.venue.maxParticipants > currentParticipants && 'Join'}
-              </Button>
-            )}
-            {hasJoined && (
-              <Menu
-                eventId={id}
-                now={now}
-                schedule={event.scheduledFor}
-                user={user}
-                isAdmin={isAdmin}
-                event={event}
-              />
+            {event.venue.createdBy.uid === user.uid && (
+              <div>
+                <p className="mb-2">Created by: <Avatar person={event.createdBy} className="inline mr-2" />{event.createdBy.name.split(' ')[0]}</p>
+                <Button
+                  disabled={loading}
+                  onClick={() => {
+                    update(`events/${spaceId}/events/${id}`, {
+                      approvedByHost: true,
+                    })
+                  }}
+                >
+                  Confirm hosting
+                </Button>
+              </div>
             )}
           </div>
-        </div>
+        )}
         <div className="flex gap-2 mb-2">
           <a
             rel="noreferrer noopener"

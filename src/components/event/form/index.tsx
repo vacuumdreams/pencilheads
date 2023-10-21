@@ -5,7 +5,7 @@ import { auth } from '@/services/firebase';
 import { useToast } from '@/components/ui/use-toast';
 import { useMutate } from '@/hooks/use-mutate'
 import { useMovie } from '@/hooks/use-movie';
-import { getUserName } from '@/lib/utils';
+import { getUser, getUserName } from '@/lib/utils';
 import { useSpaceId } from '@/hooks/use-space';
 import {
   Popover,
@@ -54,6 +54,7 @@ export const EventForm: React.FC<CreateEventProps> = ({ id, event, onBack }) => 
   const { toast } = useToast();
   const { register, control, handleSubmit, setValue, formState } = useForm<FormData>({
     defaultValues: event ? transformEvent(event) : {
+      type: 'movie-vote',
       scheduledForTime: '19:00',
     },
   });
@@ -98,17 +99,16 @@ export const EventForm: React.FC<CreateEventProps> = ({ id, event, onBack }) => 
     if (user && user.email) {
       const now = new Date()
       const userName = getUserName(user)
+      const me = getUser(user)
+      const createdBy = data.createdBy || me
 
       const mutation: Event = {
         name: data.name || `${userName.split(' ')[0]}'s movie night`,
-        type: 'movie-vote',
+        type: data.type,
         createdAt: data.createdAt || now,
-        createdBy: data.createdBy || {
-          email: user.email,
-          name: userName,
-          photoUrl: user.photoURL,
-        },
+        createdBy,
         updatedAt: now,
+        approvedByHost: data.approvedByHost || createdBy.uid === data.venue.createdBy.uid,
         scheduledFor: setTime(data.scheduledFor, data.scheduledForTime),
         expenses: 0,
         description: data.description,
@@ -116,9 +116,7 @@ export const EventForm: React.FC<CreateEventProps> = ({ id, event, onBack }) => 
         venue: data.venue,
         attendance: data.attendance || {
           [user.uid]: {
-            email: user.email,
-            name: user.displayName || user.email.split('@')[0],
-            photoUrl: user.photoURL,
+            ...me,
             markedAt: now,
           },
         },
@@ -172,10 +170,13 @@ export const EventForm: React.FC<CreateEventProps> = ({ id, event, onBack }) => 
 
         <Input {...register('name')} placeholder='Name your event. What is the theme?' />
 
-        <VenueSelector
-          defaultVenue={event?.venue}
-          setValue={setValue}
-        />
+        {user && (
+          <VenueSelector
+            user={user}
+            defaultVenue={event?.venue}
+            setValue={setValue}
+          />
+        )}
 
         <div className='flex gap-2'>
           <Controller

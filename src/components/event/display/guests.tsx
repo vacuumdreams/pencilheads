@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input'
 import { useMutate } from '@/hooks/use-mutate'
 import { useSpaceId } from '@/hooks/use-space'
 import { Event, Guest } from '@/types'
-import { isValidEmail, getUserName } from '@/lib/utils'
+import { isValidEmail, getUserName, getUser } from '@/lib/utils'
 import { useToast } from '@/components/ui/use-toast'
 
 type FormData = {
@@ -47,10 +47,7 @@ export const Guests = ({ eventId, user, event, onClose }: JoinProps) => {
         email: guest.email,
         invitedAt: now,
         confirmedAt: null,
-        invitedBy: {
-          email: user.email || '',
-          name: userName,
-        }
+        invitedBy: getUser(user),
       }
     }), {
       onSuccess: () => {

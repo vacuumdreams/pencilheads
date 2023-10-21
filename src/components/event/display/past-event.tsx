@@ -1,4 +1,6 @@
 import React from 'react'
+import { useAuthState } from 'react-firebase-hooks/auth'
+import { auth } from '@/services/firebase'
 import { Icons } from '@/components/icons'
 import { AvatarGroup } from '@/components/avatar-group'
 import { Event, Movie } from '@/types'
@@ -23,13 +25,9 @@ const getMovie = (event: Event): Movie | null => {
 }
 
 export const PastEvent = ({ event }: PastEventProps) => {
+  const [user] = useAuthState(auth)
   const movie = React.useMemo(() => getMovie(event), [])
-  const aa = Object.values(event.attendance || {})
-
-  const attendanceList = aa.concat(aa).concat(aa).concat(aa)
-    .concat(aa).concat(aa).concat(aa).concat(aa).concat(aa).concat(aa).concat(aa).concat(aa).concat(aa).concat(aa)
-    .concat(aa).concat(aa).concat(aa).concat(aa).concat(aa).concat(aa).concat(aa).concat(aa).concat(aa).concat(aa)
-    .concat(aa).concat(aa).concat(aa).concat(aa).concat(aa).concat(aa).concat(aa)
+  const attendanceList = Object.values(event.attendance || {})
 
   return (
     <div className='relative w-full border px-4 pt-12 sm:pt-4'>
@@ -73,17 +71,17 @@ export const PastEvent = ({ event }: PastEventProps) => {
           Attendees:
           <AvatarGroup
             maxDisplay={5}
-            people={attendanceList.map(sub => ({
-              name: sub.name,
-              email: sub.email,
-              photoUrl: sub.photoUrl,
-            }))}
+            people={attendanceList}
           />
         </div>
       </div>
       {movie && (
         <div>
-          <h2 className='my-4 font-bold'>You watched:</h2>
+          {user && (
+            <h2 className='my-4 font-bold'>
+              {event.attendance[user.uid] ? 'You watched:' : 'They watched:'}
+            </h2>
+          )}
           <div className="w-[calc(100%_+_2rem)] bg-muted px-4 -mx-4 flex">
             <div key={movie.imdbId} className='w-16 h-16 overflow-hidden'>
               <img className="object-cover object-center" src={movie.poster} alt={movie.title} />

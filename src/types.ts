@@ -1,10 +1,17 @@
+export type User = {
+  uid: string;
+  name: string;
+  email: string;
+  photoUrl?: string | null;
+}
+
 export type Venue = {
   name: string;
   public: boolean;
   city: string;
   address: string;
   maxParticipants: number;
-  createdBy: string;
+  createdBy: User;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -14,17 +21,11 @@ export type Guest = {
   email: string;
   invitedAt: Date;
   confirmedAt: Date | null;
-  invitedBy: {
-    name: string;
-    email: string;
-  }
+  invitedBy: User
 }
 
-export type Attendance = {
-  email: string;
-  name: string;
+export type Attendance = User & {
   markedAt: Date;
-  photoUrl?: string | null;
 }
 
 export type Movie = {
@@ -46,11 +47,8 @@ export type Event = {
   type: 'movie-vote';
   description?: string;
   createdAt: Date;
-  createdBy: {
-    email: string;
-    name: string;
-    photoUrl?: string | null;
-  };
+  createdBy: User;
+  approvedByHost: boolean;
   updatedAt: Date;
   scheduledFor: Date;
   expenses?: number;
@@ -73,10 +71,7 @@ export type Invite = {
   acceptedAt: null | number,
   expiresAt: Date,
   createdAt: Date,
-  createdBy: {
-    name: string,
-    email: string,
-  },
+  createdBy: User;
 }
 
 export type Plan = {
@@ -93,17 +88,14 @@ export type SpaceSubscription = {
   expiresAt: Date
 }
 
-export type Member = {
+export type Member = User & {
   role: 'admin' | 'member';
-  name: string;
-  email: string;
-  photoUrl?: string | null;
 }
 
 export type Space = {
   name: string;
   createdAt: Date;
-  createdBy: string;
+  createdBy: User;
   members: Record<string, Member>
   telegramInviteLink?: string;
   telegramGroupId?: string;

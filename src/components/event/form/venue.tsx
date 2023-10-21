@@ -1,4 +1,5 @@
 import React from 'react'
+import { User } from '@firebase/auth'
 import { UseFormSetValue } from 'react-hook-form'
 import { usePrivateVenueCollection, useVenueCollection } from '@/hooks/use-data';
 import { useToast } from '@/components/ui/use-toast';
@@ -22,11 +23,12 @@ import { Venue } from '@/types'
 import { FormData } from './types'
 
 type VenueSelectorProps = {
+  user: User
   defaultVenue?: Venue
   setValue: UseFormSetValue<FormData>
 }
 
-export const VenueSelector: React.FC<VenueSelectorProps> = ({ defaultVenue, setValue }) => {
+export const VenueSelector: React.FC<VenueSelectorProps> = ({ user, defaultVenue, setValue }) => {
   const { toast } = useToast()
   const [isAddingOpen, setAddingOpen] = React.useState(false)
   const [venues, vLoading, vError] = useVenueCollection();
@@ -37,6 +39,12 @@ export const VenueSelector: React.FC<VenueSelectorProps> = ({ defaultVenue, setV
     maxParticipants: defaultVenue?.maxParticipants || 0,
   })
   const venueList = Object.values(pVenues || {}).concat(Object.values(venues || {}))
+  const publicByUser = venueList.reduce((acc, v) => {
+    if (v.createdBy.uid === user.uid) {
+      return acc + 1
+    }
+    return acc
+  }, 0)
 
   React.useEffect(() => {
     if (vError) {
@@ -123,7 +131,7 @@ export const VenueSelector: React.FC<VenueSelectorProps> = ({ defaultVenue, setV
           <SelectSeparator />
           <SelectGroup>
             <Button
-              disabled={vLoading || pvLoading}
+              disabled={vLoading || pvLoading || publicByUser >= 4}
               variant="outline"
               onClick={() => setAddingOpen(true)}
             >

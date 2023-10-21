@@ -4,7 +4,7 @@ import { Transition } from 'react-transition-group'
 import { useAuthState, useSignOut } from 'react-firebase-hooks/auth'
 import { useToast } from '@/components/ui/use-toast'
 import { auth } from '@/services/firebase'
-import { cn, getUserName } from '@/lib/utils'
+import { cn, getUser, getUserName } from '@/lib/utils'
 import { Icons } from '@/components/icons'
 import { Button } from '@/components/ui/button'
 import { Animation } from '@/components/animations';
@@ -99,11 +99,7 @@ export const InternalLayout = () => {
                 <div className="flex gap-4 justify-start items-center">
                   <Avatar
                     className="w-8 h-8"
-                    person={{
-                      name: getUserName(user),
-                      email: user.email || '',
-                      photoUrl: user.photoURL,
-                    }}
+                    person={getUser(user)}
                   />
                   <span>Hello, {getUserName(user).split(' ')[0]}</span>
                 </div>

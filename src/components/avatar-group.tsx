@@ -4,16 +4,9 @@ import {
   AvatarFallback,
 } from '@/components/ui/avatar'
 import { cn } from '@/lib/utils'
+import { User } from '@/types'
 
-type Person = {
-  name: string
-  email: string
-  photoUrl?: string | null
-}
-
-
-
-const getName = (person: Person) => {
+const getName = (person: User) => {
   if (!person.name) {
     return person.email.split('@')[0]
   }
@@ -21,7 +14,7 @@ const getName = (person: Person) => {
 }
 
 type AvatarProps = {
-  person: Person
+  person: User
   className?: string
   style?: React.CSSProperties
 }
@@ -43,7 +36,7 @@ export const Avatar = ({ person, className, style }: AvatarProps) => {
 type AvatarGroupProps = {
   maxDisplay: number
   className?: string
-  people: Person[]
+  people: User[]
 }
 
 export const AvatarGroup = ({ people, maxDisplay, className }: AvatarGroupProps) => {

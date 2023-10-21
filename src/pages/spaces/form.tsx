@@ -4,7 +4,7 @@ import { useMutate } from '@/hooks/use-mutate'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Space } from '@/types'
-import { getUserName } from '@/lib/utils'
+import { getUser } from '@/lib/utils'
 
 type FormData = {
   name: string
@@ -18,18 +18,17 @@ type CreateSpaceProps = {
 export const CreateSpaceForm = ({ user, onSuccess }: CreateSpaceProps) => {
   const { push, loading } = useMutate<Space>()
   const { register, handleSubmit } = useForm<FormData>()
+  const me = getUser(user)
 
   const onSubmit = handleSubmit((data) => {
     push(`spaces`, {
       name: data.name,
       createdAt: new Date(),
-      createdBy: user.uid,
+      createdBy: me,
       members: {
         [user.uid]: {
           role: 'admin',
-          name: getUserName(user),
-          email: user.email || '',
-          photoUrl: user.photoURL,
+          ...me,
         },
       },
     }, { onSuccess })

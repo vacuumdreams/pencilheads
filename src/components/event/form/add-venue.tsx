@@ -5,7 +5,7 @@ import { auth } from '@/services/firebase'
 import { useMutate } from '@/hooks/use-mutate'
 import { useToast } from '@/components/ui/use-toast'
 import { useSpaceId } from '@/hooks/use-space'
-import { getUserName } from '@/lib/utils'
+import { getUserName, getUser } from '@/lib/utils'
 import { Icons } from '@/components/icons'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -46,7 +46,7 @@ export const AddVenue: React.FC<AddVenueProps> = ({ canAddPrivate, onSuccess }) 
     await push(venueTable, {
       ...data,
       public: data.public || false,
-      createdBy: user.email,
+      createdBy: getUser(user),
       createdAt: now,
       updatedAt: now,
     })

@@ -1,6 +1,7 @@
 import { clsx, type ClassValue } from "clsx"
-import { User } from "firebase/auth"
+import { User as AuthUser } from "firebase/auth"
 import { twMerge } from "tailwind-merge"
+import { User } from "@/types"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -21,6 +22,15 @@ export const isValidEmail = (email: string) =>
     email
   );
 
-export const getUserName = (user?: User | null) => {
+export const getUserName = (user?: AuthUser | null) => {
   return user?.displayName || user?.email?.split('@')[0] || ''
+}
+
+export const getUser = (user: AuthUser): User => {
+  return {
+    uid: user.uid,
+    email: user.email || '',
+    name: getUserName(user),
+    photoUrl: user.photoURL || null,
+  }
 }
