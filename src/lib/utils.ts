@@ -34,3 +34,15 @@ export const getUser = (user: AuthUser): User => {
     photoUrl: user.photoURL || null,
   }
 }
+
+export const getDbErrorMessage = (resourceName: string, error?: any) => {
+  if (!error) {
+    return null
+  }
+  console.error(error)
+  switch (error.code) {
+    case 'not-found': return `Could not find ${resourceName}.`
+    case 'permission-denied': return `You do not have permission to access ${resourceName}.`
+    default: return `An error occurred while accessing ${resourceName}.`
+  }
+}

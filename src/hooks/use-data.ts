@@ -15,19 +15,8 @@ import { auth, database } from '@/services/firebase';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { useCollection, useDocument } from 'react-firebase-hooks/firestore';
 import { useSpaceId } from '@/hooks/use-space';
+import { getDbErrorMessage } from '@/lib/utils';
 import { Invite, Space, Event, Venue } from '@/types';
-
-const getErrorMessage = (resourceName: string, error?: FirestoreError) => {
-  if (!error) {
-    return null
-  }
-  console.error(error)
-  switch (error.code) {
-    case 'not-found': return `Could not find ${resourceName}.`
-    case 'permission-denied': return `You do not have permission to access ${resourceName}.`
-    default: return `An error occurred while accessing ${resourceName}.`
-  }
-}
 
 const toInvite = (d: any): Invite => ({
   ...d,
@@ -102,7 +91,7 @@ export function useSpaceCollection(p?: HookParams): [Record<string, Space> | und
   const ref = collection(database, 'spaces').withConverter(spaceConverter)
   const [snapshots, loading, error] = useCollection(p?.filters ? query(ref, ...p.filters) : ref)
   const docs = snapshots?.docs.reduce<Record<string, Space>>((acc, doc) => ({ ...acc, [doc.id]: doc.data() }), {})
-  return [docs, loading, getErrorMessage('spaces', error)]
+  return [docs, loading, getDbErrorMessage('spaces', error)]
 }
 
 export function useSpace(p?: HookParams & { id?: string }): [Space | undefined, boolean, string | null] {
@@ -114,7 +103,7 @@ export function useSpace(p?: HookParams & { id?: string }): [Space | undefined, 
 
   const ref = doc(database, `spaces/${p?.id || spaceId}`).withConverter(spaceConverter)
   const [document, loading, error] = useDocument(ref)
-  return [document?.data(), loading, getErrorMessage('this space', error)]
+  return [document?.data(), loading, getDbErrorMessage('this space', error)]
 }
 
 export function useEventCollection(p: HookParams & { spaceId: string }): [Record<string, Event> | undefined, boolean, string | null] {
@@ -126,7 +115,7 @@ export function useEventCollection(p: HookParams & { spaceId: string }): [Record
   const ref = collection(database, `events/${p.spaceId}/events`).withConverter(eventConverter)
   const [snapshots, loading, error] = useCollection(p?.filters ? query(ref, ...p.filters) : ref)
   const docs = (snapshots?.docs || []).reduce<Record<string, Event>>((acc, doc) => ({ ...acc, [doc.id]: doc.data() }), {})
-  return [docs, loading, getErrorMessage('events', error)]
+  return [docs, loading, getDbErrorMessage('events', error)]
 }
 
 export function useEventCount(p?: HookParams & { spaceId?: string }): [number, boolean, string | null] {
@@ -159,7 +148,7 @@ export function useEventCount(p?: HookParams & { spaceId?: string }): [number, b
   }, [])
 
 
-  return [count, loading, getErrorMessage('events', error)]
+  return [count, loading, getDbErrorMessage('events', error)]
 }
 
 export function useEvent(p: HookParams & { id?: string }): [Event | undefined, boolean, string | null] {
@@ -172,7 +161,7 @@ export function useEvent(p: HookParams & { id?: string }): [Event | undefined, b
 
   const ref = doc(database, `events/${spaceId}/events/${p.id}`).withConverter(eventConverter)
   const [document, loading, error] = useDocument(ref)
-  return [document?.data(), loading, getErrorMessage('events', error)]
+  return [document?.data(), loading, getDbErrorMessage('events', error)]
 }
 
 export function usePrivateVenueCollection(p?: HookParams): [Record<string, Venue> | undefined, boolean, string | null] {
@@ -186,7 +175,7 @@ export function usePrivateVenueCollection(p?: HookParams): [Record<string, Venue
   const ref = collection(database, venueNamespace).withConverter(venueConverter)
   const [snapshots, loading, error] = useCollection(p?.filters ? query(ref, ...p.filters) : ref)
   const docs = (snapshots?.docs || []).reduce<Record<string, Venue>>((acc, doc) => ({ ...acc, [doc.id]: doc.data() }), {})
-  return [docs, loading, getErrorMessage('venues', error)]
+  return [docs, loading, getDbErrorMessage('venues', error)]
 }
 
 export function useVenueCollection(p?: HookParams): [Record<string, Venue> | undefined, boolean, string | null] {
@@ -200,7 +189,7 @@ export function useVenueCollection(p?: HookParams): [Record<string, Venue> | und
   const ref = collection(database, venueNamespace).withConverter(venueConverter)
   const [snapshots, loading, error] = useCollection(p?.filters ? query(ref, ...p.filters) : ref)
   const docs = (snapshots?.docs || []).reduce<Record<string, Venue>>((acc, doc) => ({ ...acc, [doc.id]: doc.data() }), {})
-  return [docs, loading, getErrorMessage('venues', error)]
+  return [docs, loading, getDbErrorMessage('venues', error)]
 }
 
 export function useInviteCollection(p?: HookParams): [Record<string, Invite> | undefined, boolean, string | null] {
@@ -211,5 +200,5 @@ export function useInviteCollection(p?: HookParams): [Record<string, Invite> | u
   const ref = collection(database, `invites`).withConverter(inviteConverter)
   const [snapshots, loading, error] = useCollection(p?.filters ? query(ref, ...p.filters) : ref)
   const docs = (snapshots?.docs || []).reduce<Record<string, Invite>>((acc, doc) => ({ ...acc, [doc.id]: doc.data() }), {})
-  return [docs, loading, getErrorMessage('invites', error)]
+  return [docs, loading, getDbErrorMessage('invites', error)]
 }

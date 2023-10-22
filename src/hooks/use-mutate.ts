@@ -1,14 +1,20 @@
 import { useState } from 'react';
-import { collection, setDoc, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore'
+import {
+  collection,
+  setDoc,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  doc,
+} from 'firebase/firestore'
 import { database } from '@/services/firebase';
 import { useToast } from '@/components/ui/use-toast';
+import { getDbErrorMessage } from '@/lib/utils';
 
 type Opts = {
   onSuccess: () => void
   onError?: (error: string) => void
 }
-
-database
 
 export function useMutate<T extends object>() {
   const { toast } = useToast()
@@ -20,13 +26,13 @@ export function useMutate<T extends object>() {
       await setDoc(doc(database, id), data)
       opts?.onSuccess()
     } catch (error) {
-      console.error(error)
+      const errorMessage = getDbErrorMessage(id.split('/')[0], error)
       if (opts?.onError) {
-        opts.onError(`${error}`)
+        opts.onError(`${errorMessage}`)
       } else {
         toast({
           title: 'Error',
-          description: `${error}`,
+          description: `${errorMessage}`,
           variant: 'destructive',
         })
       }
@@ -41,13 +47,13 @@ export function useMutate<T extends object>() {
       await addDoc(collection(database, id), data)
       opts?.onSuccess()
     } catch (error) {
-      console.error(error)
+      const errorMessage = getDbErrorMessage(id.split('/')[0], error)
       if (opts?.onError) {
-        opts.onError(`${error}`)
+        opts.onError(`${errorMessage}`)
       } else {
         toast({
           title: 'Error',
-          description: `${error}`,
+          description: `${errorMessage}`,
           variant: 'destructive',
         })
       }
@@ -62,13 +68,13 @@ export function useMutate<T extends object>() {
       await deleteDoc(doc(database, id))
       opts?.onSuccess()
     } catch (error) {
-      console.error(error)
+      const errorMessage = getDbErrorMessage(id.split('/')[0], error)
       if (opts?.onError) {
-        opts.onError(`${error}`)
+        opts.onError(`${errorMessage}`)
       } else {
         toast({
           title: 'Error',
-          description: `${error}`,
+          description: `${errorMessage}`,
           variant: 'destructive',
         })
       }
@@ -83,13 +89,13 @@ export function useMutate<T extends object>() {
       await updateDoc(doc(database, id), data)
       opts?.onSuccess()
     } catch (error) {
-      console.error(error)
+      const errorMessage = getDbErrorMessage(id.split('/')[0], error)
       if (opts?.onError) {
-        opts.onError(`${error}`)
+        opts.onError(`${errorMessage}`)
       } else {
         toast({
           title: 'Error',
-          description: `${error}`,
+          description: `${errorMessage}`,
           variant: 'destructive',
         })
       }

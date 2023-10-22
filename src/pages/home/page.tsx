@@ -69,7 +69,7 @@ export const Home = () => {
             </main>
             <footer className="fixed bg-transparent gap-x-2 px-2 sm:px-4 bottom-0 left-0 w-full flex justify-end mt-auto">
               <NavLink to="/about" className="inline-flex py-2 items-center gap-1 ml-2">
-                <Icons.cookie width={12} />
+                <Icons.library width={12} />
                 <span>about</span>
               </NavLink>
               <NavLink to="/cookies" className="inline-flex py-2 items-center gap-1 ml-2">

@@ -46,6 +46,7 @@ export const useMessaging = () => {
         })
       }
     } catch (error) {
+      console.error(error)
       toast({
         title: 'Error',
         description: `${error}`,

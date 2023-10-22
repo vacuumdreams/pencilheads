@@ -21,7 +21,6 @@ export function useMovieSearch() {
       }
       const response = await fetch(`https://www.omdbapi.com/?s=${encodeURIComponent(title)}&apikey=${import.meta.env.VITE_OMDB_API_KEY}`)
       const data = await response.json()
-      console.log(data)
       const res = data.Search?.map((item: any) => ({
         title: item.Title,
         year: item.Year,
@@ -31,9 +30,10 @@ export function useMovieSearch() {
 
       setResults(res)
     } catch (err) {
+      console.error(err)
       toast({
         title: 'Error',
-        description: `${err}`,
+        description: 'There was a problem collecting data about the movie. Please try again later.',
         variant: 'destructive',
       })
     } finally {

@@ -1,6 +1,6 @@
 import { initializeApp } from 'firebase/app';
 import { getMessaging, onBackgroundMessage } from 'firebase/messaging/sw';
-import { cleanupOutdatedCaches, precacheAndRoute } from 'workbox-precaching'
+// import { cleanupOutdatedCaches, precacheAndRoute } from 'workbox-precaching'
 import { firebaseConfig } from '@/services/config'
 
 declare const self: ServiceWorkerGlobalScope & typeof globalThis & WorkerGlobalScope
@@ -8,9 +8,9 @@ declare const self: ServiceWorkerGlobalScope & typeof globalThis & WorkerGlobalS
 const app = initializeApp(firebaseConfig)
 const messaging = getMessaging(app)
 
-cleanupOutdatedCaches()
+// cleanupOutdatedCaches()
 
-precacheAndRoute(self.__WB_MANIFEST)
+// precacheAndRoute(self.__WB_MANIFEST)
 
 let badgeCount = 0
 
