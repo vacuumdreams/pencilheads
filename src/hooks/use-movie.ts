@@ -17,7 +17,13 @@ export function useMovieSearch() {
   const mutate = async (title: string) => {
     try {
       if (!import.meta.env.VITE_OMDB_API_KEY) {
-        throw new Error('Missing OMDB API Key')
+        console.error(new Error('Missing OMDB API Key'))
+        toast({
+          title: 'Error',
+          description: 'There was a problem collecting data about the movie. Please try again later.',
+          variant: 'destructive',
+        })
+        return
       }
       const response = await fetch(`https://www.omdbapi.com/?s=${encodeURIComponent(title)}&apikey=${import.meta.env.VITE_OMDB_API_KEY}`)
       const data = await response.json()

@@ -4,6 +4,7 @@ import react from "@vitejs/plugin-react-swc"
 import { VitePWA } from 'vite-plugin-pwa'
 import { viteStaticCopy } from 'vite-plugin-static-copy';
 import { defineConfig } from "vite"
+// @ts-ignore Importing json errors for some reason in the IDE
 import iconConfig from './src/assets/icons.json'
 
 // https://vitejs.dev/config/
@@ -49,6 +50,7 @@ export default defineConfig({
         clientsClaim: true,
         skipWaiting: true,
         maximumFileSizeToCacheInBytes: 5000000,
+        globIgnores: ['/assets/index-*.js'],
       }
     }),
     sentryVitePlugin({
