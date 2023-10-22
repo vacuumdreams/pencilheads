@@ -31,6 +31,7 @@ export const ProfileForm = ({ user }: ProfileFormProps) => {
 
   React.useEffect(() => {
     if (error) {
+      console.error(error)
       toast({
         title: 'Error',
         description: `${error}`,
@@ -40,7 +41,6 @@ export const ProfileForm = ({ user }: ProfileFormProps) => {
   }, [error])
 
   const onSubmit = handleSubmit(data => {
-    console.log(data)
     mutate({
       displayName: data.name
     })

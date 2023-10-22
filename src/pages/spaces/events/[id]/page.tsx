@@ -24,7 +24,7 @@ const EventsEditContent = () => {
           <span>Error</span>
         </AlertTitle>
         <AlertDescription>
-          <p>Failed loading events</p>
+          <p>Failed loading event</p>
           <p>{`${error}`}</p>
         </AlertDescription>
       </Alert>

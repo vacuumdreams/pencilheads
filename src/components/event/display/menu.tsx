@@ -47,7 +47,13 @@ export const Menu = ({ now, schedule, user, isAdmin, event, eventId }: MenuProps
             <>
               <DropdownMenuItem
                 disabled={now > schedule && currentParticipants >= event.venue.maxParticipants}
-                onClick={() => navigate(`/dashboard/${spaceId}/events/${eventId}`)}
+                onClick={() => {
+                  if (spaceId === 'PUBLIC') {
+                    navigate(`/dashboard/events/${eventId}`)
+                    return
+                  }
+                  navigate(`/dashboard/${spaceId}/events/${eventId}`)
+                }}
               >
                 <Icons.pencil width={12} />
                 <span className="ml-4">Edit event</span>

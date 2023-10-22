@@ -43,10 +43,9 @@ export const ChangePasswordForm = ({ user, onSuccess }: ProfileFormProps) => {
     }
   })
 
-  console.log(formState, formState.errors)
-
   React.useEffect(() => {
     if (error) {
+      console.error(error)
       toast({
         title: 'Error',
         description: `${error}`,
@@ -57,6 +56,7 @@ export const ChangePasswordForm = ({ user, onSuccess }: ProfileFormProps) => {
 
   React.useEffect(() => {
     if (signinError) {
+      console.error(signinError)
       toast({
         title: 'Error',
         description: `${signinError}`,

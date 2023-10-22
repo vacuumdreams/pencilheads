@@ -39,6 +39,7 @@ export const AccountForm = ({ user }: AccountFormProps) => {
 
   React.useEffect(() => {
     if (error) {
+      console.error(error)
       toast({
         title: 'Error',
         description: `${error}`,

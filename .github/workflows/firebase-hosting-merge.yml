@@ -29,6 +29,8 @@ jobs:
           echo VITE_SENTRY_DSN=${{ vars.VITE_SENTRY_DSN }} >> .env
           cat .env
       - run: bun install && bun run build
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'

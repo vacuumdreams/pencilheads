@@ -55,7 +55,8 @@ export default defineConfig({
     }),
     sentryVitePlugin({
       org: "pencilheads",
-      project: "pencilheads-web"
+      project: "pencilheads-web",
+      authToken: process.env.SENTRY_AUTH_TOKEN,
     })
   ],
   clearScreen: false,

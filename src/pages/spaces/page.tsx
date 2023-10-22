@@ -135,6 +135,7 @@ const InviteWrapper = () => {
 
   React.useEffect(() => {
     if (error) {
+      console.error(error)
       toast({
         title: 'Error',
         description: `${error}`,

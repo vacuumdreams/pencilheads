@@ -41,6 +41,7 @@ export function Signin({ onChangeToSignup }: SigninProps) {
 
   useEffect(() => {
     if (error) {
+      console.error(error)
       toast({
         title: 'Error',
         description: error.message,

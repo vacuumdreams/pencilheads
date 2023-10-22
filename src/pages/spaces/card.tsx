@@ -49,6 +49,7 @@ export const SpaceCard = ({ user, id, space, className }: SpaceCardProps) => {
 
   React.useEffect(() => {
     if (error) {
+      console.error(error)
       toast({
         title: 'Error',
         description: `${error}`,
