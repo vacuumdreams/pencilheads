@@ -38,7 +38,8 @@ export const VenueSelector: React.FC<VenueSelectorProps> = ({ user, defaultVenue
     address: defaultVenue?.address || '',
     maxParticipants: defaultVenue?.maxParticipants || 0,
   })
-  const venueList = Object.values(pVenues || {}).concat(Object.values(venues || {}))
+  const pVenueList = Object.values(pVenues || {})
+  const venueList = pVenueList.concat(Object.values(venues || {}))
   const publicByUser = venueList.reduce((acc, v) => {
     if (v.createdBy.uid === user.uid) {
       return acc + 1
@@ -129,14 +130,22 @@ export const VenueSelector: React.FC<VenueSelectorProps> = ({ user, defaultVenue
             ))}
           </SelectGroup>
           <SelectSeparator />
-          <SelectGroup>
-            <Button
-              disabled={vLoading || pvLoading || publicByUser >= 4}
-              variant="outline"
-              onClick={() => setAddingOpen(true)}
-            >
-              Add new venue
-            </Button>
+          <SelectGroup className="flex-col md:flex gap-2 items-center">
+            {(publicByUser < 3 && pVenueList.length === 0) && (
+              <Button
+                disabled={vLoading || pvLoading || (publicByUser >= 3 && pVenueList.length > 0)}
+                variant="outline"
+                onClick={() => setAddingOpen(true)}
+              >
+                Add new venue
+              </Button>
+            )}
+            {(publicByUser >= 3 && pVenueList.length > 0) && (
+              <p className="max-w-[calc(100vw_-_6rem)] mt-4 md:mt-0 flex items-center gap-2 text-muted-foreground text-sm">
+                <Icons.info width={16} />
+                <span>Reached maximum number of venues allowed.</span>
+              </p>
+            )}
           </SelectGroup>
         </SelectContent>
       </Select>

@@ -35,10 +35,10 @@ const InviteContent = () => {
       <Alert variant='default' className='max-w-xl mx-auto text-center'>
         <AlertTitle className='flex gap-2 items-center justify-center mb-4'>
           <Icons.spinner width={16} className="animate-rotate" />
-          <span>Updating...</span>
+          <span>Processing...</span>
         </AlertTitle>
         <AlertDescription>
-          <p>Failed loading events</p>
+          <p>Validating your invitation.</p>
         </AlertDescription>
       </Alert>
     )

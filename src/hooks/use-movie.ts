@@ -27,12 +27,29 @@ export function useMovieSearch() {
       }
       const response = await fetch(`https://www.omdbapi.com/?s=${encodeURIComponent(title)}&apikey=${import.meta.env.VITE_OMDB_API_KEY}`)
       const data = await response.json()
+
+      if (data.Error === 'Too many results.') {
+        toast({
+          title: 'Warning',
+          description: 'There are too many results for your search. Try to be more specific!',
+        })
+        return
+      }
+
+      if (data.Error) {
+        toast({
+          title: 'Warning',
+          description: data.Error,
+        })
+        return
+      }
+
       const res = data.Search?.map((item: any) => ({
         title: item.Title,
         year: item.Year,
         poster: item.Poster,
         imdbId: item.imdbID,
-      }))
+      })) || []
 
       setResults(res)
     } catch (err) {

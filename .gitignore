@@ -23,7 +23,7 @@ node_modules
 
 # Environment
 .env
-.env.dev
+.env.*
 *.local
 
 # Builds

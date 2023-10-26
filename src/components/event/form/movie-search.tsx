@@ -46,9 +46,14 @@ export const MovieSearch: React.FC<MovieSearchProps> = ({ ids, disabled, onSubmi
                   e.stopPropagation()
                   setTitle(e.target.value)
                 }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault()
+                    return false
+                  }
+                }}
               />
-              <Button onClick={(e) => {
-                e.preventDefault()
+              <Button onClick={() => {
                 title && mutate(title)
               }}>
                 <Icons.search width={12} />
@@ -56,7 +61,7 @@ export const MovieSearch: React.FC<MovieSearchProps> = ({ ids, disabled, onSubmi
             </div>
           </div>
         )}
-        <DropdownMenuTrigger className='w-full' />
+        <DropdownMenuTrigger className='w-full h-0' />
         <DropdownMenuContent className='w-[calc(100%_-_2rem) left-[1rem]'>
           {results?.map((movie, i) => (
             <DropdownMenuItem

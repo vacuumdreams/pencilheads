@@ -48,7 +48,7 @@ export const InviteCard = ({ inviteId, className, invite, space }: SpaceCardProp
         </div>
       </CardContent>
       <CardFooter className="flex gap-2">
-        <Button className="flex gap-2" onClick={() => navigate(`/dashboard/invites/${inviteId}`)}>
+        <Button className="flex gap-2" onClick={() => navigate(`/invites/${inviteId}`)}>
           <Icons.userPlus />
           <span>Accept invitation</span>
         </Button>

@@ -42,7 +42,7 @@ const EventsEditContent = () => {
   return (
     <>
       {event && (
-        <EventForm id={id} event={event} onBack={() => navigate(`/dashboard/${spaceId}`)} />
+        <EventForm id={id} event={event} onBack={() => navigate(`/dashboard/spaces/${spaceId}`)} />
       )}
     </>
   )

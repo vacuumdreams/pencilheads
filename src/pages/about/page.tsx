@@ -107,6 +107,13 @@ export const About = () => {
                 </li>
               </ul>
             </section>
+            {/* <section className="py-8">
+              <h4 id="notifications" className="flex gap-2 items-center text-lg mb-8">
+                <Icons.heartHandshake size={12} />Credits
+              </h4>
+
+              <p>I've used some free animations from <a href="https://lottiefiles.com/">Lottifiles</a>, </p>
+            </section> */}
           </main>
         </div>
       </div>

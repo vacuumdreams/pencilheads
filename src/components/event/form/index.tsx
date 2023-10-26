@@ -161,7 +161,7 @@ export const EventForm: React.FC<CreateEventProps> = ({ id, event, onBack }) => 
             </div>
           </PopoverTrigger>
           <PopoverContent className="max-w-full">
-            <div className="p-2">
+            <div className="p-2 text-sm">
               <p className="mb-2"><Icons.info size={14} className="inline mr-2" />You can add up to three movies to the event, and whoever decides to join, can vote for which one they'd like to see.</p>
               <p>We'll add more event types later on. Probably. Maybe.</p>
             </div>
@@ -208,7 +208,7 @@ export const EventForm: React.FC<CreateEventProps> = ({ id, event, onBack }) => 
         <Textarea
           {...register('description')}
           maxLength={256}
-          placeholder='E.g. we gonna have some tempuras while watching a Kurosava movie. Chopsticks not allowed, but you are more than welcome!'
+          placeholder='E.g. We are going to have some tempuras and watch a Kurosawa movie. Feel free to join if interested!'
         />
 
         {/* <Tags register={register} control={control} /> */}

@@ -114,27 +114,35 @@ export const EventItem: React.FC<EventItemProps> = ({ user, spaceId, isAdmin, id
         )}
         {!event.approvedByHost && (
           <div className="flex gap-4">
-            {event.venue.createdBy.uid === user.uid && (
-              <div>
-                <p className="mb-2">Created by: <Avatar person={event.createdBy} className="inline mr-2" />{event.createdBy.name.split(' ')[0]}</p>
-                <Tag className="bg-muted text-muted-foreground">
-                  Waiting for host approval
-                </Tag>
-              </div>
-            )}
-            {event.venue.createdBy.uid === user.uid && (
-              <div>
-                <p className="mb-2">Created by: <Avatar person={event.createdBy} className="inline mr-2" />{event.createdBy.name.split(' ')[0]}</p>
-                <Button
-                  disabled={loading}
-                  onClick={() => {
-                    update(`events/${spaceId}/events/${id}`, {
-                      approvedByHost: true,
-                    })
-                  }}
-                >
-                  Confirm hosting
-                </Button>
+            {!event.approvedByHost && (
+              <div className="w-full sm:flex gap-4 justify-between mb-4">
+                <p className="mb-4 sm:mb-0 gap-4 flex items-center justify-between sm:justify-start">
+                  <span className="flex items-center">
+                    <Avatar person={event.createdBy} className="inline-flex mr-2" />
+                    {event.createdBy.name.split(' ')[0]} created this event
+                  </span>
+                </p>
+                {event.venue.createdBy.uid === user.uid && (
+                  <div>
+                    <Button
+                      disabled={loading}
+                      onClick={() => {
+                        update(`events/${spaceId}/events/${id}`, {
+                          approvedByHost: true,
+                        })
+                      }}
+                    >
+                      Confirm hosting
+                    </Button>
+                  </div>
+                )}
+                {event.venue.createdBy.uid !== user.uid && (
+                  <div>
+                    <Tag className="bg-muted text-lg text-muted-foreground">
+                      Waiting for host approval
+                    </Tag>
+                  </div>
+                )}
               </div>
             )}
           </div>

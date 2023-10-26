@@ -27,14 +27,13 @@ export default defineConfig({
       registerType: 'autoUpdate',
       strategies: 'injectManifest',
       manifest: {
-        id: 'pencilheads',
         short_name: 'pencilheads',
         name: 'pencilheads - film clubs | movie events',
         description: 'Discover film clubs and movie events around you, host your own events, share experiences.',
         icons: iconConfig.icons,
         orientation: 'portrait-primary',
         background_color: '#0f1629',
-        theme_color: '#0f1629',
+        theme_color: 'transparent',
         categories: ['movies', 'events'],
         // @ts-ignore
         gcm_sender_id: process.env.VITE_FIREBASE_MESSAGING_SENDER_ID,

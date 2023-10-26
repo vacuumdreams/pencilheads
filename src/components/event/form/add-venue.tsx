@@ -43,13 +43,14 @@ export const AddVenue: React.FC<AddVenueProps> = ({ canAddPrivate, onSuccess }) 
       ? `users/${user.uid}/venues`
       : `venues/${spaceId}/venues`
 
-    await push(venueTable, {
+    const v = await push(venueTable, {
       ...data,
       public: data.public || false,
       createdBy: getUser(user),
       createdAt: now,
       updatedAt: now,
     })
+    console.log(v)
     onSuccess()
   })
 

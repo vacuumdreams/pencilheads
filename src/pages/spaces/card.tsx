@@ -78,11 +78,7 @@ export const SpaceCard = ({ user, id, space, className }: SpaceCardProps) => {
           <p>{members.length} {members.length === 1 ? 'member' : 'members'}</p>
           <AvatarGroup
             maxDisplay={3}
-            people={members.map(m => ({
-              name: m.name,
-              email: m.email,
-              photoUrl: m.photoUrl,
-            }))}
+            people={members}
           />
         </div>
         <CardDescription className={cn('')}>
@@ -90,7 +86,7 @@ export const SpaceCard = ({ user, id, space, className }: SpaceCardProps) => {
         </CardDescription>
       </CardContent>
       <CardFooter className="flex gap-2">
-        <Button className="flex gap-2" onClick={() => navigate(`/dashboard/${id}`)}>
+        <Button className="flex gap-2" onClick={() => navigate(`/dashboard/spaces/${id}`)}>
           <Icons.arrowUpRightSquare />
           <span>Open</span>
         </Button>
