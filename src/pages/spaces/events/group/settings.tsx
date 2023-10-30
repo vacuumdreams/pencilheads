@@ -20,7 +20,7 @@ type GroupSettingsProps = {
 
 export const GroupSettings = ({ isAdmin, space, spaceId }: GroupSettingsProps) => {
   const [justCopied, setJustCopied] = React.useState<string | null>(null)
-  const { update, loading } = useMutate<Partial<Space>>()
+  const { update, loading } = useMutate<Partial<Space>>('group')
   const { register, handleSubmit, formState, getValues } = useForm<FormData>({
     defaultValues: {
       telegramGroupId: space.telegramGroupId,

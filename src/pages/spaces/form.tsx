@@ -16,7 +16,7 @@ type CreateSpaceProps = {
 }
 
 export const CreateSpaceForm = ({ user, onSuccess }: CreateSpaceProps) => {
-  const { push, loading } = useMutate<Space>()
+  const { push, loading } = useMutate<Space>('group')
   const { register, handleSubmit } = useForm<FormData>()
   const me = getUser(user)
 

@@ -31,7 +31,7 @@ type MenuProps = {
 export const Menu = ({ now, schedule, user, isAdmin, event, eventId }: MenuProps) => {
   const spaceId = useSpaceId()
   const navigate = useNavigate()
-  const { remove, loading } = useMutate()
+  const { remove, loading } = useMutate<Event>('event')
   const [isRemoveDialogOpen, setRemoveDialogOpen] = React.useState(false)
   const [isGuestsDialogOpen, setGuestsDialogOpen] = React.useState(false)
   const currentParticipants = Object.keys(event.attendance || {}).length

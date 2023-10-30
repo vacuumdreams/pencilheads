@@ -20,7 +20,7 @@ export const useMessaging = () => {
   })
   const { toast, dismiss } = useToast()
   const [user] = useAuthState(auth)
-  const { set } = useMutate<Device>()
+  const { set } = useMutate<Device>('device')
   const [loading, setLoading] = React.useState(false)
 
   const setup = React.useCallback(async (topics?: Topics) => {

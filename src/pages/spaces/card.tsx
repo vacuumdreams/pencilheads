@@ -40,7 +40,7 @@ export const SpaceCard = ({ user, id, space, className }: SpaceCardProps) => {
   const { toast } = useToast()
   const navigate = useNavigate()
   const [isLeaveDialogOpen, setLeaveDialogOpen] = React.useState(false)
-  const { update, loading } = useMutate()
+  const { update, loading } = useMutate('group')
   const members = Object.values(space.members || {})
   const [count, _loading, error] = useEventCount({
     spaceId: id,

@@ -24,7 +24,7 @@ export const InviteForm: React.FC<InviteProps> = ({ user, onSuccess }) => {
   const spaceId = useSpaceId()
   const { toast } = useToast();
   const { register, handleSubmit, formState } = useForm<FormData>()
-  const { push, loading } = useMutate<InviteType>()
+  const { push, loading } = useMutate<InviteType>('invite')
 
   const onSubmit = handleSubmit(async ({ email }) => {
     const now = new Date()

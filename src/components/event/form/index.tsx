@@ -58,7 +58,7 @@ export const EventForm: React.FC<CreateEventProps> = ({ id, event, onBack }) => 
       scheduledForTime: '19:00',
     },
   });
-  const { push, update, loading } = useMutate<Event>()
+  const { push, update, loading } = useMutate<Event>('event')
   const { mutate: getMovies, loading: isMoviesLoading } = useMovie()
 
   const onSubmit = handleSubmit(async (data) => {

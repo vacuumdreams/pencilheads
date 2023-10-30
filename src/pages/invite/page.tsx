@@ -19,7 +19,7 @@ const InviteContent = () => {
   const [isSuccess, setSuccess] = React.useState(false)
   const [error, setError] = React.useState<null | string>(null)
   const { id } = useParams();
-  const { update, loading } = useMutate<Partial<InviteType>>()
+  const { update, loading } = useMutate<Partial<InviteType>>('invite')
 
   React.useEffect(() => {
     if (user) {

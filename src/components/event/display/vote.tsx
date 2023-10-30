@@ -16,7 +16,7 @@ type VoteButtonProps = {
 
 export const VoteButton = ({ user, eventId, event, movieKey, hasJoined }: VoteButtonProps) => {
   const spaceId = useSpaceId()
-  const { update, loading } = useMutate()
+  const { update, loading } = useMutate('event')
   const hasVotedFor = event.votes[user.uid] === movieKey
   const voteCount = Object.values(event.votes).filter(v => v === movieKey).length
 
