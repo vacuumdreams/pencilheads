@@ -7,8 +7,6 @@ import { defineConfig } from "vite"
 // @ts-ignore Importing json errors for some reason in the IDE
 import iconConfig from './src/assets/icons.json'
 
-console.log('SENTRY_AUTH_TOKEN', process.env.SENTRY_AUTH_TOKEN)
-
 // https://vitejs.dev/config/
 export default defineConfig({
   resolve: {
