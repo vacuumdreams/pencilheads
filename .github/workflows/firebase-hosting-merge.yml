@@ -27,6 +27,7 @@ jobs:
           echo VITE_OMDB_API_KEY=${{ vars.VITE_OMDB_API_KEY }} >> .env
           echo VITE_STRIPE_PUBLIC_API_KEY=${{ vars.VITE_STRIPE_PUBLIC_API_KEY }} >> .env
           echo VITE_SENTRY_DSN=${{ vars.VITE_SENTRY_DSN }} >> .env
+          echo SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }} >> .env
           cat .env
       - run: bun install && bun run build
         env:
