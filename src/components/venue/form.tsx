@@ -13,21 +13,23 @@ import { Switch } from '@/components/ui/switch'
 import { Venue } from '@/types'
 
 type AddVenueProps = {
+  id?: string
+  defaultValues?: Venue
   canAddPrivate: boolean
   onSuccess: () => void
 }
 
-export const AddVenue: React.FC<AddVenueProps> = ({ canAddPrivate, onSuccess }) => {
+export const VenueForm: React.FC<AddVenueProps> = ({ id, defaultValues, canAddPrivate, onSuccess }) => {
   const spaceId = useSpaceId()
   const { toast } = useToast()
   const [user] = useAuthState(auth)
   const { register, control, handleSubmit, formState } = useForm<Pick<Venue, 'public' | 'name' | 'city' | 'address' | 'maxParticipants'>>({
-    defaultValues: {
+    defaultValues: defaultValues || {
       public: !canAddPrivate,
       city: 'Lisbon',
     }
   })
-  const { push, loading } = useMutate<Venue>()
+  const { update, push, loading } = useMutate<Venue>('venue')
 
   const onSubmit = handleSubmit(async (data) => {
     const now = new Date()
@@ -43,14 +45,25 @@ export const AddVenue: React.FC<AddVenueProps> = ({ canAddPrivate, onSuccess }) 
       ? `users/${user.uid}/venues`
       : `venues/${spaceId}/venues`
 
-    const v = await push(venueTable, {
+    if (id && defaultValues) {
+      await update(`${venueTable}/${id}`, {
+        ...data,
+        public: data.public || false,
+        createdBy: defaultValues?.createdBy || getUser(user),
+        createdAt: defaultValues?.createdAt || now,
+        updatedAt: now,
+      })
+      onSuccess()
+      return
+    }
+
+    push(venueTable, {
       ...data,
       public: data.public || false,
-      createdBy: getUser(user),
-      createdAt: now,
+      createdBy: defaultValues?.createdBy || getUser(user),
+      createdAt: defaultValues?.createdAt || now,
       updatedAt: now,
     })
-    console.log(v)
     onSuccess()
   })
 

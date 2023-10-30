@@ -1,11 +1,8 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { Transition } from 'react-transition-group'
 import { where } from 'firebase/firestore';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '@/services/firebase';
 import { useMessaging } from '@/hooks/use-messaging';
-import { cn } from '@/lib/utils'
 import { Icons } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import {
@@ -20,8 +17,6 @@ import { EventList } from '@/components/event/display/list';
 
 export const Events: React.FC = () => {
   const { initialize } = useMessaging()
-  const titleRef = React.useRef(null)
-  const [user] = useAuthState(auth)
   const [isCreateOpen, setCreateOpen] = React.useState(false)
   const [now] = React.useState(new Date())
 
@@ -31,30 +26,31 @@ export const Events: React.FC = () => {
 
   return (
     <Guard>
-      <div className='w-full pb-8 pt-20 gap-4 mb-12 flex items-center'>
-        <Transition
-          nodeRef={titleRef}
-          in={!!user}
-          timeout={200}
-        >
-          {state => (
-            <Link
-              to="/"
-              ref={titleRef}
-              className={cn('w-full cursor-pointer text-center opacity-0 transition-opacity duration-1000', {
-                'opacity-100': ['entering', 'entered'].includes(state),
-              })}
-            >
-              <h1 className='font-mono text-4xl sm:text-5xl md:text-6xl lg:text-8xl'>
-                pencilheads
-              </h1>
-            </Link>
-          )}
-        </Transition>
-      </div>
-      {isCreateOpen && <EventForm onBack={() => setCreateOpen(false)} />}
+      {isCreateOpen && (
+        <div>
+          <div className="grid sm:grid-cols-3 mb-6">
+            <div>
+              <Button
+                variant="outline"
+                className='flex gap-2 items-center'
+                onClick={() => setCreateOpen(false)}
+              >
+                <Icons.arrowLeft size={12} />
+                <span>Back</span>
+              </Button>
+            </div>
+            <h3 className="w-full text-center text-xl text-muted-foreground">
+              <span className="flex items-center justify-center gap-2">
+                <span className="animate-pulse"><Icons.chevronRight size={20} /></span>
+                <span>create event</span>
+              </span>
+            </h3>
+          </div>
+          <EventForm onBack={() => setCreateOpen(false)} />
+        </div>
+      )}
       {!isCreateOpen && (
-        <Tabs defaultValue="future" className="space-y-4">
+        <Tabs defaultValue="future" className="space-y-4 mt-12">
           <div className='flex justify-between mb-16'>
             <TabsList>
               <TabsTrigger value="future">

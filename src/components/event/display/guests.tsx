@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input'
 import { useMutate } from '@/hooks/use-mutate'
 import { useSpaceId } from '@/hooks/use-space'
 import { Event, Guest } from '@/types'
-import { isValidEmail, getUserName, getUser } from '@/lib/utils'
+import { isValidEmail, getUser } from '@/lib/utils'
 import { useToast } from '@/components/ui/use-toast'
 
 type FormData = {
@@ -35,11 +35,10 @@ export const Guests = ({ eventId, user, event, onClose }: JoinProps) => {
     control,
     name: 'guests',
   })
-  const { set, loading } = useMutate<Guest[]>()
+  const { set, loading } = useMutate<Guest[]>('guest')
 
   const onSubmit = handleSubmit(async (data) => {
     const now = new Date()
-    const userName = getUserName(user)
 
     await set(`events/${spaceId}/events/${eventId}/guests/${user.uid}`, data.guests.map((guest) => {
       return {

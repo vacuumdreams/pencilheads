@@ -16,7 +16,7 @@ type Opts = {
   onError?: (error: string) => void
 }
 
-export function useMutate<T extends object>() {
+export function useMutate<T extends object>(namespace: string) {
   const { toast } = useToast()
   const [loading, setLoading] = useState(false)
 
@@ -26,7 +26,7 @@ export function useMutate<T extends object>() {
       await setDoc(doc(database, id), data)
       opts?.onSuccess()
     } catch (error) {
-      const errorMessage = getDbErrorMessage(id.split('/')[0], error)
+      const errorMessage = getDbErrorMessage(namespace, error)
       if (opts?.onError) {
         opts.onError(`${errorMessage}`)
       } else {
@@ -47,7 +47,7 @@ export function useMutate<T extends object>() {
       await addDoc(collection(database, id), data)
       opts?.onSuccess()
     } catch (error) {
-      const errorMessage = getDbErrorMessage(id.split('/')[0], error)
+      const errorMessage = getDbErrorMessage(namespace, error)
       if (opts?.onError) {
         opts.onError(`${errorMessage}`)
       } else {
@@ -68,7 +68,7 @@ export function useMutate<T extends object>() {
       await deleteDoc(doc(database, id))
       opts?.onSuccess()
     } catch (error) {
-      const errorMessage = getDbErrorMessage(id.split('/')[0], error)
+      const errorMessage = getDbErrorMessage(namespace, error)
       if (opts?.onError) {
         opts.onError(`${errorMessage}`)
       } else {
@@ -89,7 +89,7 @@ export function useMutate<T extends object>() {
       await updateDoc(doc(database, id), data)
       opts?.onSuccess()
     } catch (error) {
-      const errorMessage = getDbErrorMessage(id.split('/')[0], error)
+      const errorMessage = getDbErrorMessage(namespace, error)
       if (opts?.onError) {
         opts.onError(`${errorMessage}`)
       } else {

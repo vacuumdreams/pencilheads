@@ -1,5 +1,5 @@
 import React from 'react'
-import { Outlet, NavLink, useNavigate } from 'react-router-dom'
+import { Outlet, NavLink, useNavigate, useLocation } from 'react-router-dom'
 import { Transition } from 'react-transition-group'
 import { useAuthState, useSignOut } from 'react-firebase-hooks/auth'
 import { useToast } from '@/components/ui/use-toast'
@@ -26,6 +26,7 @@ import {
 const navigation = [
   { name: 'Events', href: '/dashboard', icon: <Icons.calendar /> },
   { name: 'Groups', href: '/spaces', icon: <Icons.users /> },
+  { name: 'Venues', href: '/venues', icon: <Icons.mapPin /> },
   { name: 'Settings', href: '/settings', icon: <Icons.settings /> },
 ]
 
@@ -35,12 +36,17 @@ const captions = [
 ]
 
 export const InternalLayout = () => {
+  const location = useLocation()
   const [isSheetOpen, setSheetOpen] = React.useState(false)
   const navigate = useNavigate()
   const headerRef = React.useRef(null)
+  const titleRef = React.useRef(null)
+  const subtitleRef = React.useRef(null)
   const { toast } = useToast()
   const [user, loading, error] = useAuthState(auth)
   const [signOut] = useSignOut(auth)
+
+  const currentPath = navigation.find(n => n.href === location.pathname)
 
   const onSignOut = () => {
     signOut()
@@ -90,55 +96,103 @@ export const InternalLayout = () => {
             </header>
           )}
         </Transition>
-        {!loading && <Outlet />}
+        <div className='w-full pt-20 gap-4 items-center text-center'>
+          <Transition
+            nodeRef={titleRef}
+            in={!loading}
+            timeout={200}
+          >
+            {state => (
+              <NavLink
+                to="/dashboard"
+                ref={titleRef}
+                className={cn(
+                  'w-full cursor-pointer',
+                  'opacity-0 transition-opacity duration-1000',
+                  {
+                    'opacity-100': ['entering', 'entered'].includes(state),
+                  }
+                )}
+              >
+                <h1 className='font-mono text-4xl sm:text-5xl md:text-6xl lg:text-8xl'>
+                  pencilheads
+                </h1>
+              </NavLink>
+            )}
+          </Transition>
+          <Transition
+            nodeRef={subtitleRef}
+            in={!!user}
+            timeout={200}
+          >
+            {state => (
+              <h3
+                ref={subtitleRef}
+                className={cn(
+                  'w-full font-mono text-2xl md:text-4xl mb-12 text-muted-foreground',
+                  'opacity-0 transition-opacity duration-1000',
+                  {
+                    'opacity-100': ['entering', 'entered'].includes(state),
+                  }
+                )}
+              >
+                <span className="flex items-center justify-center gap-2">
+                  <span>{currentPath?.icon}</span>
+                  <span>{currentPath?.name.toLowerCase()}</span>
+                </span>
+              </h3>
+            )}
+          </Transition>
+          {!loading && <Outlet />}
+        </div>
+        <Sheet open={isSheetOpen} onOpenChange={setSheetOpen}>
+          <SheetContent>
+            <SheetHeader className="flex justify-start mb-6">
+              <SheetTitle>
+                {user && (
+                  <div className="flex gap-4 justify-start items-center">
+                    <Avatar
+                      className="w-8 h-8"
+                      person={getUser(user)}
+                    />
+                    <span>Hello, {getUserName(user).split(' ')[0]}</span>
+                  </div>
+                )}
+              </SheetTitle>
+            </SheetHeader>
+            <SheetDescription className="text-left mb-8">
+              {captions[0]}
+            </SheetDescription>
+            <NavigationMenu orientation='vertical' className="w-[calc(100%_+_4rem)] max-w-none flex-col justify-stretch -mx-6">
+              {navigation.map(({ name, href, icon }) => (
+                <NavigationMenuLink asChild key={href}>
+                  <NavLink
+                    to={href}
+                    onClick={() => setSheetOpen(false)}
+                    className={cn(
+                      navigationMenuTriggerStyle(),
+                      'justify-start gap-2 py-6 w-full max-w-none flex-1 px-6',
+                      '[&.active]:bg-accent'
+                    )}
+                  >
+                    {icon}
+                    {name}
+                  </NavLink>
+                </NavigationMenuLink>
+              ))}
+            </NavigationMenu>
+            <SheetFooter className="pt-6">
+              <Button
+                className="flex gap-2"
+                onClick={onSignOut}
+              >
+                <Icons.logOut />
+                <span>Sign Out</span>
+              </Button>
+            </SheetFooter>
+          </SheetContent>
+        </Sheet>
       </div>
-      <Sheet open={isSheetOpen} onOpenChange={setSheetOpen}>
-        <SheetContent>
-          <SheetHeader className="flex justify-start mb-6">
-            <SheetTitle>
-              {user && (
-                <div className="flex gap-4 justify-start items-center">
-                  <Avatar
-                    className="w-8 h-8"
-                    person={getUser(user)}
-                  />
-                  <span>Hello, {getUserName(user).split(' ')[0]}</span>
-                </div>
-              )}
-            </SheetTitle>
-          </SheetHeader>
-          <SheetDescription className="text-left mb-8">
-            {captions[0]}
-          </SheetDescription>
-          <NavigationMenu orientation='vertical' className="w-[calc(100%_+_4rem)] max-w-none flex-col justify-stretch -mx-6">
-            {navigation.map(({ name, href, icon }) => (
-              <NavigationMenuLink asChild key={href}>
-                <NavLink
-                  to={href}
-                  onClick={() => setSheetOpen(false)}
-                  className={cn(
-                    navigationMenuTriggerStyle(),
-                    'justify-start gap-2 py-6 w-full max-w-none flex-1 px-6',
-                    '[&.active]:bg-accent'
-                  )}
-                >
-                  {icon}
-                  {name}
-                </NavLink>
-              </NavigationMenuLink>
-            ))}
-          </NavigationMenu>
-          <SheetFooter className="pt-6">
-            <Button
-              className="flex gap-2"
-              onClick={onSignOut}
-            >
-              <Icons.logOut />
-              <span>Sign Out</span>
-            </Button>
-          </SheetFooter>
-        </SheetContent>
-      </Sheet>
-    </div >
+    </div>
   )
 }

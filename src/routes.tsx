@@ -9,6 +9,7 @@ import { Home } from '@/pages/home/page';
 import { About } from '@/pages/about/page';
 import { Events } from '@/pages/events/page';
 import { Spaces } from '@/pages/spaces/page';
+import { Venues } from '@/pages/venues/page';
 import { SpaceEvents } from '@/pages/spaces/events/page';
 import { EventsEdit } from '@/pages/spaces/events/[id]/page';
 import { Settings } from '@/pages/settings/page';
@@ -34,6 +35,10 @@ export const AppRouter: React.FC = () => {
             <Route index path="/spaces/:spaceId" element={<SpaceEvents />} />
             <Route path="/spaces/:spaceId/events/:id" element={<EventsEdit />} />
           </Route>
+        </Route>
+
+        <Route path="/venues" element={<InternalLayout />}>
+          <Route index path="/venues" element={<Venues />} />
         </Route>
 
         <Route path="/settings" element={<InternalLayout />}>

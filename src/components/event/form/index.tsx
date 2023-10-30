@@ -144,84 +144,75 @@ export const EventForm: React.FC<CreateEventProps> = ({ id, event, onBack }) => 
   })
 
   return (
-    <div>
-      <div className='flex'>
-        <Button className='flex gap-2' variant='secondary' onClick={onBack}>
-          <Icons.arrowLeft />
-          <span>Back</span>
-        </Button>
+    <form className="flex flex-col gap-4 mt-8" onSubmit={onSubmit}>
+      <Popover>
+        <PopoverTrigger type="button" className="p-4 text-muted-foreground border border-muted">
+          <div className="flex gap-2">
+            <Icons.hand />
+            <span className="font-mono text-xl">the voter</span>
+          </div>
+        </PopoverTrigger>
+        <PopoverContent className="max-w-full">
+          <div className="p-2 text-sm">
+            <p className="mb-2"><Icons.info size={14} className="inline mr-2" />You can add up to three movies to the event, and whoever decides to join, can vote for which one they'd like to see.</p>
+            <p>We'll add more event types later on. Probably. Maybe.</p>
+          </div>
+        </PopoverContent>
+      </Popover>
+
+      <Input {...register('name')} placeholder='Name your event. What is the theme?' />
+
+      {user && (
+        <VenueSelector
+          user={user}
+          defaultVenue={event?.venue}
+          setValue={setValue}
+        />
+      )}
+
+      <div className='flex gap-2'>
+        <Controller
+          name="scheduledFor"
+          control={control}
+          render={({ field }) => (
+            <DatePicker
+              value={field.value}
+              onChange={field.onChange}
+            />
+          )}
+        />
+        <Controller
+          name="scheduledForTime"
+          control={control}
+          render={({ field }) => (
+            <Input
+              type="time"
+              className="w-44"
+              value={field.value}
+              onChange={field.onChange}
+            />
+          )}
+        />
       </div>
 
-      <form className="flex flex-col gap-4 mt-8" onSubmit={onSubmit}>
-        <Popover>
-          <PopoverTrigger type="button" className="p-4 text-muted-foreground border border-muted">
-            <div className="flex gap-2">
-              <Icons.hand />
-              <span className="font-mono text-xl">the voter</span>
-            </div>
-          </PopoverTrigger>
-          <PopoverContent className="max-w-full">
-            <div className="p-2 text-sm">
-              <p className="mb-2"><Icons.info size={14} className="inline mr-2" />You can add up to three movies to the event, and whoever decides to join, can vote for which one they'd like to see.</p>
-              <p>We'll add more event types later on. Probably. Maybe.</p>
-            </div>
-          </PopoverContent>
-        </Popover>
+      <Movies control={control} />
 
-        <Input {...register('name')} placeholder='Name your event. What is the theme?' />
+      <Textarea
+        {...register('description')}
+        maxLength={256}
+        placeholder='E.g. We are going to have some tempuras and watch a Kurosawa movie. Feel free to join if interested!'
+      />
 
-        {user && (
-          <VenueSelector
-            user={user}
-            defaultVenue={event?.venue}
-            setValue={setValue}
-          />
-        )}
+      {/* <Tags register={register} control={control} /> */}
 
-        <div className='flex gap-2'>
-          <Controller
-            name="scheduledFor"
-            control={control}
-            render={({ field }) => (
-              <DatePicker
-                value={field.value}
-                onChange={field.onChange}
-              />
-            )}
-          />
-          <Controller
-            name="scheduledForTime"
-            control={control}
-            render={({ field }) => (
-              <Input
-                type="time"
-                className="w-44"
-                value={field.value}
-                onChange={field.onChange}
-              />
-            )}
-          />
-        </div>
-
-        <Movies control={control} />
-
-        <Textarea
-          {...register('description')}
-          maxLength={256}
-          placeholder='E.g. We are going to have some tempuras and watch a Kurosawa movie. Feel free to join if interested!'
-        />
-
-        {/* <Tags register={register} control={control} /> */}
-
-        <div className='2-full flex justify-center my-4'>
-          <Button
-            type="submit"
-            disabled={loading || isMoviesLoading || !formState.isDirty || !formState.isValid}
-          >
-            Submit
-          </Button>
-        </div>
-      </form>
-    </div>
+      <div className='2-full flex justify-center my-4'>
+        <Button
+          type="submit"
+          disabled={loading || isMoviesLoading || !formState.isDirty || !formState.isValid}
+        >
+          Submit
+        </Button>
+      </div>
+    </form>
   );
 }

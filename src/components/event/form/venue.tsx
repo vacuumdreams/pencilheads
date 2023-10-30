@@ -18,7 +18,7 @@ import {
   DialogContent,
 } from '@/components/ui/dialog'
 import { VenueSelectItem } from './venue-select-item'
-import { AddVenue } from './add-venue';
+import { VenueForm } from '@/components/venue/form';
 import { Venue } from '@/types'
 import { FormData } from './types'
 
@@ -81,8 +81,8 @@ export const VenueSelector: React.FC<VenueSelectorProps> = ({ user, defaultVenue
     <div>
       <Dialog open={isAddingOpen} onOpenChange={handleAddingChange}>
         <DialogContent>
-          <AddVenue
-            canAddPrivate={Object.values(pVenues || {}).length === 0}
+          <VenueForm
+            canAddPrivate={pVenueList.length === 0}
             onSuccess={() => handleAddingChange(false)}
           />
         </DialogContent>

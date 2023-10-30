@@ -56,7 +56,7 @@ export type Event = {
     name: string;
     icon: string;
   }>;
-  venue: Venue;
+  venue: Venue & { id: string };
   attendance: Record<string, Attendance>;
   guests: Record<string, Guest[]>;
   movies: Record<string, Movie>;

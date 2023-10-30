@@ -21,7 +21,7 @@ type EventItemProps = {
 }
 
 export const EventItem: React.FC<EventItemProps> = ({ user, spaceId, isAdmin, id, event }) => {
-  const { update, loading } = useMutate<Partial<Event>>()
+  const { update, loading } = useMutate<Partial<Event>>('event')
   const hasJoined = !!user.email && !!event.attendance?.[user.uid]
   const currentParticipants = Object.keys(event.attendance || {}).length
   const [now, setNow] = React.useState(new Date())
@@ -166,11 +166,13 @@ export const EventItem: React.FC<EventItemProps> = ({ user, spaceId, isAdmin, id
           </a>
         </div>
         {event.description && (
-          <div className="">
+          <div className="text-left">
             <p>{event.description}</p>
           </div>
         )}
-        <h2 className='my-4 font-bold'>The movies:</h2>
+        <h2 className='my-4 font-bold text-left'>
+          {Object.keys(event.movies || {}).length === 1 ? 'The movie:' : 'The movies:'}
+        </h2>
         <Movies
           id={id}
           event={event}

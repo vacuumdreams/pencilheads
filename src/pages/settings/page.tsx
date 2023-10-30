@@ -17,12 +17,8 @@ export function Settings() {
   const [user] = useAuthState(auth)
 
   return (
-    <div className="pt-12 sm:pt-24 md:pt-48">
-      <header>
-        <h1 className="font-mono text-xl">pencilheads</h1>
-      </header>
-      <main>
-        <h3 className="font-mono text-4xl mb-12">Settings</h3>
+    <div>
+      <main className="">
         {user && (
           <>
             <div className="rounded-lg border p-4 mb-8">

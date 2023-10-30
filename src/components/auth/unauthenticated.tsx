@@ -9,7 +9,6 @@ export function Unauthenticated() {
 
   return (
     <div>
-      <h1 className="font-mono text-4xl text-center mt-12 mb-16">pencilheads</h1>
       <Tabs value={tab} onValueChange={setTab}>
         <TabsContent value="signin">
           <Signin onChangeToSignup={() => setTab('signup')} />

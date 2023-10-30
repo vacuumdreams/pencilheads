@@ -160,7 +160,6 @@ const InviteWrapper = () => {
 export const Spaces = () => {
   return (
     <Guard>
-      <h1 className="font-mono text-4xl text-center mt-12 mb-16">pencilheads</h1>
       <InviteWrapper />
     </Guard>
   )
