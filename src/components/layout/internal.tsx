@@ -6,7 +6,7 @@ import { useToast } from "@/components/ui/use-toast"
 import { auth } from "@/services/firebase"
 import { cn, getUser, getUserName } from "@/lib/utils"
 import { Icons } from "@/components/icons"
-import { Button, buttonVariants } from "@/components/ui/button"
+import { Button } from "@/components/ui/button"
 import { Avatar } from "@/components/avatar-group"
 import {
   Sheet,
@@ -81,7 +81,7 @@ export const InternalLayout = () => {
             >
               <div
                 className={cn(
-                  "absolute right-2 top-0 -translate-y-32 transition-transform delay-1000 duration-500 md:right-4",
+                  "absolute right-2 top-0 z-10 -translate-y-32 transition-transform delay-1000 duration-500 md:right-4",
                   {
                     "translate-y-0": ["entered", "entering"].includes(state),
                   }

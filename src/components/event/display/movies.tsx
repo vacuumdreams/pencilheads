@@ -65,15 +65,19 @@ export const Movies = ({ id, event, user, hasJoined }: MoviesProps) => {
                     </div>
                   )}
                 </div>
-                <AccordionContent className="text-center sm:text-left">
+                <AccordionContent className="text-left">
                   <p className="mb-2 p-4">{movie.plot}</p>
-                  <div className="grid gap-2 p-4 md:grid-cols-2">
+                  <div className="grid gap-1 p-4 sm:gap-2 md:grid-cols-2">
                     <h4 className="font-bold">Awards</h4>
-                    <p>{movie.awards || "N/A"}</p>
+                    <p className="text-muted-foreground">
+                      {movie.awards || "N/A"}
+                    </p>
                     <h4 className="font-bold">Directed by:</h4>
-                    <div>{movie.director}</div>
+                    <div className="text-muted-foreground">
+                      {movie.director}
+                    </div>
                     <h4 className="font-bold">Cast:</h4>
-                    <div>{movie.actors}</div>
+                    <div className="text-muted-foreground">{movie.actors}</div>
                     {movie.tags?.length > 0 && (
                       <>
                         <h4 className="font-bold">Genre:</h4>
@@ -89,7 +93,7 @@ export const Movies = ({ id, event, user, hasJoined }: MoviesProps) => {
                       href={`https://imdb.com/title/${movie.imdbId}`}
                       rel="noreferrer noopener"
                       target="_blank"
-                      className="flex items-center gap-3 text-gray-500 underline"
+                      className="flex items-center justify-start gap-3 text-gray-500 underline"
                     >
                       <Icons.star width={16} />
                       <span className="font-mono text-lg">

@@ -1,14 +1,12 @@
-import React from 'react'
-import { z } from 'zod'
+import React from "react"
+import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
-import { User } from 'firebase/auth'
-import {
-  useUpdateProfile,
-} from 'react-firebase-hooks/auth'
-import { auth } from '@/services/firebase'
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
+import { User } from "firebase/auth"
+import { useUpdateProfile } from "react-firebase-hooks/auth"
+import { auth } from "@/services/firebase"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
 import { useToast } from "@/components/ui/use-toast"
 
 const FormSchema = z.object({
@@ -26,37 +24,36 @@ export const ProfileForm = ({ user }: ProfileFormProps) => {
     resolver: zodResolver(FormSchema),
     defaultValues: {
       name: user.displayName,
-    }
+    },
   })
 
   React.useEffect(() => {
     if (error) {
       console.error(error)
       toast({
-        title: 'Error',
+        title: "Error",
         description: `${error}`,
-        variant: 'destructive',
+        variant: "destructive",
       })
     }
   }, [error])
 
-  const onSubmit = handleSubmit(data => {
+  const onSubmit = handleSubmit((data) => {
     mutate({
-      displayName: data.name
+      displayName: data.name,
     })
   })
 
   return (
     <div>
-      <p className="text-base mb-2">
-        Your name
-      </p>
-      <form className="grid gap-4 w-full" onSubmit={onSubmit}>
-        <Input
-          {...register('name', { required: true })}
-        />
-        <div className='flex'>
-          <Button disabled={loading && formState.isValid && !formState.isDirty} type="submit">
+      <p className="mb-2 text-base">Your name</p>
+      <form className="grid w-full gap-4" onSubmit={onSubmit}>
+        <Input {...register("name", { required: true })} />
+        <div className="flex">
+          <Button
+            disabled={loading && formState.isValid && !formState.isDirty}
+            type="submit"
+          >
             Save
           </Button>
         </div>
