@@ -276,7 +276,6 @@ export const Rate = ({ user, id, event }: RateProps) => {
                       max={100}
                       step={1}
                       onValueChange={([value]) => {
-                        console.log(value)
                         field.onChange(value)
                       }}
                     />

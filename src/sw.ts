@@ -1,9 +1,11 @@
-import { initializeApp } from 'firebase/app';
-import { getMessaging, onBackgroundMessage } from 'firebase/messaging/sw';
-import { cleanupOutdatedCaches, precacheAndRoute } from 'workbox-precaching'
-import { firebaseConfig } from '@/services/config'
+import { initializeApp } from "firebase/app"
+import { getMessaging, onBackgroundMessage } from "firebase/messaging/sw"
+import { cleanupOutdatedCaches, precacheAndRoute } from "workbox-precaching"
+import { firebaseConfig } from "@/services/config"
 
-declare const self: ServiceWorkerGlobalScope & typeof globalThis & WorkerGlobalScope
+declare const self: ServiceWorkerGlobalScope &
+  typeof globalThis &
+  WorkerGlobalScope
 
 const app = initializeApp(firebaseConfig)
 const messaging = getMessaging(app)
@@ -14,12 +16,11 @@ precacheAndRoute(self.__WB_MANIFEST)
 
 let badgeCount = 0
 
-self.addEventListener('message', (event) => {
-  if (event.data && event.data.type === 'SKIP_WAITING') {
+self.addEventListener("message", (event) => {
+  if (event.data && event.data.type === "SKIP_WAITING") {
     self.skipWaiting()
   }
-  if (event.data && event.data.type === 'RESET_BADGE') {
-    console.log('reset badge')
+  if (event.data && event.data.type === "RESET_BADGE") {
     badgeCount = 0
     navigator?.setAppBadge?.()
   }
@@ -29,11 +30,11 @@ onBackgroundMessage(messaging, (payload) => {
   badgeCount += 1
   navigator?.setAppBadge?.(badgeCount)
 
-  self.registration.showNotification(payload?.notification?.title || '', {
+  self.registration.showNotification(payload?.notification?.title || "", {
     body: payload?.notification?.body,
-    icon: payload?.notification?.icon || '/pencilhead.svg',
+    icon: payload?.notification?.icon || "/pencilhead.svg",
     data: {
-      click_action: '/dashboard',
-    }
-  });
-});
+      click_action: "/dashboard",
+    },
+  })
+})

@@ -172,7 +172,6 @@ export function useEventCount(
           p?.filters ? query(ref, ...p.filters) : ref
         )
         setLoading(false)
-        console.log(snapshot.data())
         setCount(snapshot.data().count)
       } catch (err) {
         setError(err as FirestoreError)
