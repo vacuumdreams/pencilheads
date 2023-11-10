@@ -48,7 +48,6 @@ export default defineConfig({
         clientsClaim: true,
         skipWaiting: true,
         maximumFileSizeToCacheInBytes: 5000000,
-        globIgnores: ["/assets/index-*.js"],
       },
     }),
     sentryVitePlugin({
