@@ -2,7 +2,7 @@ import React from "react"
 import { QueryFieldFilterConstraint } from "firebase/firestore"
 import { useAuthState } from "react-firebase-hooks/auth"
 import { auth } from "@/services/firebase"
-import { useEventCollection } from '@/hooks/use-data'
+import { useEventCollection } from "@/hooks/use-data"
 import { Icons } from "@/components/icons"
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert"
 import { EventDateLabel } from "./date-label"
@@ -15,13 +15,18 @@ type EventListProps = {
   noEventsMessage: React.ReactNode | string
 }
 
-export const EventList: React.FC<EventListProps> = ({ isAdmin, spaceId, filters, noEventsMessage }) => {
+export const EventList: React.FC<EventListProps> = ({
+  isAdmin,
+  spaceId,
+  filters,
+  noEventsMessage,
+}) => {
   const [user] = useAuthState(auth)
   const [events, loading, error] = useEventCollection({ spaceId, filters })
 
-  if (!user || loading) {
+  if (loading) {
     return (
-      <div className="flex w-full p-16 justify-center">
+      <div className="flex w-full justify-center p-16">
         <Icons.spinner className="animate-spin" />
       </div>
     )
@@ -29,8 +34,8 @@ export const EventList: React.FC<EventListProps> = ({ isAdmin, spaceId, filters,
 
   if (error) {
     return (
-      <Alert variant="destructive" className='max-w-xl mx-auto text-center'>
-        <AlertTitle className='flex gap-2 items-center justify-center mb-4'>
+      <Alert variant="destructive" className="mx-auto max-w-xl text-center">
+        <AlertTitle className="mb-4 flex items-center justify-center gap-2">
           <Icons.warning width={16} />
           <span>Error</span>
         </AlertTitle>
@@ -42,16 +47,18 @@ export const EventList: React.FC<EventListProps> = ({ isAdmin, spaceId, filters,
     )
   }
 
-  if (!events || typeof events !== 'object' || Object.keys(events).length === 0) {
+  if (
+    !events ||
+    typeof events !== "object" ||
+    Object.keys(events).length === 0
+  ) {
     return (
-      <Alert className='max-w-xl mx-auto text-center'>
-        <AlertTitle className='flex gap-2 items-center justify-center mb-4'>
+      <Alert className="mx-auto max-w-xl text-center">
+        <AlertTitle className="mb-4 flex items-center justify-center gap-2">
           <Icons.help width={16} />
           <span>No data</span>
         </AlertTitle>
-        <AlertDescription>
-          {noEventsMessage}
-        </AlertDescription>
+        <AlertDescription>{noEventsMessage}</AlertDescription>
       </Alert>
     )
   }
@@ -59,12 +66,16 @@ export const EventList: React.FC<EventListProps> = ({ isAdmin, spaceId, filters,
   const keys = Object.keys(events)
 
   return (
-    <ul className="ml-2 pl-4 md:pl-8 py-4 border-l border-muted">
+    <ul className="border-muted ml-2 border-l py-4 pl-4 md:pl-8">
       {keys.map((key, index) => (
         <li key={key}>
           <EventDateLabel
             date={events[key].scheduledFor}
-            prevDate={keys[index - 1] ? events[keys[index - 1]]?.scheduledFor : undefined}
+            prevDate={
+              keys[index - 1]
+                ? events[keys[index - 1]]?.scheduledFor
+                : undefined
+            }
           />
           <EventItem
             id={key}

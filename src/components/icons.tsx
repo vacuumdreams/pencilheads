@@ -3,6 +3,7 @@ import {
   ArrowRight,
   ArrowLeft,
   ArrowUpRightSquare,
+  Award,
   Badge,
   Book,
   BadgeCheck,
@@ -83,6 +84,7 @@ export const Icons = {
     </svg>
   ),
   arrowUpRightSquare: ArrowUpRightSquare,
+  award: Award,
   badge: Badge,
   book: Book,
   badgeCheck: BadgeCheck,

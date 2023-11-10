@@ -1,44 +1,60 @@
-import { User } from 'firebase/auth'
-import { Icons } from '@/components/icons'
+import { User } from "firebase/auth"
+import { Icons } from "@/components/icons"
 import {
   Accordion,
   AccordionItem,
   AccordionTrigger,
   AccordionContent,
-} from '@/components/ui/accordion'
-import { Tag } from '@/components/ui/tag'
-import { cn } from '@/lib/utils'
-import { Event } from '@/types'
-import { VoteButton } from './vote'
+} from "@/components/ui/accordion"
+import { Tag } from "@/components/ui/tag"
+import { cn } from "@/lib/utils"
+import { Event } from "@/types"
+import { VoteButton } from "./vote"
 
 type MoviesProps = {
   id: string
   event: Event
-  user: User
+  user?: User
   hasJoined: boolean
 }
 
 export const Movies = ({ id, event, user, hasJoined }: MoviesProps) => {
   const movies = Object.keys(event.movies || {}).sort()
   return (
-    <div className={cn('-mx-4')}>
+    <div className={cn("-mx-4")}>
       <Accordion type="single" collapsible className="w-full">
         {movies.map((key, index) => {
           const movie = event.movies[key]
           return (
-            <div key={index} className="w-full flex items-stretch [&_h3]:w-full">
-              <AccordionItem className="w-full" key={movie.imdbId} value={movie.imdbId}>
-                <div className="w-full flex items-stretch gap-1">
-                  <AccordionTrigger className="w-full bg-muted px-4">
-                    <div key={movie.imdbId} className='w-16 h-16 overflow-hidden'>
-                      <img className="object-cover object-center" src={movie.poster} alt={movie.title} />
+            <div
+              key={index}
+              className="flex w-full items-stretch [&_h3]:w-full"
+            >
+              <AccordionItem
+                className="w-full"
+                key={movie.imdbId}
+                value={movie.imdbId}
+              >
+                <div className="flex w-full items-stretch gap-1">
+                  <AccordionTrigger className="bg-muted w-full px-4">
+                    <div
+                      key={movie.imdbId}
+                      className="h-16 w-16 overflow-hidden"
+                    >
+                      <img
+                        className="object-cover object-center"
+                        src={movie.poster}
+                        alt={movie.title}
+                      />
                     </div>
-                    <div className='w-full p-4 flex gap-2 justify-between text-left'>
-                      <div>{movie.title}{' '}({movie.year})</div>
+                    <div className="flex w-full justify-between gap-2 p-4 text-left">
+                      <div>
+                        {movie.title} ({movie.year})
+                      </div>
                     </div>
                   </AccordionTrigger>
-                  {movies.length > 1 && (
-                    <div className='flex items-center mr-4 [&_button]:py-8'>
+                  {user && movies.length > 1 && (
+                    <div className="mr-4 flex items-center [&_button]:py-8">
                       <VoteButton
                         user={user}
                         event={event}
@@ -49,11 +65,11 @@ export const Movies = ({ id, event, user, hasJoined }: MoviesProps) => {
                     </div>
                   )}
                 </div>
-                <AccordionContent className="">
-                  <p className='p-4 mb-2'>{movie.plot}</p>
-                  <div className="p-4 grid md:grid-cols-2 gap-2">
+                <AccordionContent className="text-center sm:text-left">
+                  <p className="mb-2 p-4">{movie.plot}</p>
+                  <div className="grid gap-2 p-4 md:grid-cols-2">
                     <h4 className="font-bold">Awards</h4>
-                    <p>{movie.awards || 'N/A'}</p>
+                    <p>{movie.awards || "N/A"}</p>
                     <h4 className="font-bold">Directed by:</h4>
                     <div>{movie.director}</div>
                     <h4 className="font-bold">Cast:</h4>
@@ -62,11 +78,9 @@ export const Movies = ({ id, event, user, hasJoined }: MoviesProps) => {
                       <>
                         <h4 className="font-bold">Genre:</h4>
                         <div>
-                          {movie.tags?.map(tag => (
-                            <Tag key={tag}>
-                              {tag}
-                            </Tag>
-                          )) || 'N/A'}
+                          {movie.tags?.map((tag) => (
+                            <Tag key={tag}>{tag}</Tag>
+                          )) || "N/A"}
                         </div>
                       </>
                     )}
@@ -75,14 +89,16 @@ export const Movies = ({ id, event, user, hasJoined }: MoviesProps) => {
                       href={`https://imdb.com/title/${movie.imdbId}`}
                       rel="noreferrer noopener"
                       target="_blank"
-                      className="underline flex gap-3 items-center text-gray-500"
+                      className="flex items-center gap-3 text-gray-500 underline"
                     >
                       <Icons.star width={16} />
-                      <span className="font-mono text-lg">{movie.imdbRating}</span>
+                      <span className="font-mono text-lg">
+                        {movie.imdbRating}
+                      </span>
                     </a>
                   </div>
                   {movie.trailer && (
-                    <div className="flex w-full justify-center mt-4">
+                    <div className="mt-4 flex w-full justify-center">
                       <iframe
                         width="560"
                         height="315"
