@@ -7,12 +7,14 @@ import { Icons } from "@/components/icons"
 import { Button, buttonVariants } from "@/components/ui/button"
 import { Tag } from "@/components/ui/tag"
 import { Avatar, AvatarGroup } from "@/components/avatar-group"
+import { Dialog, DialogTitle, DialogContent } from "@/components/ui/dialog"
 import { Movies } from "./movies"
 import { Menu } from "./menu"
 import { Directions } from "./directions"
+import { AttendeesList } from "./attendees-list"
 import { PastEvent } from "./past-event"
 import { useMutate } from "@/hooks/use-mutate"
-import { cn, getUser } from "@/lib/utils"
+import { getUser } from "@/lib/utils"
 
 type EventItemProps = {
   user?: User
@@ -29,6 +31,7 @@ export const EventItem: React.FC<EventItemProps> = ({
   id,
   event,
 }) => {
+  const [isAttendeesOpen, setAttendeesOpen] = React.useState(false)
   const { update, loading } = useMutate<Partial<Event>>("event")
   const hasJoined = user && !!user.email && !!event.attendance?.[user.uid]
   const currentParticipants = Object.keys(event.attendance || {}).length
@@ -59,7 +62,7 @@ export const EventItem: React.FC<EventItemProps> = ({
         </div>
         <div className="flex gap-2">
           <Icons.calendar width={16} />
-          {event.scheduledFor.getDate()}/{event.scheduledFor.getMonth()}/
+          {event.scheduledFor.getDate()}/{event.scheduledFor.getMonth() + 1}/
           {event.scheduledFor.getFullYear()}
         </div>
       </div>
@@ -72,10 +75,12 @@ export const EventItem: React.FC<EventItemProps> = ({
         </div>
         {event.approvedByHost && (
           <div className="mb-6 flex w-full items-center justify-between gap-4">
-            <AvatarGroup
-              maxDisplay={3}
-              people={Object.values(event.attendance || {})}
-            />
+            <button onClick={() => setAttendeesOpen(true)}>
+              <AvatarGroup
+                maxDisplay={3}
+                people={Object.values(event.attendance || {})}
+              />
+            </button>
             <div className="flex gap-2">
               {!user && (
                 <NavLink
@@ -195,6 +200,12 @@ export const EventItem: React.FC<EventItemProps> = ({
         </h2>
         <Movies id={id} event={event} user={user} hasJoined={hasJoined} />
       </div>
+      <Dialog open={isAttendeesOpen} onOpenChange={setAttendeesOpen}>
+        <DialogContent>
+          <DialogTitle>Who's coming</DialogTitle>
+          <AttendeesList event={event} />
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

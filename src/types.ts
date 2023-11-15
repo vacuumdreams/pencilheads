@@ -10,6 +10,7 @@ export type Venue = {
   public: boolean
   city: string
   address: string
+  hosts?: string[]
   maxParticipants: number
   createdBy: User
   createdAt: Date

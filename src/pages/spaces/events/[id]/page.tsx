@@ -1,14 +1,10 @@
-import { useParams, useNavigate } from 'react-router-dom'
-import { Icons } from '@/components/icons'
-import { Guard } from '@/components/auth/guard';
-import {
-  Alert,
-  AlertTitle,
-  AlertDescription
-} from "@/components/ui/alert"
-import { EventForm } from '@/components/event/form'
-import { useEvent } from '@/hooks/use-data'
-import { useSpaceId } from '@/hooks/use-space'
+import { useParams, useNavigate } from "react-router-dom"
+import { Icons } from "@/components/icons"
+import { Guard } from "@/components/auth/guard"
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert"
+import { EventForm } from "@/components/event/form"
+import { useEvent } from "@/hooks/use-data"
+import { useSpaceId } from "@/hooks/use-space"
 
 const EventsEditContent = () => {
   const { id } = useParams()
@@ -18,8 +14,8 @@ const EventsEditContent = () => {
 
   if (error) {
     return (
-      <Alert variant="destructive" className='max-w-xl mx-auto text-center'>
-        <AlertTitle className='flex gap-2 items-center justify-center mb-4'>
+      <Alert variant="destructive" className="mx-auto max-w-xl text-center">
+        <AlertTitle className="mb-4 flex items-center justify-center gap-2">
           <Icons.warning width={16} />
           <span>Error</span>
         </AlertTitle>
@@ -33,7 +29,7 @@ const EventsEditContent = () => {
 
   if (loading) {
     return (
-      <div className="flex w-full p-16 justify-center">
+      <div className="flex w-full justify-center p-16">
         <Icons.spinner className="animate-spin" />
       </div>
     )
@@ -42,7 +38,16 @@ const EventsEditContent = () => {
   return (
     <>
       {event && (
-        <EventForm id={id} event={event} onBack={() => navigate(`/dashboard/spaces/${spaceId}`)} />
+        <EventForm
+          id={id}
+          event={event}
+          onBack={() => {
+            if (spaceId === "PUBLIC") {
+              return navigate(`/dashboard`)
+            }
+            return navigate(`/dashboard/spaces/${spaceId}`)
+          }}
+        />
       )}
     </>
   )
@@ -51,7 +56,7 @@ const EventsEditContent = () => {
 export const EventsEdit = () => {
   return (
     <Guard>
-      <h1 className="w-full flex gap-2 items-center justify-center font-mono text-4xl text-center mt-12 mb-16">
+      <h1 className="mb-16 mt-12 flex w-full items-center justify-center gap-2 text-center font-mono text-4xl">
         <Icons.pencil />
         <span>Edit event</span>
       </h1>

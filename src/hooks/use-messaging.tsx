@@ -67,7 +67,8 @@ export const useMessaging = () => {
   )
 
   const initialize = React.useCallback(async () => {
-    const hasSupport = await isSupported()
+    const hasSupport =
+      typeof Notification !== "undefined" && (await isSupported())
 
     if (!hasSupport) {
       setTimeout(() => {
