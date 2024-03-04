@@ -2,7 +2,7 @@
 # https://github.com/firebase/firebase-tools
 
 name: Deploy to Firebase Hosting on merge
-'on':
+"on":
   push:
     branches:
       - main
@@ -27,13 +27,12 @@ jobs:
           echo VITE_OMDB_API_KEY=${{ vars.VITE_OMDB_API_KEY }} >> .env
           echo VITE_STRIPE_PUBLIC_API_KEY=${{ vars.VITE_STRIPE_PUBLIC_API_KEY }} >> .env
           echo VITE_SENTRY_DSN=${{ vars.VITE_SENTRY_DSN }} >> .env
-          cat .env
+          touch .env.sentry-build-plugin
+          echo SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }} >> .env.sentry-build-plugin
       - run: bun install && bun run build
-        env:
-          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
-          repoToken: '${{ secrets.GITHUB_TOKEN }}'
-          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_PENCILHEADS_341D8 }}'
+          repoToken: "${{ secrets.GITHUB_TOKEN }}"
+          firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_PENCILHEADS_341D8 }}"
           channelId: live
           projectId: pencilheads-341d8
