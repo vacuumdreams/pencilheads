@@ -1,4 +1,4 @@
-# pencilheads
+# <img src="/public/pencilhead.svg" width="54px" align="center" alt="Pencilhead" /> pencilheads
 
 We have a small movie club going with some friends, and I've created this app to experiment with some ideas. Go check it out [in the wild](https://pencilheads.net/).
 
