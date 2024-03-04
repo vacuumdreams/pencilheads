@@ -30,6 +30,7 @@ node_modules
 dist
 functions/lib
 runtimeconfig.json
+.firebase
 
 # Sentry Config File
 .env.sentry-build-plugin
