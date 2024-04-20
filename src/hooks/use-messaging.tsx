@@ -17,7 +17,9 @@ type Topics = {
 export const useMessaging = () => {
   const [token, setToken] = React.useState<string | null>(null)
   const [topics, setTopics] = React.useState({
-    events: Notification.permission === "granted",
+    events:
+      typeof Notification !== "undefined" &&
+      Notification.permission === "granted",
   })
   const { toast, dismiss } = useToast()
   const [user] = useAuthState(auth)

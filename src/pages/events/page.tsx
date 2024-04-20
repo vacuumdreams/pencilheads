@@ -1,19 +1,21 @@
 import React from "react"
-import { where } from "firebase/firestore"
-import { useAuthState } from "react-firebase-hooks/auth"
-import { useMessaging } from "@/hooks/use-messaging"
 import { auth } from "@/services/firebase"
-import { Icons } from "@/components/icons"
+import { addHours } from "date-fns"
+import { orderBy, where } from "firebase/firestore"
+import { useAuthState } from "react-firebase-hooks/auth"
+
+import { useMessaging } from "@/hooks/use-messaging"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { EventForm } from "@/components/event/form"
 import { EventList } from "@/components/event/display/list"
+import { EventForm } from "@/components/event/form"
+import { Icons } from "@/components/icons"
 
 export const Events: React.FC = () => {
   const [user] = useAuthState(auth)
   const { initialize } = useMessaging()
   const [isCreateOpen, setCreateOpen] = React.useState(false)
-  const [now] = React.useState(new Date())
+  const [now] = React.useState(addHours(Date.now(), 6))
 
   React.useEffect(() => {
     initialize()
@@ -34,7 +36,7 @@ export const Events: React.FC = () => {
                 <span>Back</span>
               </Button>
             </div>
-            <h3 className="text-muted-foreground w-full text-center text-xl">
+            <h3 className="w-full text-center text-xl text-muted-foreground">
               <span className="flex items-center justify-center gap-2">
                 <span className="animate-pulse">
                   <Icons.chevronRight size={20} />
@@ -68,7 +70,10 @@ export const Events: React.FC = () => {
             <EventList
               isAdmin={false}
               spaceId="PUBLIC"
-              filters={[where("scheduledFor", ">=", now)]}
+              filters={[
+                where("scheduledFor", ">=", now),
+                orderBy("scheduledFor", "asc"),
+              ]}
               noEventsMessage="There are no upcoming events."
             />
           </TabsContent>
@@ -76,7 +81,10 @@ export const Events: React.FC = () => {
             <EventList
               isAdmin={false}
               spaceId="PUBLIC"
-              filters={[where("scheduledFor", "<", now)]}
+              filters={[
+                where("scheduledFor", "<", now),
+                orderBy("scheduledFor", "desc"),
+              ]}
               noEventsMessage="Looks like there has been no events organised just yet."
             />
           </TabsContent>

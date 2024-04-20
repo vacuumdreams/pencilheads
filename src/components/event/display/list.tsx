@@ -1,5 +1,8 @@
 import React from "react"
-import { QueryFieldFilterConstraint } from "firebase/firestore"
+import {
+  QueryFieldFilterConstraint,
+  QueryOrderByConstraint,
+} from "firebase/firestore"
 import { useAuthState } from "react-firebase-hooks/auth"
 import { auth } from "@/services/firebase"
 import { useEventCollection } from "@/hooks/use-data"
@@ -11,7 +14,7 @@ import { EventItem } from "./item"
 type EventListProps = {
   isAdmin: boolean
   spaceId: string
-  filters: QueryFieldFilterConstraint[]
+  filters: Array<QueryFieldFilterConstraint | QueryOrderByConstraint>
   noEventsMessage: React.ReactNode | string
 }
 
